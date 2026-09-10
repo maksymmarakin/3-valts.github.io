@@ -737,6 +737,12 @@
       <h2 style="margin:0;">Треки для оцінювання</h2>
       <button class="btn btn-primary btn-small" id="finishSessionBtn">Завершити сесію оцінювання</button>
     </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:12px;background:var(--surface-alt);border-radius:6px;">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;">
+        <input type="checkbox" id="showAllTracks" style="width:16px;height:16px;">
+        <span>Показати всі треки</span>
+      </label>
+    </div>
     <div id="tracksList"></div>
   </section>
 
@@ -1219,6 +1225,20 @@ document.getElementById('finishSessionBtn').addEventListener('click', () => {
     scheduleAutoSync();
     showToast(`Переміщено ${ratedTracks.length} треків в історію.`);
   }
+});
+
+/* ---------------- Show All Tracks Toggle ---------------- */
+document.getElementById('showAllTracks').addEventListener('change', e => {
+  const showAll = e.target.checked;
+  const trackCards = document.querySelectorAll('.track-card');
+  
+  trackCards.forEach(card => {
+    if(showAll){
+      card.classList.add('open');
+    }else{
+      card.classList.remove('open');
+    }
+  });
 });
 
 /* ---------------- History ---------------- */

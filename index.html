@@ -759,6 +759,9 @@
         <label class="file-btn" style="padding:6px 12px;font-size:12px;">Імпортувати JSON<input type="file" id="importFile" accept="application/json" hidden></label>
       </div>
     </div>
+    <div style="margin-bottom:16px;">
+      <input type="text" id="historySearch" placeholder="Пошук треку..." style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;font-size:13px;">
+    </div>
     <div id="historyList"></div>
   </section>
 
@@ -1241,6 +1244,36 @@ document.getElementById('showAllTracks').addEventListener('change', e => {
   });
 });
 
+/* ---------------- History Search ---------------- */
+document.getElementById('historySearch').addEventListener('input', e => {
+  const searchTerm = e.target.value.toLowerCase().trim();
+  const daySections = document.querySelectorAll('.history-day-section');
+  
+  daySections.forEach(section => {
+    const rows = section.querySelectorAll('tbody tr');
+    let hasVisibleRows = false;
+    
+    rows.forEach(row => {
+      const titleCell = row.cells[1];
+      const title = titleCell.textContent.toLowerCase();
+      
+      if(searchTerm === '' || title.includes(searchTerm)){
+        row.style.display = '';
+        hasVisibleRows = true;
+      }else{
+        row.style.display = 'none';
+      }
+    });
+    
+    // Hide entire day section if no visible rows
+    if(hasVisibleRows){
+      section.style.display = '';
+    }else{
+      section.style.display = 'none';
+    }
+  });
+});
+
 /* ---------------- History ---------------- */
 function renderHistory(){
   const container = document.getElementById('historyList');
@@ -1339,7 +1372,7 @@ function renderTopTracks(){
       avgScore: t.scores.reduce((a,b)=>a+b,0) / t.scores.length
     }))
     .sort((a,b) => b.avgScore - a.avgScore)
-    .slice(0, 20); // Top 20
+    .slice(0, 10); // Top 10
   
   if(topTracks.length === 0){
     container.innerHTML = '<div class="empty-state">Ще немає оцінених треків в історії.</div>';

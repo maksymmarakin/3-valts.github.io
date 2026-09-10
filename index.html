@@ -1267,6 +1267,7 @@ document.getElementById('runMigrationBtn').addEventListener('click', async () =>
   
   let migratedCount = 0;
   let notFoundCount = 0;
+  let skippedCount = 0;
   
   // Create a map of filename -> base64
   const fileMap = {};
@@ -1279,17 +1280,24 @@ document.getElementById('runMigrationBtn').addEventListener('click', async () =>
     fileMap[file.name] = base64;
   }
   
+  console.log('Files loaded:', Object.keys(fileMap));
+  
   // Update tracks with old cover paths
   db.tracks.forEach(track => {
     if(track.cover && !track.coverBase64){
       const filename = track.cover.split('/').pop();
+      console.log('Track cover:', track.cover, 'Filename:', filename);
       if(fileMap[filename]){
         track.coverBase64 = fileMap[filename];
         track.cover = '';
         migratedCount++;
+        console.log('Migrated track:', track.title);
       }else{
         notFoundCount++;
+        console.log('Not found for track:', track.title);
       }
+    }else{
+      skippedCount++;
     }
   });
   
@@ -1305,6 +1313,8 @@ document.getElementById('runMigrationBtn').addEventListener('click', async () =>
         }else{
           notFoundCount++;
         }
+      }else{
+        skippedCount++;
       }
     });
   }
@@ -1313,22 +1323,29 @@ document.getElementById('runMigrationBtn').addEventListener('click', async () =>
   db.history.forEach(entry => {
     if(entry.cover && !entry.coverBase64){
       const filename = entry.cover.split('/').pop();
+      console.log('History cover:', entry.cover, 'Filename:', filename);
       if(fileMap[filename]){
         entry.coverBase64 = fileMap[filename];
         entry.cover = '';
         migratedCount++;
+        console.log('Migrated history entry:', entry.title);
       }else{
         notFoundCount++;
+        console.log('Not found for history:', entry.title);
       }
+    }else{
+      skippedCount++;
     }
   });
+  
+  console.log('Migration results:', {migratedCount, notFoundCount, skippedCount});
   
   saveDB();
   renderTracks();
   renderHistory();
   renderTopTracks();
   
-  statusEl.textContent = `Міграція завершено: ${migratedCount} файлів оновлено, ${notFoundCount} не знайдено.`;
+  statusEl.textContent = `Міграція завершено: ${migratedCount} файлів оновлено, ${notFoundCount} не знайдено, ${skippedCount} пропущено (вже є base64).`;
   statusEl.style.color = 'var(--text-muted)';
   
   scheduleAutoSync();

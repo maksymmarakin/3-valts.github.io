@@ -1883,18 +1883,14 @@ async function syncFromGitHub(){
       throw new Error('Файл не містить валідних даних');
     }
 
-    if(confirm('Замінити локальні дані даними з GitHub?')){
-      db = imported;
-      saveDB();
-      renderEvaluators();
-      renderTracks();
-      renderTopTracks();
-      renderHistory();
-      loadGitHubSettings();
-      setGHStatus('✓ Завантажено');
-    }else{
-      setGHStatus('Скасовано');
-    }
+    db = imported;
+    saveDB();
+    renderEvaluators();
+    renderTracks();
+    renderTopTracks();
+    renderHistory();
+    loadGitHubSettings();
+    setGHStatus('✓ Завантажено');
     setTimeout(() => setGHStatus(''), 3000);
   }catch(err){
     setGHStatus(`Помилка: ${err.message}`, true);

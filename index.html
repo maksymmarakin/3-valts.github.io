@@ -828,6 +828,16 @@ function loadDB(){
     if(!raw) return defaultDB();
     const parsed = JSON.parse(raw);
     if(!parsed.evaluators || !parsed.tracks || !parsed.history) return defaultDB();
+    
+    // Migrate old data to add github config if missing
+    if(!parsed.github){
+      parsed.github = {
+        token: '',
+        repo: '',
+        path: 'data/track-ratings.json'
+      };
+    }
+    
     return parsed;
   }catch(e){
     console.error('DB load failed', e);

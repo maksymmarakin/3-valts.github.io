@@ -706,10 +706,9 @@
     <form id="addTrackForm">
       <div class="form-grid">
         <div class="field full">
-          <label>Обкладинка (шлях/назва файла в цій папці, напр. covers/song.jpg)</label>
-          <input type="text" id="fCover" placeholder="covers/song.jpg">
-          <div class="file-hint">Можеш обрати файл нижче — поле заповниться автоматично його назвою.</div>
-          <label class="file-btn" style="margin-top:6px;padding:6px 12px;font-size:12px;">Обрати файл<input type="file" id="fCoverPick" accept="image/*" hidden></label>
+          <label>Обкладинка</label>
+          <input type="file" id="fCoverPick" accept="image/*">
+          <div class="file-hint">Картинка автоматично завантажиться в data/images/</div>
         </div>
         <div class="field">
           <label>Назва треку</label>
@@ -961,7 +960,6 @@ let currentCoverBase64 = null;
 document.getElementById('fCoverPick').addEventListener('change', e => {
   if(e.target.files[0]){
     const file = e.target.files[0];
-    document.getElementById('fCover').value = file.name;
     
     // Convert to base64
     const reader = new FileReader();
@@ -980,7 +978,7 @@ document.getElementById('addTrackForm').addEventListener('submit', e => {
     id: db.nextId++,
     title,
     artist: document.getElementById('fArtist').value.trim(),
-    cover: document.getElementById('fCover').value.trim(),
+    cover: '',
     coverBase64: currentCoverBase64,
     length: document.getElementById('fLength').value.trim(),
     year: document.getElementById('fYear').value.trim(),
@@ -1061,9 +1059,7 @@ function renderTrackCard(track){
 
   const cover = track.coverBase64
     ? `<img class="track-cover" src="${escapeAttr(track.coverBase64)}">`
-    : track.cover
-      ? `<img class="track-cover" src="${escapeAttr(track.cover)}" onerror="this.style.visibility='hidden'">`
-      : `<div class="track-cover"></div>`;
+    : `<div class="track-cover"></div>`;
 
   const ratersHTML = db.evaluators.map((ev, i) => {
     if(!ev.name.trim()) return ''; // Skip empty evaluators
@@ -1193,7 +1189,6 @@ function saveRating(trackId){
     trackId: track.id,
     title: track.title,
     artist: track.artist,
-    cover: track.cover,
     coverBase64: track.coverBase64,
     year: track.year,
     length: track.length,
@@ -1319,7 +1314,7 @@ function renderHistory(){
       
       return `
         <tr>
-          <td>${h.coverBase64 ? `<img src="${escapeAttr(h.coverBase64)}">` : h.cover ? `<img src="${escapeAttr(h.cover)}" onerror="this.style.visibility='hidden'">` : ''}</td>
+          <td>${h.coverBase64 ? `<img src="${escapeAttr(h.coverBase64)}">` : ''}</td>
           <td>${escapeHTML(h.title)}${h.artist ? ' — ' + escapeHTML(h.artist) : ''}</td>
           <td>${h.year || '—'}</td>
           ${evaluatorCells}
@@ -1371,7 +1366,7 @@ function renderTopTracks(){
       trackScores[key] = {
         title: h.title,
         artist: h.artist,
-        cover: h.cover,
+        coverBase64: h.coverBase64,
         year: h.year,
         scores: [],
         count: 0
@@ -1398,7 +1393,7 @@ function renderTopTracks(){
   const rows = topTracks.map((t, i) => `
     <tr>
       <td style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--amber);">#${i+1}</td>
-      <td>${t.cover ? `<img src="${escapeAttr(t.cover)}" onerror="this.style.visibility='hidden'">` : ''}</td>
+      <td>${t.coverBase64 ? `<img src="${escapeAttr(t.coverBase64)}">` : ''}</td>
       <td>${escapeHTML(t.title)}${t.artist ? ' — ' + escapeHTML(t.artist) : ''}</td>
       <td class="score-cell" style="font-size:16px;font-weight:600;">${fmt1(t.avgScore)}</td>
     </tr>
@@ -1646,9 +1641,6 @@ function openModal(trackId){
   const coverWrapper = document.getElementById('modalCoverWrapper');
   if(track.coverBase64){
     coverEl.src = track.coverBase64;
-    coverWrapper.classList.add('has-cover');
-  }else if(track.cover){
-    coverEl.src = track.cover;
     coverWrapper.classList.add('has-cover');
   }else{
     coverEl.src = '';

@@ -732,7 +732,10 @@
   </section>
 
   <section class="panel">
-    <h2>Треки</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+      <h2 style="margin:0;">Треки для оцінювання</h2>
+      <button class="btn btn-primary btn-small" id="finishSessionBtn">Завершити сесію оцінювання</button>
+    </div>
     <div id="tracksList"></div>
   </section>
 
@@ -813,6 +816,7 @@ function defaultDB(){
       {name:'', avatar:''}  // Optional 5th evaluator
     ],
     tracks: [],
+    archivedTracks: [],
     history: [],
     trackRandomOrder: {}, // Store persistent random order for each track
     github: {
@@ -837,6 +841,11 @@ function loadDB(){
         repo: '',
         path: 'data/track-ratings.json'
       };
+    }
+    
+    // Migrate old data to add archivedTracks if missing
+    if(!parsed.archivedTracks){
+      parsed.archivedTracks = [];
     }
     
     return parsed;
@@ -1171,8 +1180,10 @@ function saveRating(trackId){
     title: track.title,
     artist: track.artist,
     cover: track.cover,
+    coverBase64: track.coverBase64,
     year: track.year,
     length: track.length,
+    lyrics: track.lyrics,
     timestamp: new Date().toISOString(),
     evaluatorScores,
     finalScore: finalScore(track)
@@ -1184,6 +1195,30 @@ function saveRating(trackId){
   scheduleAutoSync();
   showToast('Оцінку записано в історію.');
 }
+
+/* ---------------- Finish Session ---------------- */
+document.getElementById('finishSessionBtn').addEventListener('click', () => {
+  const ratedTracks = db.tracks.filter(t => finalScore(t) !== null);
+  
+  if(ratedTracks.length === 0){
+    showToast('Немає оцінених треків для переміщення.');
+    return;
+  }
+  
+  if(confirm(`Перемістити ${ratedTracks.length} оцінених треків в історію?`)){
+    db.archivedTracks = db.archivedTracks || [];
+    ratedTracks.forEach(track => {
+      db.archivedTracks.push(track);
+    });
+    
+    db.tracks = db.tracks.filter(t => finalScore(t) === null);
+    
+    saveDB();
+    renderTracks();
+    scheduleAutoSync();
+    showToast(`Переміщено ${ratedTracks.length} треків в історію.`);
+  }
+});
 
 /* ---------------- History ---------------- */
 function renderHistory(){
@@ -1214,7 +1249,7 @@ function renderHistory(){
       
       return `
         <tr>
-          <td>${h.cover ? `<img src="${escapeAttr(h.cover)}" onerror="this.style.visibility='hidden'">` : ''}</td>
+          <td>${h.coverBase64 ? `<img src="${escapeAttr(h.coverBase64)}">` : h.cover ? `<img src="${escapeAttr(h.cover)}" onerror="this.style.visibility='hidden'">` : ''}</td>
           <td>${escapeHTML(h.title)}${h.artist ? ' — ' + escapeHTML(h.artist) : ''}</td>
           <td>${h.year || '—'}</td>
           ${evaluatorCells}
@@ -1462,8 +1497,9 @@ document.getElementById('importTracksFile').addEventListener('change', e => {
 
 /* ---------------- Clear Data ---------------- */
 document.getElementById('clearDataBtn').addEventListener('click', () => {
-  if(confirm('Видалити всі треки та скинути оцінювачів? Цю дію не можна скасувати.')){
+  if(confirm('Видалити всі треки та історію? Цю дію не можна скасувати.')){
     db.tracks = [];
+    db.archivedTracks = [];
     db.history = [];
     db.trackRandomOrder = {};
     db.evaluators = [

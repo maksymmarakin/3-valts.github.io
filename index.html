@@ -1689,7 +1689,7 @@ async function syncToGitHub(){
     }
 
     // Create or update file
-    const content = btoa(JSON.stringify(db, null, 2));
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))));
     const putUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
     const putBody = {
       message: `Update track ratings ${new Date().toISOString()}`,
@@ -1743,7 +1743,7 @@ async function syncFromGitHub(){
     }
 
     const data = await response.json();
-    const content = atob(data.content);
+    const content = decodeURIComponent(escape(atob(data.content)));
     const imported = JSON.parse(content);
 
     if(!imported.evaluators || !imported.tracks || !imported.history){

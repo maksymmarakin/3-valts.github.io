@@ -1346,10 +1346,10 @@ document.getElementById('runMigrationBtn').addEventListener('click', async () =>
   renderHistory();
   renderTopTracks();
   
-  statusEl.textContent = `Міграція завершено: ${migratedCount} файлів оновлено, ${notFoundCount} не знайдено, ${skippedCount} пропущено (вже є base64).`;
+  statusEl.textContent = `Міграція завершено: ${migratedCount} файлів оновлено, ${notFoundCount} не знайдено, ${skippedCount} пропущено (вже є base64). Натисни "Синхронізувати зараз" щоб завантажити на GitHub.`;
   statusEl.style.color = 'var(--text-muted)';
   
-  scheduleAutoSync();
+  // Don't auto-sync after migration - let user do it manually to avoid overwriting with old data
 });
 
 document.getElementById('exportDBBtn').addEventListener('click', () => {

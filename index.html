@@ -1707,8 +1707,9 @@ async function syncToGitHub(){
       console.error('GitHub Sync: Unexpected file response', fileResponse.status);
     }
 
-    // Create or update file
-    const jsonString = JSON.stringify(db, null, 2);
+    // Create a copy of db without token for syncing
+    const dbToSync = {...db, github: {...db.github, token: ''}};
+    const jsonString = JSON.stringify(dbToSync, null, 2);
     console.log('GitHub Sync: JSON size', jsonString.length, 'chars');
     
     const content = btoa(unescape(encodeURIComponent(jsonString)));

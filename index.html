@@ -1396,15 +1396,14 @@ function renderTopTracks(){
       <td style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--amber);">#${i+1}</td>
       <td>${t.cover ? `<img src="${escapeAttr(t.cover)}" onerror="this.style.visibility='hidden'">` : ''}</td>
       <td>${escapeHTML(t.title)}${t.artist ? ' — ' + escapeHTML(t.artist) : ''}</td>
-      <td>${t.year || '—'}</td>
-      <td class="score-cell">${fmt1(t.avgScore)}</td>
+      <td class="score-cell" style="font-size:16px;font-weight:600;">${fmt1(t.avgScore)}</td>
     </tr>
   `).join('');
   
   container.innerHTML = `
     <table class="history-table">
       <thead>
-        <tr><th>#</th><th></th><th>Трек</th><th>Рік</th><th>Середня</th></tr>
+        <tr><th>#</th><th></th><th>Трек</th><th>Середня</th></tr>
       </thead>
       <tbody>${rows}</tbody>
     </table>

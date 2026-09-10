@@ -1667,14 +1667,18 @@ async function syncToGitHub(){
   const {token, repo, path} = db.github;
   if(!token || !repo || !path){
     setGHStatus('Налаштуйте GitHub Sync спочатку', true);
+    console.error('GitHub Sync: Missing config', {token: !!token, repo, path});
     return;
   }
 
   setGHStatus('Синхронізація...');
+  console.log('GitHub Sync: Starting sync to', repo, path);
 
   try{
     // Get current file SHA if exists
     const getFileUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
+    console.log('GitHub Sync: Fetching current file', getFileUrl);
+    
     const fileResponse = await fetch(getFileUrl, {
       headers: {
         'Authorization': `token ${token}`,
@@ -1682,14 +1686,24 @@ async function syncToGitHub(){
       }
     });
 
+    console.log('GitHub Sync: File response status', fileResponse.status);
+
     let sha = null;
     if(fileResponse.ok){
       const fileData = await fileResponse.json();
       sha = fileData.sha;
+      console.log('GitHub Sync: Got file SHA', sha);
+    }else if(fileResponse.status !== 404){
+      console.error('GitHub Sync: Unexpected file response', fileResponse.status);
     }
 
     // Create or update file
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))));
+    const jsonString = JSON.stringify(db, null, 2);
+    console.log('GitHub Sync: JSON size', jsonString.length, 'chars');
+    
+    const content = btoa(unescape(encodeURIComponent(jsonString)));
+    console.log('GitHub Sync: Base64 size', content.length, 'chars');
+    
     const putUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
     const putBody = {
       message: `Update track ratings ${new Date().toISOString()}`,
@@ -1697,6 +1711,7 @@ async function syncToGitHub(){
     };
     if(sha) putBody.sha = sha;
 
+    console.log('GitHub Sync: Uploading file', putUrl);
     const putResponse = await fetch(putUrl, {
       method: 'PUT',
       headers: {
@@ -1707,16 +1722,21 @@ async function syncToGitHub(){
       body: JSON.stringify(putBody)
     });
 
+    console.log('GitHub Sync: Upload response status', putResponse.status);
+
     if(!putResponse.ok){
       const error = await putResponse.json();
+      console.error('GitHub Sync: Upload failed', error);
       throw new Error(error.message || 'Failed to sync');
     }
 
+    const result = await putResponse.json();
+    console.log('GitHub Sync: Success', result);
     setGHStatus('✓ Синхронізовано');
     setTimeout(() => setGHStatus(''), 3000);
   }catch(err){
-    setGHStatus(`Помилка: ${err.message}`, true);
     console.error('GitHub sync error:', err);
+    setGHStatus(`Помилка: ${err.message}`, true);
   }
 }
 

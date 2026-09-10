@@ -657,9 +657,10 @@
   <div class="mode-toggle">
     <button class="mode-btn" data-mode="admin">Адмін</button>
     <button class="mode-btn active" data-mode="friend">Оцінка</button>
+    <button class="mode-btn" data-mode="history">Історія</button>
   </div>
 
-  <section class="panel">
+  <section class="panel admin-section">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
       <h2 style="margin:0;">Три Вальта</h2>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -671,7 +672,7 @@
     <div class="evaluators-grid" id="evaluatorsGrid"></div>
   </section>
 
-  <section class="panel github-sync-panel">
+  <section class="panel admin-section github-sync-panel">
     <h2>GitHub Sync</h2>
     <div class="form-grid">
       <div class="field">
@@ -696,7 +697,7 @@
     </div>
   </section>
 
-  <section class="panel add-track">
+  <section class="panel admin-section add-track">
     <h2>Додати трек</h2>
     <form id="addTrackForm">
       <div class="form-grid">
@@ -731,7 +732,7 @@
     </form>
   </section>
 
-  <section class="panel">
+  <section class="panel rating-section">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
       <h2 style="margin:0;">Треки для оцінювання</h2>
       <button class="btn btn-primary btn-small" id="finishSessionBtn">Завершити сесію оцінювання</button>
@@ -739,12 +740,12 @@
     <div id="tracksList"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel history-section">
     <h2>Топ пісень</h2>
     <div id="topTracksList"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel history-section">
     <div class="history-header">
       <h2>Історія оцінок</h2>
       <div class="history-actions">
@@ -1528,24 +1529,20 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
     btn.classList.add('active');
     
     // Hide/show sections based on mode
-    const evalSection = document.querySelector('.panel:has(#evaluatorsGrid)');
-    const addTrackSection = document.querySelector('.panel.add-track');
-    const historySection = document.querySelector('.panel:has(#historyList)');
-    const topSection = document.querySelector('.panel:has(#topTracksList)');
-    const ghSyncSection = document.querySelector('.panel.github-sync-panel');
+    const adminSections = document.querySelectorAll('.admin-section');
+    const ratingSections = document.querySelectorAll('.rating-section');
+    const historySections = document.querySelectorAll('.history-section');
     
-    if(mode === 'friend'){
-      evalSection.style.display = 'none';
-      addTrackSection.style.display = 'none';
-      historySection.style.display = 'none';
-      topSection.style.display = 'none';
-      ghSyncSection.style.display = 'none';
-    }else{
-      evalSection.style.display = '';
-      addTrackSection.style.display = '';
-      historySection.style.display = '';
-      topSection.style.display = '';
-      ghSyncSection.style.display = '';
+    adminSections.forEach(s => s.style.display = 'none');
+    ratingSections.forEach(s => s.style.display = 'none');
+    historySections.forEach(s => s.style.display = 'none');
+    
+    if(mode === 'admin'){
+      adminSections.forEach(s => s.style.display = '');
+    }else if(mode === 'friend'){
+      ratingSections.forEach(s => s.style.display = '');
+    }else if(mode === 'history'){
+      historySections.forEach(s => s.style.display = '');
     }
     
     renderTracks();
@@ -1554,18 +1551,20 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
 
 // Initialize mode on page load
 function initMode(){
-  const evalSection = document.querySelector('.panel:has(#evaluatorsGrid)');
-  const addTrackSection = document.querySelector('.panel.add-track');
-  const historySection = document.querySelector('.panel:has(#historyList)');
-  const topSection = document.querySelector('.panel:has(#topTracksList)');
-  const ghSyncSection = document.querySelector('.panel.github-sync-panel');
+  const adminSections = document.querySelectorAll('.admin-section');
+  const ratingSections = document.querySelectorAll('.rating-section');
+  const historySections = document.querySelectorAll('.history-section');
   
-  if(currentMode === 'friend'){
-    evalSection.style.display = 'none';
-    addTrackSection.style.display = 'none';
-    historySection.style.display = 'none';
-    topSection.style.display = 'none';
-    ghSyncSection.style.display = 'none';
+  adminSections.forEach(s => s.style.display = 'none');
+  ratingSections.forEach(s => s.style.display = 'none');
+  historySections.forEach(s => s.style.display = 'none');
+  
+  if(currentMode === 'admin'){
+    adminSections.forEach(s => s.style.display = '');
+  }else if(currentMode === 'friend'){
+    ratingSections.forEach(s => s.style.display = '');
+  }else if(currentMode === 'history'){
+    historySections.forEach(s => s.style.display = '');
   }
 }
 

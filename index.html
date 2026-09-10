@@ -844,8 +844,11 @@ let openTrackId = null;
 let currentMode = 'friend';
 let currentModalTrackId = null;
 
-function avatarHTML(avatar, name, size){
+function avatarHTML(avatar, name, size, avatarBase64 = null){
   const initial = (name||'?').trim().charAt(0).toUpperCase();
+  if(avatarBase64){
+    return `<img class="avatar" src="${escapeAttr(avatarBase64)}" style="width:${size}px;height:${size}px;">`;
+  }
   if(avatar){
     return `<img class="avatar" src="${escapeAttr(avatar)}" style="width:${size}px;height:${size}px;" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'avatar-fallback',style:'width:${size}px;height:${size}px;',textContent:'${initial}'}))">`;
   }
@@ -872,7 +875,7 @@ function renderEvaluators(){
   const grid = document.getElementById('evaluatorsGrid');
   grid.innerHTML = db.evaluators.map((ev, i) => `
     <div class="evaluator-setup-card">
-      ${avatarHTML(ev.avatar, ev.name, 56)}
+      ${avatarHTML(ev.avatar, ev.name, 56, ev.avatarBase64)}
       <label>Ім'я</label>
       <input type="text" data-eval-name="${i}" value="${escapeAttr(ev.name)}">
       <label>Аватар (шлях/назва файла)</label>
@@ -902,17 +905,37 @@ document.getElementById('evaluatorsGrid').addEventListener('input', e => {
 document.getElementById('evaluatorsGrid').addEventListener('change', e => {
   const pickIdx = e.target.getAttribute('data-eval-avatar-pick');
   if(pickIdx !== null && e.target.files[0]){
-    db.evaluators[+pickIdx].avatar = e.target.files[0].name;
-    saveDB();
-    renderEvaluators();
-    renderTracks();
-    scheduleAutoSync();
+    const file = e.target.files[0];
+    
+    // Convert to base64
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      db.evaluators[+pickIdx].avatar = file.name;
+      db.evaluators[+pickIdx].avatarBase64 = event.target.result;
+      saveDB();
+      renderEvaluators();
+      renderTracks();
+      scheduleAutoSync();
+    };
+    reader.readAsDataURL(file);
   }
 });
 
 /* ---------------- Add track ---------------- */
+let currentCoverBase64 = null;
+
 document.getElementById('fCoverPick').addEventListener('change', e => {
-  if(e.target.files[0]) document.getElementById('fCover').value = e.target.files[0].name;
+  if(e.target.files[0]){
+    const file = e.target.files[0];
+    document.getElementById('fCover').value = file.name;
+    
+    // Convert to base64
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      currentCoverBase64 = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
 });
 
 document.getElementById('addTrackForm').addEventListener('submit', e => {
@@ -924,6 +947,7 @@ document.getElementById('addTrackForm').addEventListener('submit', e => {
     title,
     artist: document.getElementById('fArtist').value.trim(),
     cover: document.getElementById('fCover').value.trim(),
+    coverBase64: currentCoverBase64,
     length: document.getElementById('fLength').value.trim(),
     year: document.getElementById('fYear').value.trim(),
     lyrics: document.getElementById('fLyrics').value.trim(),
@@ -933,6 +957,7 @@ document.getElementById('addTrackForm').addEventListener('submit', e => {
   db.tracks.unshift(track);
   saveDB();
   e.target.reset();
+  currentCoverBase64 = null;
   renderTracks();
   scheduleAutoSync();
 });
@@ -1000,9 +1025,11 @@ function renderTrackCard(track){
     ? `<div class="track-score pending">—/10</div>`
     : `<div class="track-score">${fmt1(score)}</div>`;
 
-  const cover = track.cover
-    ? `<img class="track-cover" src="${escapeAttr(track.cover)}" onerror="this.style.visibility='hidden'">`
-    : `<div class="track-cover"></div>`;
+  const cover = track.coverBase64
+    ? `<img class="track-cover" src="${escapeAttr(track.coverBase64)}">`
+    : track.cover
+      ? `<img class="track-cover" src="${escapeAttr(track.cover)}" onerror="this.style.visibility='hidden'">`
+      : `<div class="track-cover"></div>`;
 
   const ratersHTML = db.evaluators.map((ev, i) => {
     if(!ev.name.trim()) return ''; // Skip empty evaluators
@@ -1011,7 +1038,7 @@ function renderTrackCard(track){
     return `
       <div class="rater-block">
         <div class="rater-head">
-          ${avatarHTML(ev.avatar, ev.name, 28)}
+          ${avatarHTML(ev.avatar, ev.name, 28, ev.avatarBase64)}
           <div class="rater-name">${escapeHTML(ev.name)}</div>
         </div>
         ${CATS.map(c => `
@@ -1504,7 +1531,10 @@ function openModal(trackId){
   
   const coverEl = document.getElementById('modalCover');
   const coverWrapper = document.getElementById('modalCoverWrapper');
-  if(track.cover){
+  if(track.coverBase64){
+    coverEl.src = track.coverBase64;
+    coverWrapper.classList.add('has-cover');
+  }else if(track.cover){
     coverEl.src = track.cover;
     coverWrapper.classList.add('has-cover');
   }else{
@@ -1537,7 +1567,7 @@ function openModal(trackId){
     return `
       <div class="rater-block">
         <div class="rater-head">
-          ${avatarHTML(ev.avatar, ev.name, 28)}
+          ${avatarHTML(ev.avatar, ev.name, 28, ev.avatarBase64)}
           <div class="rater-name">${escapeHTML(ev.name)}</div>
         </div>
         ${CATS.map(c => `

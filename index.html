@@ -1268,10 +1268,22 @@ document.getElementById('historySearch').addEventListener('input', e => {
     // Hide entire day section if no visible rows
     if(hasVisibleRows){
       section.style.display = '';
+      // Auto-open day section when searching
+      if(searchTerm !== ''){
+        section.classList.add('open');
+      }
     }else{
       section.style.display = 'none';
+      section.classList.remove('open');
     }
   });
+  
+  // Close all sections when search is cleared
+  if(searchTerm === ''){
+    daySections.forEach(section => {
+      section.classList.remove('open');
+    });
+  }
 });
 
 /* ---------------- History ---------------- */

@@ -707,6 +707,7 @@
     <input type="file" id="migrationFiles" accept="image/*" multiple style="width:100%;margin-bottom:12px;">
     <button class="btn btn-primary btn-small" id="runMigrationBtn">Запустити міграцію</button>
     <div id="migrationStatus" style="margin-top:12px;font-size:12px;color:var(--text-muted);"></div>
+    <button class="btn btn-secondary btn-small" id="exportDBBtn" style="margin-top:12px;">Експортувати базу даних</button>
   </section>
 
   <section class="panel admin-section add-track">
@@ -1349,6 +1350,18 @@ document.getElementById('runMigrationBtn').addEventListener('click', async () =>
   statusEl.style.color = 'var(--text-muted)';
   
   scheduleAutoSync();
+});
+
+document.getElementById('exportDBBtn').addEventListener('click', () => {
+  const dbJSON = JSON.stringify(db, null, 2);
+  const blob = new Blob([dbJSON], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'track-rater-db.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Базу даних експортовано.');
 });
 
 /* ---------------- History Search ---------------- */

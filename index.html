@@ -691,6 +691,7 @@
     <div style="display:flex;gap:10px;margin-top:16px;align-items:center;">
       <button class="btn btn-primary btn-small" id="ghSaveBtn">Зберегти налаштування</button>
       <button class="btn btn-secondary btn-small" id="ghSyncBtn">Синхронізувати зараз</button>
+      <button class="btn btn-secondary btn-small" id="ghLoadBtn">Завантажити з GitHub</button>
       <span id="ghStatus" style="font-size:12px;color:var(--text-muted);"></span>
     </div>
   </section>
@@ -1815,6 +1816,7 @@ function scheduleAutoSync(){
 
 document.getElementById('ghSaveBtn').addEventListener('click', saveGitHubSettings);
 document.getElementById('ghSyncBtn').addEventListener('click', syncToGitHub);
+document.getElementById('ghLoadBtn').addEventListener('click', syncFromGitHub);
 
 /* ---------------- init ---------------- */
 initMode();
@@ -1823,6 +1825,12 @@ renderTracks();
 renderTopTracks();
 renderHistory();
 loadGitHubSettings();
+
+// Auto-load from GitHub if no local data
+if(db.tracks.length === 0 && db.history.length === 0 && db.github.token && db.github.repo && db.github.path){
+  console.log('No local data found, attempting to load from GitHub...');
+  syncFromGitHub();
+}
 </script>
 </body>
 </html>

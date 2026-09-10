@@ -686,7 +686,7 @@
       </div>
       <div class="field full">
         <label>Шлях до файлу в репозиторії</label>
-        <input type="text" id="ghPath" placeholder="data/track-ratings.json">
+        <input type="text" id="ghPath" placeholder="data/db.json">
       </div>
     </div>
     <div style="display:flex;gap:10px;margin-top:16px;align-items:center;">
@@ -832,7 +832,7 @@ function defaultDB(){
     github: {
       token: '',
       repo: '',
-      path: 'data/track-ratings.json'
+      path: 'data/db.json'
     }
   };
 }
@@ -849,7 +849,7 @@ function loadDB(){
       parsed.github = {
         token: '',
         repo: '',
-        path: 'data/track-ratings.json'
+        path: 'data/db.json'
       };
     }
     
@@ -1398,14 +1398,13 @@ function renderTopTracks(){
       <td>${escapeHTML(t.title)}${t.artist ? ' — ' + escapeHTML(t.artist) : ''}</td>
       <td>${t.year || '—'}</td>
       <td class="score-cell">${fmt1(t.avgScore)}</td>
-      <td style="color:var(--text-muted);font-size:11px;">${t.count} оцінок</td>
     </tr>
   `).join('');
   
   container.innerHTML = `
     <table class="history-table">
       <thead>
-        <tr><th>#</th><th></th><th>Трек</th><th>Рік</th><th>Середня</th><th>Оцінок</th></tr>
+        <tr><th>#</th><th></th><th>Трек</th><th>Рік</th><th>Середня</th></tr>
       </thead>
       <tbody>${rows}</tbody>
     </table>
@@ -1757,13 +1756,13 @@ document.getElementById('modalLyricsToggle').addEventListener('click', () => {
 function loadGitHubSettings(){
   document.getElementById('ghToken').value = db.github.token || '';
   document.getElementById('ghRepo').value = db.github.repo || '';
-  document.getElementById('ghPath').value = db.github.path || 'data/track-ratings.json';
+  document.getElementById('ghPath').value = db.github.path || 'data/db.json';
 }
 
 function saveGitHubSettings(){
   db.github.token = document.getElementById('ghToken').value.trim();
   db.github.repo = document.getElementById('ghRepo').value.trim();
-  db.github.path = document.getElementById('ghPath').value.trim() || 'data/track-ratings.json';
+  db.github.path = document.getElementById('ghPath').value.trim() || 'data/db.json';
   saveDB();
   showToast('Налаштування GitHub збережено.');
 }

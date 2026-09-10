@@ -22,380 +22,7 @@
       "avatar": ""
     }
   ],
-  "tracks": [
-    {
-      "id": 12,
-      "title": "Дядя",
-      "artist": "LIL KRYSTALLL",
-      "cover": "lil .jpg",
-      "length": "2:12",
-      "year": "2026",
-      "addedAt": "2026-09-08T14:33:08.231Z",
-      "ratings": [
-        {
-          "vibe": 10,
-          "text": 8,
-          "beat": 10
-        },
-        {
-          "vibe": 10,
-          "text": 7,
-          "beat": 10
-        },
-        {
-          "vibe": 9,
-          "text": 8,
-          "beat": 9
-        },
-        {
-          "vibe": 7,
-          "text": 7,
-          "beat": 6
-        }
-      ]
-    },
-    {
-      "id": 11,
-      "title": "LOVESTAR",
-      "artist": "ROCKET",
-      "cover": "rocket.jpg",
-      "length": "1:47",
-      "year": "2026",
-      "addedAt": "2026-09-08T14:30:26.880Z",
-      "ratings": [
-        {
-          "vibe": 10,
-          "text": 8,
-          "beat": 8
-        },
-        {
-          "vibe": 8,
-          "text": 6,
-          "beat": 8
-        },
-        {
-          "vibe": 8,
-          "text": 7,
-          "beat": 9
-        },
-        {
-          "vibe": 6,
-          "text": 5,
-          "beat": 8
-        }
-      ]
-    },
-    {
-      "id": 10,
-      "title": "Думаю о тебе",
-      "artist": "ROCKET",
-      "cover": "rocket.jpg",
-      "length": "2:11",
-      "year": "2026",
-      "addedAt": "2026-09-08T14:28:40.330Z",
-      "ratings": [
-        {
-          "vibe": 7,
-          "text": 6,
-          "beat": 9
-        },
-        {
-          "vibe": 9,
-          "text": 7,
-          "beat": 9
-        },
-        {
-          "vibe": 7,
-          "text": 6,
-          "beat": 9
-        },
-        {
-          "vibe": 5,
-          "text": 2,
-          "beat": 4
-        }
-      ]
-    },
-    {
-      "id": 9,
-      "title": "PSP-FLOW",
-      "artist": "Слава КПСС feat. 163ONMYNECK",
-      "cover": "slava.jpg",
-      "length": "2:49",
-      "year": "2026",
-      "addedAt": "2026-09-08T14:28:16.830Z",
-      "ratings": [
-        {
-          "vibe": 7,
-          "text": 7,
-          "beat": 7
-        },
-        {
-          "vibe": 7,
-          "text": 8,
-          "beat": 8
-        },
-        {
-          "vibe": 7,
-          "text": 10,
-          "beat": 8
-        },
-        {
-          "vibe": 8,
-          "text": 9,
-          "beat": 9
-        }
-      ]
-    },
-    {
-      "id": 8,
-      "title": "type london",
-      "artist": "ONDA ANDAR",
-      "cover": "onda.jpg",
-      "length": "1:44",
-      "year": "2026",
-      "addedAt": "2026-09-08T14:27:29.514Z",
-      "ratings": [
-        {
-          "vibe": 9,
-          "text": 7,
-          "beat": 8
-        },
-        {
-          "vibe": 7,
-          "text": 5,
-          "beat": 8
-        },
-        {
-          "vibe": 9,
-          "text": 6,
-          "beat": 8
-        },
-        {
-          "vibe": 3,
-          "text": 3,
-          "beat": 3
-        }
-      ]
-    },
-    {
-      "id": 7,
-      "title": "WET",
-      "artist": "LIL KRYSTALLL",
-      "cover": "lil .jpg",
-      "length": "2:00",
-      "year": "2026",
-      "addedAt": "2026-09-08T14:26:59.497Z",
-      "ratings": [
-        {
-          "vibe": 8,
-          "text": 8,
-          "beat": 7
-        },
-        {
-          "vibe": 9,
-          "text": 7,
-          "beat": 8
-        },
-        {
-          "vibe": 8,
-          "text": 6,
-          "beat": 8
-        },
-        {
-          "vibe": 8,
-          "text": 7,
-          "beat": 8
-        }
-      ]
-    },
-    {
-      "id": 6,
-      "title": "такопи",
-      "artist": "ева киллер, мая койка, ника кабина",
-      "cover": "kapusta.jpg",
-      "length": "1:56",
-      "year": "2026",
-      "addedAt": "2026-09-08T14:26:24.164Z",
-      "ratings": [
-        {
-          "vibe": 5,
-          "text": 2,
-          "beat": 5
-        },
-        {
-          "vibe": 5,
-          "text": 2,
-          "beat": 7
-        },
-        {
-          "vibe": 6,
-          "text": 2,
-          "beat": 5
-        },
-        {
-          "vibe": 1,
-          "text": 1,
-          "beat": 1
-        }
-      ]
-    },
-    {
-      "id": 5,
-      "title": "Прав",
-      "artist": "ROCKET",
-      "cover": "rocket.jpg",
-      "length": "1:50",
-      "year": "2026",
-      "addedAt": "2026-09-08T14:25:21.064Z",
-      "ratings": [
-        {
-          "vibe": 8,
-          "text": 4,
-          "beat": 8
-        },
-        {
-          "vibe": 8,
-          "text": 5,
-          "beat": 7
-        },
-        {
-          "vibe": 8,
-          "text": 5,
-          "beat": 9
-        },
-        {
-          "vibe": 4,
-          "text": 3,
-          "beat": 7
-        }
-      ]
-    },
-    {
-      "id": 4,
-      "title": "andy worhol",
-      "artist": "Kai Angel",
-      "cover": "kai.jpg",
-      "length": "2:57",
-      "year": "2026",
-      "addedAt": "2026-09-08T14:24:53.814Z",
-      "ratings": [
-        {
-          "vibe": 7,
-          "text": 7,
-          "beat": 8
-        },
-        {
-          "vibe": 6,
-          "text": 6,
-          "beat": 7
-        },
-        {
-          "vibe": 9,
-          "text": 6,
-          "beat": 9
-        },
-        {
-          "vibe": 7,
-          "text": 8,
-          "beat": 7
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "title": "Flowers",
-      "artist": "Kai Angel",
-      "cover": "kai.jpg",
-      "length": "3:25",
-      "year": "2026",
-      "addedAt": "2026-09-08T14:24:30.997Z",
-      "ratings": [
-        {
-          "vibe": 6,
-          "text": 6,
-          "beat": 7
-        },
-        {
-          "vibe": 6,
-          "text": 4,
-          "beat": 6
-        },
-        {
-          "vibe": 7,
-          "text": 7,
-          "beat": 7
-        },
-        {
-          "vibe": 6,
-          "text": 7,
-          "beat": 5
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "title": "ЗНАК",
-      "artist": "Toxi$ feat. Дора",
-      "cover": "tox.jpg",
-      "length": "3:36",
-      "year": "2026",
-      "addedAt": "2026-09-08T14:23:55.547Z",
-      "ratings": [
-        {
-          "vibe": 9,
-          "text": 7,
-          "beat": 8
-        },
-        {
-          "vibe": 7,
-          "text": 7,
-          "beat": 7
-        },
-        {
-          "vibe": 7,
-          "text": 6,
-          "beat": 7
-        },
-        {
-          "vibe": 4,
-          "text": 6,
-          "beat": 5
-        }
-      ]
-    },
-    {
-      "id": 1,
-      "title": "Я Канівес",
-      "artist": "МС Петя",
-      "cover": "petya.jpg",
-      "length": "2:12",
-      "year": "2026",
-      "addedAt": "2026-09-08T14:22:53.682Z",
-      "ratings": [
-        {
-          "vibe": 10,
-          "text": 8,
-          "beat": 2
-        },
-        {
-          "vibe": 10,
-          "text": 8,
-          "beat": 2
-        },
-        {
-          "vibe": 10,
-          "text": 6,
-          "beat": 3
-        },
-        {
-          "vibe": 10,
-          "text": 3,
-          "beat": 2
-        }
-      ]
-    }
-  ],
+  "tracks": [],
   "history": [
     {
       "id": 24,
@@ -992,5 +619,379 @@
     "token": "",
     "repo": "maksymmarakin/3-valts.github.io",
     "path": "data/db.json"
-  }
+  },
+  "archivedTracks": [
+    {
+      "id": 12,
+      "title": "Дядя",
+      "artist": "LIL KRYSTALLL",
+      "cover": "lil .jpg",
+      "length": "2:12",
+      "year": "2026",
+      "addedAt": "2026-09-08T14:33:08.231Z",
+      "ratings": [
+        {
+          "vibe": 10,
+          "text": 8,
+          "beat": 10
+        },
+        {
+          "vibe": 10,
+          "text": 7,
+          "beat": 10
+        },
+        {
+          "vibe": 9,
+          "text": 8,
+          "beat": 9
+        },
+        {
+          "vibe": 7,
+          "text": 7,
+          "beat": 6
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "LOVESTAR",
+      "artist": "ROCKET",
+      "cover": "rocket.jpg",
+      "length": "1:47",
+      "year": "2026",
+      "addedAt": "2026-09-08T14:30:26.880Z",
+      "ratings": [
+        {
+          "vibe": 10,
+          "text": 8,
+          "beat": 8
+        },
+        {
+          "vibe": 8,
+          "text": 6,
+          "beat": 8
+        },
+        {
+          "vibe": 8,
+          "text": 7,
+          "beat": 9
+        },
+        {
+          "vibe": 6,
+          "text": 5,
+          "beat": 8
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Думаю о тебе",
+      "artist": "ROCKET",
+      "cover": "rocket.jpg",
+      "length": "2:11",
+      "year": "2026",
+      "addedAt": "2026-09-08T14:28:40.330Z",
+      "ratings": [
+        {
+          "vibe": 7,
+          "text": 6,
+          "beat": 9
+        },
+        {
+          "vibe": 9,
+          "text": 7,
+          "beat": 9
+        },
+        {
+          "vibe": 7,
+          "text": 6,
+          "beat": 9
+        },
+        {
+          "vibe": 5,
+          "text": 2,
+          "beat": 4
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "PSP-FLOW",
+      "artist": "Слава КПСС feat. 163ONMYNECK",
+      "cover": "slava.jpg",
+      "length": "2:49",
+      "year": "2026",
+      "addedAt": "2026-09-08T14:28:16.830Z",
+      "ratings": [
+        {
+          "vibe": 7,
+          "text": 7,
+          "beat": 7
+        },
+        {
+          "vibe": 7,
+          "text": 8,
+          "beat": 8
+        },
+        {
+          "vibe": 7,
+          "text": 10,
+          "beat": 8
+        },
+        {
+          "vibe": 8,
+          "text": 9,
+          "beat": 9
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "type london",
+      "artist": "ONDA ANDAR",
+      "cover": "onda.jpg",
+      "length": "1:44",
+      "year": "2026",
+      "addedAt": "2026-09-08T14:27:29.514Z",
+      "ratings": [
+        {
+          "vibe": 9,
+          "text": 7,
+          "beat": 8
+        },
+        {
+          "vibe": 7,
+          "text": 5,
+          "beat": 8
+        },
+        {
+          "vibe": 9,
+          "text": 6,
+          "beat": 8
+        },
+        {
+          "vibe": 3,
+          "text": 3,
+          "beat": 3
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "WET",
+      "artist": "LIL KRYSTALLL",
+      "cover": "lil .jpg",
+      "length": "2:00",
+      "year": "2026",
+      "addedAt": "2026-09-08T14:26:59.497Z",
+      "ratings": [
+        {
+          "vibe": 8,
+          "text": 8,
+          "beat": 7
+        },
+        {
+          "vibe": 9,
+          "text": 7,
+          "beat": 8
+        },
+        {
+          "vibe": 8,
+          "text": 6,
+          "beat": 8
+        },
+        {
+          "vibe": 8,
+          "text": 7,
+          "beat": 8
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "такопи",
+      "artist": "ева киллер, мая койка, ника кабина",
+      "cover": "kapusta.jpg",
+      "length": "1:56",
+      "year": "2026",
+      "addedAt": "2026-09-08T14:26:24.164Z",
+      "ratings": [
+        {
+          "vibe": 5,
+          "text": 2,
+          "beat": 5
+        },
+        {
+          "vibe": 5,
+          "text": 2,
+          "beat": 7
+        },
+        {
+          "vibe": 6,
+          "text": 2,
+          "beat": 5
+        },
+        {
+          "vibe": 1,
+          "text": 1,
+          "beat": 1
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Прав",
+      "artist": "ROCKET",
+      "cover": "rocket.jpg",
+      "length": "1:50",
+      "year": "2026",
+      "addedAt": "2026-09-08T14:25:21.064Z",
+      "ratings": [
+        {
+          "vibe": 8,
+          "text": 4,
+          "beat": 8
+        },
+        {
+          "vibe": 8,
+          "text": 5,
+          "beat": 7
+        },
+        {
+          "vibe": 8,
+          "text": 5,
+          "beat": 9
+        },
+        {
+          "vibe": 4,
+          "text": 3,
+          "beat": 7
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "andy worhol",
+      "artist": "Kai Angel",
+      "cover": "kai.jpg",
+      "length": "2:57",
+      "year": "2026",
+      "addedAt": "2026-09-08T14:24:53.814Z",
+      "ratings": [
+        {
+          "vibe": 7,
+          "text": 7,
+          "beat": 8
+        },
+        {
+          "vibe": 6,
+          "text": 6,
+          "beat": 7
+        },
+        {
+          "vibe": 9,
+          "text": 6,
+          "beat": 9
+        },
+        {
+          "vibe": 7,
+          "text": 8,
+          "beat": 7
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Flowers",
+      "artist": "Kai Angel",
+      "cover": "kai.jpg",
+      "length": "3:25",
+      "year": "2026",
+      "addedAt": "2026-09-08T14:24:30.997Z",
+      "ratings": [
+        {
+          "vibe": 6,
+          "text": 6,
+          "beat": 7
+        },
+        {
+          "vibe": 6,
+          "text": 4,
+          "beat": 6
+        },
+        {
+          "vibe": 7,
+          "text": 7,
+          "beat": 7
+        },
+        {
+          "vibe": 6,
+          "text": 7,
+          "beat": 5
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "ЗНАК",
+      "artist": "Toxi$ feat. Дора",
+      "cover": "tox.jpg",
+      "length": "3:36",
+      "year": "2026",
+      "addedAt": "2026-09-08T14:23:55.547Z",
+      "ratings": [
+        {
+          "vibe": 9,
+          "text": 7,
+          "beat": 8
+        },
+        {
+          "vibe": 7,
+          "text": 7,
+          "beat": 7
+        },
+        {
+          "vibe": 7,
+          "text": 6,
+          "beat": 7
+        },
+        {
+          "vibe": 4,
+          "text": 6,
+          "beat": 5
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "title": "Я Канівес",
+      "artist": "МС Петя",
+      "cover": "petya.jpg",
+      "length": "2:12",
+      "year": "2026",
+      "addedAt": "2026-09-08T14:22:53.682Z",
+      "ratings": [
+        {
+          "vibe": 10,
+          "text": 8,
+          "beat": 2
+        },
+        {
+          "vibe": 10,
+          "text": 8,
+          "beat": 2
+        },
+        {
+          "vibe": 10,
+          "text": 6,
+          "beat": 3
+        },
+        {
+          "vibe": 10,
+          "text": 3,
+          "beat": 2
+        }
+      ]
+    }
+  ]
 }

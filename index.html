@@ -671,7 +671,7 @@
     <div class="evaluators-grid" id="evaluatorsGrid"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel github-sync-panel">
     <h2>GitHub Sync</h2>
     <div class="form-grid">
       <div class="field">
@@ -1458,17 +1458,20 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
     const addTrackSection = document.querySelector('.panel.add-track');
     const historySection = document.querySelector('.panel:has(#historyList)');
     const topSection = document.querySelector('.panel:has(#topTracksList)');
+    const ghSyncSection = document.querySelector('.panel.github-sync-panel');
     
     if(mode === 'friend'){
       evalSection.style.display = 'none';
       addTrackSection.style.display = 'none';
       historySection.style.display = 'none';
       topSection.style.display = 'none';
+      ghSyncSection.style.display = 'none';
     }else{
       evalSection.style.display = '';
       addTrackSection.style.display = '';
       historySection.style.display = '';
       topSection.style.display = '';
+      ghSyncSection.style.display = '';
     }
     
     renderTracks();
@@ -1481,12 +1484,14 @@ function initMode(){
   const addTrackSection = document.querySelector('.panel.add-track');
   const historySection = document.querySelector('.panel:has(#historyList)');
   const topSection = document.querySelector('.panel:has(#topTracksList)');
+  const ghSyncSection = document.querySelector('.panel.github-sync-panel');
   
   if(currentMode === 'friend'){
     evalSection.style.display = 'none';
     addTrackSection.style.display = 'none';
     historySection.style.display = 'none';
     topSection.style.display = 'none';
+    ghSyncSection.style.display = 'none';
   }
 }
 

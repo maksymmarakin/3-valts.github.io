@@ -2066,7 +2066,12 @@ loadGitHubSettings();
 // Auto-load from GitHub if no local data
 if(db.tracks.length === 0 && db.history.length === 0 && db.github.repo && db.github.path){
   console.log('No local data found, attempting to load from GitHub...');
-  syncFromGitHub();
+  try {
+    syncFromGitHub();
+  } catch(err) {
+    console.error('Auto-load from GitHub failed:', err);
+    // Continue with empty local data
+  }
 }
 </script>
 </body>

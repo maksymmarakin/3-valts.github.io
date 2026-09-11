@@ -835,12 +835,20 @@ function defaultDB(){
 // Session-in-progress tracks stay local-only and never get synced.
 const DB_PATH = 'data/db.json';
 
+// True only when we actually found a usable DB in this browser's localStorage.
+// Placeholder evaluator names ("Оцінювач 1" etc.) from defaultDB() don't count -
+// they're not real data, just an empty form waiting to be filled in.
+let dbLoadedFromStorage = true;
+
 function loadDB(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return defaultDB();
+    if(!raw){ dbLoadedFromStorage = false; return defaultDB(); }
     const parsed = JSON.parse(raw);
-    if(!parsed.evaluators || !parsed.tracks || !parsed.history) return defaultDB();
+    if(!parsed.evaluators || !parsed.tracks || !parsed.history){
+      dbLoadedFromStorage = false;
+      return defaultDB();
+    }
 
     // Migrate old data to add github config if missing
     if(!parsed.github){
@@ -850,6 +858,7 @@ function loadDB(){
     return parsed;
   }catch(e){
     console.error('DB load failed', e);
+    dbLoadedFromStorage = false;
     return defaultDB();
   }
 }
@@ -1761,8 +1770,7 @@ async function init(){
   initMode();
   loadGitHubSettings();
 
-  const hasLocalData = db.evaluators.some(e => e.name.trim()) || db.history.length > 0;
-  if(!hasLocalData){
+  if(!dbLoadedFromStorage){
     // Fresh browser/device: pull evaluators + history straight from GitHub,
     // no token needed since it's a plain public-file read.
     await pullDBFromGitHub({force: false});

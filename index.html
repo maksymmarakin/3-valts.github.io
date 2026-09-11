@@ -755,7 +755,10 @@
   <section class="panel rating-section">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
       <h2 style="margin:0;">Треки для оцінювання</h2>
-      <button class="btn btn-primary btn-small" id="finishSessionBtn">Завершити сесію оцінювання</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-secondary btn-small" id="loadFromGitHubBtn">Завантажити з GitHub</button>
+        <button class="btn btn-primary btn-small" id="finishSessionBtn">Завершити сесію оцінювання</button>
+      </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:12px;background:var(--surface-alt);border-radius:6px;">
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;">
@@ -2102,6 +2105,23 @@ document.getElementById('ghSaveBtn').addEventListener('click', saveGitHubSetting
 document.getElementById('ghSyncBtn').addEventListener('click', syncToGitHub);
 document.getElementById('ghLoadBtn').addEventListener('click', syncFromGitHub);
 
+document.getElementById('loadFromGitHubBtn').addEventListener('click', () => {
+  const repo = prompt('Введіть репозиторій (наприклад: username/repo):', db.github.repo || '');
+  const path = prompt('Введіть шлях до файлу (наприклад: data/db.json):', db.github.path || 'data/db.json');
+  
+  if(!repo || !path){
+    showToast('Скасовано');
+    return;
+  }
+  
+  // Temporarily set GitHub config for this load
+  db.github = db.github || {};
+  db.github.repo = repo;
+  db.github.path = path;
+  
+  syncFromGitHub();
+});
+
 /* ---------------- init ---------------- */
 initMode();
 renderEvaluators();
@@ -2111,13 +2131,18 @@ renderHistory();
 loadGitHubSettings();
 
 // Auto-load from GitHub if no local data
-if(db.tracks.length === 0 && db.history.length === 0 && db.github.repo && db.github.path){
-  console.log('No local data found, attempting to load from GitHub...');
-  try {
-    syncFromGitHub();
-  } catch(err) {
-    console.error('Auto-load from GitHub failed:', err);
-    // Continue with empty local data
+if(db.tracks.length === 0 && db.history.length === 0){
+  // Try to load from GitHub if repo is configured
+  if(db.github && db.github.repo && db.github.path){
+    console.log('No local data found, attempting to load from GitHub...');
+    try {
+      syncFromGitHub();
+    } catch(err) {
+      console.error('Auto-load from GitHub failed:', err);
+      // Continue with empty local data
+    }
+  } else {
+    console.log('No local data and no GitHub config - starting fresh');
   }
 }
 </script>

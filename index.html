@@ -1890,6 +1890,12 @@ function setGHStatus(msg, isError = false){
 }
 
 async function syncToGitHub(){
+  if(!db.github){
+    setGHStatus('Налаштуйте GitHub Sync спочатку', true);
+    console.error('GitHub Sync: db.github is undefined');
+    return;
+  }
+  
   const {token, repo, path} = db.github;
   if(!token || !repo || !path){
     setGHStatus('Налаштуйте GitHub Sync спочатку', true);
@@ -1968,6 +1974,11 @@ async function syncToGitHub(){
 }
 
 async function syncFromGitHub(){
+  if(!db.github){
+    setGHStatus('Налаштуйте GitHub Sync спочатку', true);
+    return;
+  }
+  
   const {token, repo, path} = db.github;
   if(!repo || !path){
     setGHStatus('Налаштуйте GitHub Sync спочатку', true);

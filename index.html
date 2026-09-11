@@ -1456,23 +1456,14 @@ document.getElementById('historyRefreshBtn').addEventListener('click', async () 
 /* ---------------- Clear Data ---------------- */
 document.getElementById('clearDataBtn').addEventListener('click', () => {
   if(confirm('Видалити всі треки та історію? Цю дію не можна скасувати.')){
-    db.tracks = [];
-    db.history = [];
-    db.trackRandomOrder = {};
-    db.evaluators = [
-      {name:'Оцінювач 1', avatar:''},
-      {name:'Оцінювач 2', avatar:''},
-      {name:'Оцінювач 3', avatar:''},
-      {name:'', avatar:''},
-      {name:'', avatar:''}
-    ];
-    saveDB();
+    // Clear localStorage completely so auto-load from GitHub will work on next page load
+    localStorage.removeItem(STORAGE_KEY);
+    db = loadDB(); // Reload with default empty data
     renderEvaluators();
     renderTracks();
     renderHistory();
     renderTopTracks();
-    // Don't auto-sync after clearing data - only syncs to GitHub if user manually clicks sync
-    showToast('Дані очищено (тільки локально).');
+    showToast('Дані очищено. Перезавантаж сторінку для завантаження з GitHub.');
   }
 });
 

@@ -1644,7 +1644,7 @@ document.getElementById('modalLyricsToggle').addEventListener('click', () => {
 ------------------------------------------------- */
 function loadGitHubSettings(){
   document.getElementById('ghToken').value = db.github.token || '';
-  document.getElementById('ghRepo').value = db.github.repo || '';
+  document.getElementById('ghRepo').value = db.github.repo || detectGitHubRepo() || '';
 }
 
 function saveGitHubSettings(){
@@ -1652,6 +1652,21 @@ function saveGitHubSettings(){
   db.github.repo = document.getElementById('ghRepo').value.trim();
   saveDB();
   showToast('Налаштування GitHub збережено.');
+}
+
+// Figures out "owner/repo" from where this page is actually hosted
+// (username.github.io/repo-name/...), so reading history never depends on
+// a setting that lives only in localStorage. Falls back to the manually
+// entered repo field, which matters when testing the file locally
+// (file:// or localhost, where there's no GitHub Pages URL to read).
+function detectGitHubRepo(){
+  const host = location.hostname;
+  if(host.endsWith('.github.io')){
+    const owner = host.split('.')[0];
+    const repoName = location.pathname.split('/').filter(Boolean)[0];
+    if(owner && repoName) return `${owner}/${repoName}`;
+  }
+  return (db.github && db.github.repo) || null;
 }
 
 function setGHStatus(msg, isError = false){
@@ -1664,7 +1679,7 @@ function setGHStatus(msg, isError = false){
 // anyone who opens the site, including on a device that's never touched
 // GitHub settings before.
 async function fetchDBFromGitHub(){
-  const repo = db.github && db.github.repo;
+  const repo = detectGitHubRepo();
   if(!repo) return null;
   const url = `https://raw.githubusercontent.com/${repo}/main/${DB_PATH}?t=${Date.now()}`;
   const response = await fetch(url);
@@ -1682,7 +1697,7 @@ async function fetchDBFromGitHub(){
 // force=true overwrites local data even if some already exists (manual button).
 // force=false only fills in when local is empty (first load on a new device).
 async function pullDBFromGitHub({force = false} = {}){
-  if(!db.github || !db.github.repo){
+  if(!detectGitHubRepo()){
     if(force) setGHStatus('Спочатку вкажи репозиторій', true);
     return;
   }

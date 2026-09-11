@@ -1993,7 +1993,19 @@ async function syncFromGitHub(){
     }
 
     const data = await response.json();
+    
+    // Check if content exists
+    if(!data.content){
+      throw new Error('Файл порожній або не містить даних');
+    }
+    
     const content = decodeURIComponent(escape(atob(data.content)));
+    
+    // Check if content is valid JSON
+    if(!content || content.trim() === ''){
+      throw new Error('Файл порожній');
+    }
+    
     const imported = JSON.parse(content);
 
     if(!imported.evaluators || !imported.tracks || !imported.history){

@@ -1698,8 +1698,8 @@ document.getElementById('clearDataBtn').addEventListener('click', () => {
     renderTracks();
     renderHistory();
     renderTopTracks();
-    scheduleAutoSync();
-    showToast('Дані очищено.');
+    // Don't auto-sync after clearing data - only syncs to GitHub if user manually clicks sync
+    showToast('Дані очищено (тільки локально).');
   }
 });
 

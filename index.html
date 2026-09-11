@@ -1203,9 +1203,20 @@ document.getElementById('finishSessionBtn').addEventListener('click', async () =
   renderTracks();
   renderHistory();
   renderTopTracks();
-  showToast(`Записано ${ratedTracks.length} треків в історію. Синхронізація з GitHub...`);
+  showToast(`Записано ${ratedTracks.length} треків в історію.`);
 
-  await pushDBToGitHub();
+  // Try to sync to GitHub if token is configured
+  if(db.github && db.github.token && db.github.repo && db.github.path){
+    try {
+      await pushDBToGitHub();
+      showToast('Дані синхронізовано з GitHub.');
+    } catch(err) {
+      console.error('GitHub sync failed:', err);
+      showToast('Помилка синхронізації з GitHub. Дані збережено локально.');
+    }
+  } else {
+    showToast('GitHub токен не налаштовано. Дані збережено локально.');
+  }
 });
 
 /* ---------------- Show All Tracks Toggle ---------------- */

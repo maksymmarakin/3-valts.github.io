@@ -1519,6 +1519,14 @@ function initMode(){
   ratingSections.forEach(s => s.style.display = 'none');
   historySections.forEach(s => s.style.display = 'none');
   
+  // Set active button based on currentMode
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.classList.remove('active');
+    if(btn.getAttribute('data-mode') === currentMode){
+      btn.classList.add('active');
+    }
+  });
+  
   if(currentMode === 'admin'){
     adminSections.forEach(s => s.style.display = '');
   }else if(currentMode === 'friend'){
@@ -1783,7 +1791,7 @@ async function pushDBToGitHub(){
 
 document.getElementById('ghSaveBtn').addEventListener('click', saveGitHubSettings);
 document.getElementById('ghLoadBtn').addEventListener('click', () => pullDBFromGitHub({force: true}));
-document.getElementById('ghSyncBtn').addEventListener('click', syncToGitHub);
+document.getElementById('ghSyncBtn').addEventListener('click', pushDBToGitHub);
 
 /* ---------------- init ---------------- */
 async function init(){

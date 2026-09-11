@@ -668,8 +668,6 @@
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
       <h2 style="margin:0;">Три Вальта</h2>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn btn-secondary btn-small" id="exportTracksBtn">Експорт треків</button>
-        <label class="file-btn" style="padding:6px 12px;font-size:12px;">Імпорт треків<input type="file" id="importTracksFile" accept="application/json" hidden></label>
         <button class="btn btn-danger btn-small" id="clearDataBtn">Очистити все</button>
       </div>
     </div>
@@ -678,6 +676,7 @@
 
   <section class="panel admin-section github-sync-panel">
     <h2>GitHub Sync</h2>
+    <div class="file-hint" style="margin-bottom:12px;">Історія та оцінювачі зберігаються у файлі <code>data/db.json</code> в репозиторії. Читання (для всіх, хто відкриє сайт) відбувається автоматично й без токена. Токен потрібен лише тобі, щоб записувати нову історію після «Завершити оцінювання».</div>
     <div class="form-grid">
       <div class="field">
         <label>GitHub Token (PAT)</label>
@@ -688,34 +687,12 @@
         <label>Репозиторій (owner/repo)</label>
         <input type="text" id="ghRepo" placeholder="username/repo-name">
       </div>
-      <div class="field full">
-        <label>Шлях до файлу в репозиторії</label>
-        <input type="text" id="ghPath" placeholder="data/db.json">
-      </div>
     </div>
-    <div style="display:flex;gap:10px;margin-top:16px;align-items:center;">
+    <div style="display:flex;gap:10px;margin-top:16px;align-items:center;flex-wrap:wrap;">
       <button class="btn btn-primary btn-small" id="ghSaveBtn">Зберегти налаштування</button>
-      <button class="btn btn-secondary btn-small" id="ghSyncBtn">Синхронізувати зараз</button>
       <button class="btn btn-secondary btn-small" id="ghLoadBtn">Завантажити з GitHub</button>
       <span id="ghStatus" style="font-size:12px;color:var(--text-muted);"></span>
     </div>
-  </section>
-
-  <section class="panel admin-section">
-    <h2>Міграція картинок</h2>
-    <div class="file-hint" style="margin-bottom:12px;">Оберіть файли картинок для конвертації в base64. Файли будуть автоматично співставлені з треками за назвою.</div>
-    <input type="file" id="migrationFiles" accept="image/*" multiple style="width:100%;margin-bottom:12px;">
-    <button class="btn btn-primary btn-small" id="runMigrationBtn">Запустити міграцію</button>
-    <div id="migrationStatus" style="margin-top:12px;font-size:12px;color:var(--text-muted);"></div>
-    <button class="btn btn-secondary btn-small" id="exportDBBtn" style="margin-top:12px;">Експортувати базу даних</button>
-  </section>
-
-  <section class="panel admin-section">
-    <h2>Відновлення даних</h2>
-    <div class="file-hint" style="margin-bottom:12px;">Завантажте експортовану базу даних для відновлення.</div>
-    <input type="file" id="importDBFile" accept="application/json" style="width:100%;margin-bottom:12px;">
-    <button class="btn btn-primary btn-small" id="importDBBtn">Імпортувати базу даних</button>
-    <div id="importDBStatus" style="margin-top:12px;font-size:12px;color:var(--text-muted);"></div>
   </section>
 
   <section class="panel admin-section add-track">
@@ -756,8 +733,7 @@
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
       <h2 style="margin:0;">Треки для оцінювання</h2>
       <div style="display:flex;gap:8px;">
-        <button class="btn btn-secondary btn-small" id="loadFromGitHubBtn">Завантажити з GitHub</button>
-        <button class="btn btn-primary btn-small" id="finishSessionBtn">Завершити сесію оцінювання</button>
+        <button class="btn btn-primary btn-small" id="finishSessionBtn">Завершити оцінювання</button>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:12px;background:var(--surface-alt);border-radius:6px;">
@@ -778,8 +754,7 @@
     <div class="history-header">
       <h2>Історія оцінок</h2>
       <div class="history-actions">
-        <button class="btn btn-secondary btn-small" id="exportBtn">Експортувати JSON</button>
-        <label class="file-btn" style="padding:6px 12px;font-size:12px;">Імпортувати JSON<input type="file" id="importFile" accept="application/json" hidden></label>
+        <button class="btn btn-secondary btn-small" id="historyRefreshBtn">Оновити з GitHub</button>
       </div>
     </div>
     <div style="margin-bottom:16px;">
@@ -821,9 +796,7 @@
         <div class="lyrics-text" id="modalLyricsText"></div>
       </div>
     </div>
-    <div class="track-actions">
-      <button class="btn btn-primary btn-small" id="modalSaveBtn">Зберегти оцінку в історію</button>
-    </div>
+
   </div>
 </div>
 
@@ -849,16 +822,18 @@ function defaultDB(){
       {name:'', avatar:''}  // Optional 5th evaluator
     ],
     tracks: [],
-    archivedTracks: [],
     history: [],
     trackRandomOrder: {}, // Store persistent random order for each track
     github: {
       token: '',
-      repo: '',
-      path: 'data/db.json'
+      repo: ''
     }
   };
 }
+
+// Only the DB fields that live on GitHub (evaluators + history).
+// Session-in-progress tracks stay local-only and never get synced.
+const DB_PATH = 'data/db.json';
 
 function loadDB(){
   try{
@@ -866,21 +841,12 @@ function loadDB(){
     if(!raw) return defaultDB();
     const parsed = JSON.parse(raw);
     if(!parsed.evaluators || !parsed.tracks || !parsed.history) return defaultDB();
-    
+
     // Migrate old data to add github config if missing
     if(!parsed.github){
-      parsed.github = {
-        token: '',
-        repo: '',
-        path: 'data/db.json'
-      };
+      parsed.github = { token: '', repo: '' };
     }
-    
-    // Migrate old data to add archivedTracks if missing
-    if(!parsed.archivedTracks){
-      parsed.archivedTracks = [];
-    }
-    
+
     return parsed;
   }catch(e){
     console.error('DB load failed', e);
@@ -947,12 +913,10 @@ document.getElementById('evaluatorsGrid').addEventListener('input', e => {
     db.evaluators[+nameIdx].name = e.target.value;
     saveDB();
     renderTracks();
-    scheduleAutoSync();
   }else if(avatarIdx !== null){
     db.evaluators[+avatarIdx].avatar = e.target.value;
     saveDB();
     renderTracks();
-    scheduleAutoSync();
   }
 });
 document.getElementById('evaluatorsGrid').addEventListener('change', e => {
@@ -968,7 +932,6 @@ document.getElementById('evaluatorsGrid').addEventListener('change', e => {
       saveDB();
       renderEvaluators();
       renderTracks();
-      scheduleAutoSync();
     };
     reader.readAsDataURL(file);
   }
@@ -1011,7 +974,6 @@ document.getElementById('addTrackForm').addEventListener('submit', e => {
   e.target.reset();
   currentCoverBase64 = null;
   renderTracks();
-  scheduleAutoSync();
 });
 
 /* ---------------- Tracks ---------------- */
@@ -1121,7 +1083,6 @@ function renderTrackCard(track){
           <div class="final-value" data-final="${track.id}">${score===null?'—':fmt1(score)}</div>
         </div>
         <div class="track-actions">
-          <button class="btn btn-primary btn-small" data-save="${track.id}">Зберегти оцінку в історію</button>
           <button class="btn btn-danger btn-small" data-delete="${track.id}">Видалити трек</button>
         </div>
       </div>
@@ -1136,11 +1097,6 @@ document.getElementById('tracksList').addEventListener('click', e => {
     openModal(id);
     return;
   }
-  const saveBtn = e.target.closest('[data-save]');
-  if(saveBtn){
-    saveRating(+saveBtn.getAttribute('data-save'));
-    return;
-  }
   const delBtn = e.target.closest('[data-delete]');
   if(delBtn){
     const id = +delBtn.getAttribute('data-delete');
@@ -1148,7 +1104,6 @@ document.getElementById('tracksList').addEventListener('click', e => {
       db.tracks = db.tracks.filter(t => t.id !== id);
       saveDB();
       renderTracks();
-      scheduleAutoSync();
     }
     return;
   }
@@ -1173,7 +1128,6 @@ document.getElementById('tracksList').addEventListener('input', e => {
   finEl.textContent = fin===null ? '—' : fmt1(fin);
 
   saveDB();
-  scheduleAutoSync();
   // also refresh the collapsed head score
   const headScoreEl = document.querySelector(`[data-card="${trackId}"] .track-score`);
   if(headScoreEl){
@@ -1187,13 +1141,7 @@ document.getElementById('tracksList').addEventListener('input', e => {
   }
 });
 
-function saveRating(trackId){
-  const track = db.tracks.find(t => t.id === trackId);
-  if(!track) return;
-  const missing = track.ratings.some(r => r === null);
-  if(missing && !confirm('Не всі оцінювачі виставили оцінку. Зберегти частковий результат в історію?')){
-    return;
-  }
+function buildHistoryEntry(track){
   const evaluatorScores = db.evaluators.map((ev, i) => {
     const r = track.ratings[i];
     return {
@@ -1204,7 +1152,7 @@ function saveRating(trackId){
       avg: r ? evalAvg(r) : null
     };
   });
-  const entry = {
+  return {
     id: db.nextId++,
     trackId: track.id,
     title: track.title,
@@ -1217,36 +1165,37 @@ function saveRating(trackId){
     evaluatorScores,
     finalScore: finalScore(track)
   };
-  db.history.unshift(entry);
-  saveDB();
-  renderHistory();
-  renderTopTracks();
-  scheduleAutoSync();
-  showToast('Оцінку записано в історію.');
 }
 
-/* ---------------- Finish Session ---------------- */
-document.getElementById('finishSessionBtn').addEventListener('click', () => {
+/* ---------------- Finish Evaluation ---------------- */
+// One button does the whole Friday-night ritual:
+// 1) turns every rated track into a history entry
+// 2) empties the working session (ready for next Friday's tracks)
+// 3) pushes the updated history straight to GitHub
+document.getElementById('finishSessionBtn').addEventListener('click', async () => {
   const ratedTracks = db.tracks.filter(t => finalScore(t) !== null);
-  
+
   if(ratedTracks.length === 0){
-    showToast('Немає оцінених треків для переміщення.');
+    showToast('Немає оцінених треків для запису в історію.');
     return;
   }
-  
-  if(confirm(`Перемістити ${ratedTracks.length} оцінених треків в історію?`)){
-    db.archivedTracks = db.archivedTracks || [];
-    ratedTracks.forEach(track => {
-      db.archivedTracks.push(track);
-    });
-    
-    db.tracks = db.tracks.filter(t => finalScore(t) === null);
-    
-    saveDB();
-    renderTracks();
-    scheduleAutoSync();
-    showToast(`Переміщено ${ratedTracks.length} треків в історію.`);
+
+  if(!confirm(`Записати ${ratedTracks.length} оцінених треків в історію та завершити оцінювання?`)){
+    return;
   }
+
+  ratedTracks.forEach(track => {
+    db.history.unshift(buildHistoryEntry(track));
+  });
+  db.tracks = db.tracks.filter(t => finalScore(t) === null);
+
+  saveDB();
+  renderTracks();
+  renderHistory();
+  renderTopTracks();
+  showToast(`Записано ${ratedTracks.length} треків в історію. Синхронізація з GitHub...`);
+
+  await pushDBToGitHub();
 });
 
 /* ---------------- Show All Tracks Toggle ---------------- */
@@ -1261,157 +1210,6 @@ document.getElementById('showAllTracks').addEventListener('change', e => {
       card.classList.remove('open');
     }
   });
-});
-
-/* ---------------- Image Migration ---------------- */
-document.getElementById('runMigrationBtn').addEventListener('click', async () => {
-  const fileInput = document.getElementById('migrationFiles');
-  const statusEl = document.getElementById('migrationStatus');
-  
-  if(fileInput.files.length === 0){
-    statusEl.textContent = 'Оберіть файли для міграції.';
-    statusEl.style.color = 'var(--red)';
-    return;
-  }
-  
-  statusEl.textContent = 'Міграція...';
-  statusEl.style.color = 'var(--text-muted)';
-  
-  let migratedCount = 0;
-  let notFoundCount = 0;
-  let skippedCount = 0;
-  
-  // Create a map of filename -> base64
-  const fileMap = {};
-  for(const file of fileInput.files){
-    const base64 = await new Promise(resolve => {
-      const reader = new FileReader();
-      reader.onload = e => resolve(e.target.result);
-      reader.readAsDataURL(file);
-    });
-    fileMap[file.name] = base64;
-  }
-  
-  console.log('Files loaded:', Object.keys(fileMap));
-  
-  // Update tracks with old cover paths
-  db.tracks.forEach(track => {
-    if(track.cover && !track.coverBase64){
-      const filename = track.cover.split('/').pop();
-      console.log('Track cover:', track.cover, 'Filename:', filename);
-      if(fileMap[filename]){
-        track.coverBase64 = fileMap[filename];
-        track.cover = '';
-        migratedCount++;
-        console.log('Migrated track:', track.title);
-      }else{
-        notFoundCount++;
-        console.log('Not found for track:', track.title);
-      }
-    }else{
-      skippedCount++;
-    }
-  });
-  
-  // Update archived tracks
-  if(db.archivedTracks){
-    db.archivedTracks.forEach(track => {
-      if(track.cover && !track.coverBase64){
-        const filename = track.cover.split('/').pop();
-        if(fileMap[filename]){
-          track.coverBase64 = fileMap[filename];
-          track.cover = '';
-          migratedCount++;
-        }else{
-          notFoundCount++;
-        }
-      }else{
-        skippedCount++;
-      }
-    });
-  }
-  
-  // Update history entries
-  db.history.forEach(entry => {
-    if(entry.cover && !entry.coverBase64){
-      const filename = entry.cover.split('/').pop();
-      console.log('History cover:', entry.cover, 'Filename:', filename);
-      if(fileMap[filename]){
-        entry.coverBase64 = fileMap[filename];
-        entry.cover = '';
-        migratedCount++;
-        console.log('Migrated history entry:', entry.title);
-      }else{
-        notFoundCount++;
-        console.log('Not found for history:', entry.title);
-      }
-    }else{
-      skippedCount++;
-    }
-  });
-  
-  console.log('Migration results:', {migratedCount, notFoundCount, skippedCount});
-  
-  saveDB();
-  renderTracks();
-  renderHistory();
-  renderTopTracks();
-  
-  statusEl.textContent = `Міграція завершено: ${migratedCount} файлів оновлено, ${notFoundCount} не знайдено, ${skippedCount} пропущено (вже є base64). Натисни "Синхронізувати зараз" щоб завантажити на GitHub.`;
-  statusEl.style.color = 'var(--text-muted)';
-  
-  // Don't auto-sync after migration - let user do it manually to avoid overwriting with old data
-});
-
-document.getElementById('exportDBBtn').addEventListener('click', () => {
-  const dbJSON = JSON.stringify(db, null, 2);
-  const blob = new Blob([dbJSON], {type: 'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'track-rater-db.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('Базу даних експортовано.');
-});
-
-document.getElementById('importDBBtn').addEventListener('click', () => {
-  const fileInput = document.getElementById('importDBFile');
-  const statusEl = document.getElementById('importDBStatus');
-  
-  if(fileInput.files.length === 0){
-    statusEl.textContent = 'Оберіть файл для імпорту.';
-    statusEl.style.color = 'var(--red)';
-    return;
-  }
-  
-  const file = fileInput.files[0];
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const imported = JSON.parse(e.target.result);
-      if(!imported.evaluators || !imported.tracks || !imported.history){
-        throw new Error('Файл не містить валідних даних');
-      }
-      
-      if(confirm('Замінити поточні дані імпортованими?')){
-        db = imported;
-        saveDB();
-        renderEvaluators();
-        renderTracks();
-        renderHistory();
-        renderTopTracks();
-        loadGitHubSettings();
-        statusEl.textContent = '✓ Дані відновлено.';
-        statusEl.style.color = 'var(--text-muted)';
-        showToast('Базу даних відновлено.');
-      }
-    } catch(err) {
-      statusEl.textContent = `Помилка: ${err.message}`;
-      statusEl.style.color = 'var(--red)';
-    }
-  };
-  reader.readAsText(file);
 });
 
 /* ---------------- History Search ---------------- */
@@ -1635,105 +1433,21 @@ document.getElementById('historyList').addEventListener('click', e => {
     saveDB();
     renderHistory();
     renderTopTracks();
-    scheduleAutoSync();
   }
 });
 
-/* ---------------- Export / Import (файл-«база даних») ---------------- */
-document.getElementById('exportBtn').addEventListener('click', () => {
-  const blob = new Blob([JSON.stringify(db, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
-  a.download = `track-ratings-${stamp}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-});
-
-document.getElementById('importFile').addEventListener('change', e => {
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    try{
-      const imported = JSON.parse(reader.result);
-      if(!imported.evaluators || !imported.tracks || !imported.history){
-        alert('Файл не схожий на файл бази цього сайту.');
-        return;
-      }
-      if(confirm('Замінити поточні дані даними з файлу? (Скасувати = об’єднати історію)')){
-        db = imported;
-      }else{
-        // merge: keep current evaluators/tracks, append history, avoid id clashes
-        const maxId = Math.max(db.nextId, imported.nextId||1);
-        db.nextId = maxId;
-        db.history = [...imported.history, ...db.history];
-      }
-      saveDB();
-      renderEvaluators();
-      renderTracks();
-      renderHistory();
-      renderTopTracks();
-      alert('Імпорт завершено.');
-    }catch(err){
-      alert('Не вдалося прочитати файл: ' + err.message);
-    }
-  };
-  reader.readAsText(file);
-  e.target.value = '';
-});
-
-/* ---------------- Export / Import Tracks ---------------- */
-document.getElementById('exportTracksBtn').addEventListener('click', () => {
-  const tracksData = {
-    tracks: db.tracks,
-    nextId: db.nextId,
-    trackRandomOrder: db.trackRandomOrder || {}
-  };
-  const blob = new Blob([JSON.stringify(tracksData, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
-  a.download = `3val-tracks-${stamp}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('Треки експортовано.');
-});
-
-document.getElementById('importTracksFile').addEventListener('change', e => {
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    try{
-      const imported = JSON.parse(reader.result);
-      if(!imported.tracks){
-        showToast('Файл не містить треків.');
-        return;
-      }
-      if(confirm('Замінити поточні треки? (Оцінювачі залишаться незмінними)')){
-        db.tracks = imported.tracks;
-        db.nextId = imported.nextId || db.nextId;
-        db.trackRandomOrder = imported.trackRandomOrder || {};
-        saveDB();
-        renderTracks();
-        showToast('Треки імпортовано.');
-      }
-    }catch(err){
-      showToast('Помилка читання файлу: ' + err.message);
-    }
-  };
-  reader.readAsText(file);
-  e.target.value = '';
+/* ---------------- History refresh from GitHub ---------------- */
+document.getElementById('historyRefreshBtn').addEventListener('click', async () => {
+  if(!confirm('Підтягнути історію з GitHub? Це замінить локальну історію та список оцінювачів даними з репозиторію.')){
+    return;
+  }
+  await pullDBFromGitHub({force: true});
 });
 
 /* ---------------- Clear Data ---------------- */
 document.getElementById('clearDataBtn').addEventListener('click', () => {
   if(confirm('Видалити всі треки та історію? Цю дію не можна скасувати.')){
     db.tracks = [];
-    db.archivedTracks = [];
     db.history = [];
     db.trackRandomOrder = {};
     db.evaluators = [
@@ -1896,12 +1610,6 @@ document.getElementById('modalRaters').addEventListener('input', e => {
   saveDB();
 });
 
-document.getElementById('modalSaveBtn').addEventListener('click', () => {
-  if(currentModalTrackId === null) return;
-  saveRating(currentModalTrackId);
-  closeModal();
-});
-
 document.getElementById('modalLyricsToggle').addEventListener('click', () => {
   const toggle = document.getElementById('modalLyricsToggle');
   const content = document.getElementById('modalLyricsContent');
@@ -1918,17 +1626,21 @@ document.getElementById('modalLyricsToggle').addEventListener('click', () => {
   }
 });
 
-/* ---------------- GitHub Sync ---------------- */
+/* ---------------- GitHub Sync ----------------
+   Reading: plain fetch from raw.githubusercontent.com — public, no token,
+   works for anyone who opens the page.
+   Writing: GitHub Contents API with a personal token — only used by the
+   host, only when "Завершити оцінювання" is clicked (or a manual retry).
+   Nothing auto-syncs on every click anymore.
+------------------------------------------------- */
 function loadGitHubSettings(){
   document.getElementById('ghToken').value = db.github.token || '';
   document.getElementById('ghRepo').value = db.github.repo || '';
-  document.getElementById('ghPath').value = db.github.path || 'data/db.json';
 }
 
 function saveGitHubSettings(){
   db.github.token = document.getElementById('ghToken').value.trim();
   db.github.repo = document.getElementById('ghRepo').value.trim();
-  db.github.path = document.getElementById('ghPath').value.trim() || 'data/db.json';
   saveDB();
   showToast('Налаштування GitHub збережено.');
 }
@@ -1939,212 +1651,130 @@ function setGHStatus(msg, isError = false){
   el.style.color = isError ? 'var(--red)' : 'var(--text-muted)';
 }
 
-async function syncToGitHub(){
-  if(!db.github){
-    setGHStatus('Налаштуйте GitHub Sync спочатку', true);
-    console.error('GitHub Sync: db.github is undefined');
-    return;
+// Public read: evaluators + history only. No token needed, works for
+// anyone who opens the site, including on a device that's never touched
+// GitHub settings before.
+async function fetchDBFromGitHub(){
+  const repo = db.github && db.github.repo;
+  if(!repo) return null;
+  const url = `https://raw.githubusercontent.com/${repo}/main/${DB_PATH}?t=${Date.now()}`;
+  const response = await fetch(url);
+  if(!response.ok){
+    throw new Error(`Не вдалося прочитати ${DB_PATH} з ${repo}`);
   }
-  
-  const {token, repo, path} = db.github;
-  if(!token || !repo || !path){
-    setGHStatus('Налаштуйте GitHub Sync спочатку', true);
-    console.error('GitHub Sync: Missing config', {token: !!token, repo, path});
-    return;
+  const remote = await response.json();
+  if(!remote.evaluators || !remote.history){
+    throw new Error('Файл на GitHub не містить очікуваних даних');
   }
-
-  setGHStatus('Синхронізація...');
-  console.log('GitHub Sync: Starting sync to', repo, path);
-
-  try{
-    // Get current file SHA if exists
-    const getFileUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
-    console.log('GitHub Sync: Fetching current file', getFileUrl);
-    
-    const fileResponse = await fetch(getFileUrl, {
-      headers: {
-        'Authorization': `token ${token}`,
-        'Accept': 'application/vnd.github.v3+json'
-      }
-    });
-
-    console.log('GitHub Sync: File response status', fileResponse.status);
-
-    let sha = null;
-    if(fileResponse.ok){
-      const fileData = await fileResponse.json();
-      sha = fileData.sha;
-      console.log('GitHub Sync: Got file SHA', sha);
-    }else if(fileResponse.status !== 404){
-      console.error('GitHub Sync: Unexpected file response', fileResponse.status);
-    }
-
-    // Create a copy of db without token for syncing
-    const dbToSync = {...db, github: {...db.github, token: ''}};
-    const jsonString = JSON.stringify(dbToSync, null, 2);
-    console.log('GitHub Sync: JSON size', jsonString.length, 'chars');
-    
-    const content = btoa(unescape(encodeURIComponent(jsonString)));
-    console.log('GitHub Sync: Base64 size', content.length, 'chars');
-    
-    const putUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
-    const putBody = {
-      message: `Update track ratings ${new Date().toISOString()}`,
-      content: content
-    };
-    if(sha) putBody.sha = sha;
-
-    console.log('GitHub Sync: Uploading file', putUrl);
-    const putResponse = await fetch(putUrl, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `token ${token}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/vnd.github.v3+json'
-      },
-      body: JSON.stringify(putBody)
-    });
-
-    console.log('GitHub Sync: Upload response status', putResponse.status);
-
-    if(!putResponse.ok){
-      const error = await putResponse.json();
-      console.error('GitHub Sync: Upload failed', error);
-      throw new Error(error.message || 'Failed to sync');
-    }
-
-    const result = await putResponse.json();
-    console.log('GitHub Sync: Success', result);
-    setGHStatus('✓ Синхронізовано');
-    setTimeout(() => setGHStatus(''), 3000);
-  }catch(err){
-    console.error('GitHub sync error:', err);
-    setGHStatus(`Помилка: ${err.message}`, true);
-  }
+  return remote;
 }
 
-async function syncFromGitHub(){
-  if(!db.github){
-    setGHStatus('Налаштуйте GitHub Sync спочатку', true);
+// Pull remote evaluators+history into the local DB.
+// force=true overwrites local data even if some already exists (manual button).
+// force=false only fills in when local is empty (first load on a new device).
+async function pullDBFromGitHub({force = false} = {}){
+  if(!db.github || !db.github.repo){
+    if(force) setGHStatus('Спочатку вкажи репозиторій', true);
     return;
   }
-  
-  const {token, repo, path} = db.github;
-  if(!repo || !path){
-    setGHStatus('Налаштуйте GitHub Sync спочатку', true);
-    return;
-  }
-
   setGHStatus('Завантаження...');
-
   try{
-    const url = `https://api.github.com/repos/${repo}/contents/${path}`;
-    const headers = {
-      'Accept': 'application/vnd.github.v3+json'
-    };
-    // Add token only if available (for private repos)
-    if(token){
-      headers['Authorization'] = `token ${token}`;
-    }
-    
-    const response = await fetch(url, {headers});
-
-    if(!response.ok){
-      throw new Error('Файл не знайдено або немає доступу');
-    }
-
-    const data = await response.json();
-    
-    // Check if content exists
-    if(!data.content){
-      throw new Error('Файл порожній або не містить даних');
-    }
-    
-    const content = decodeURIComponent(escape(atob(data.content)));
-    
-    // Check if content is valid JSON
-    if(!content || content.trim() === ''){
-      throw new Error('Файл порожній');
-    }
-    
-    const imported = JSON.parse(content);
-
-    if(!imported.evaluators || !imported.tracks || !imported.history){
-      throw new Error('Файл не містить валідних даних');
-    }
-
-    db = imported;
+    const remote = await fetchDBFromGitHub();
+    if(!remote) return;
+    db.evaluators = remote.evaluators;
+    db.history = remote.history;
+    if(remote.nextId) db.nextId = Math.max(db.nextId, remote.nextId);
     saveDB();
     renderEvaluators();
     renderTracks();
-    renderTopTracks();
     renderHistory();
-    loadGitHubSettings();
+    renderTopTracks();
     setGHStatus('✓ Завантажено');
     setTimeout(() => setGHStatus(''), 3000);
   }catch(err){
     setGHStatus(`Помилка: ${err.message}`, true);
-    console.error('GitHub sync error:', err);
+    console.error('GitHub pull error:', err);
   }
 }
 
-// Auto-sync on data changes
-let syncTimeout = null;
-function scheduleAutoSync(){
-  if(!db.github.token || !db.github.repo || !db.github.path) return;
-  
-  if(syncTimeout) clearTimeout(syncTimeout);
-  setGHStatus('Автосинхронізація через 5с...');
-  
-  syncTimeout = setTimeout(() => {
-    syncToGitHub();
-  }, 5000);
+// Write: only evaluators + history go to GitHub. The token never leaves
+// this one function, and is never written into the synced file itself.
+async function pushDBToGitHub(){
+  const {token, repo} = db.github || {};
+  if(!token || !repo){
+    setGHStatus('Вкажи токен і репозиторій в GitHub Sync', true);
+    return;
+  }
+
+  setGHStatus('Синхронізація...');
+  try{
+    const contentsUrl = `https://api.github.com/repos/${repo}/contents/${DB_PATH}`;
+    const headers = {
+      'Authorization': `token ${token}`,
+      'Accept': 'application/vnd.github.v3+json'
+    };
+
+    let sha = null;
+    const getRes = await fetch(contentsUrl, {headers});
+    if(getRes.ok){
+      sha = (await getRes.json()).sha;
+    }else if(getRes.status !== 404){
+      throw new Error(`Не вдалося перевірити файл (${getRes.status})`);
+    }
+
+    const payload = {
+      evaluators: db.evaluators,
+      history: db.history,
+      nextId: db.nextId
+    };
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+
+    const putRes = await fetch(contentsUrl, {
+      method: 'PUT',
+      headers: {...headers, 'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        message: `Оцінювання ${new Date().toLocaleDateString('uk-UA')}`,
+        content,
+        ...(sha ? {sha} : {})
+      })
+    });
+
+    if(!putRes.ok){
+      const error = await putRes.json().catch(() => ({}));
+      throw new Error(error.message || `Помилка запису (${putRes.status})`);
+    }
+
+    setGHStatus('✓ Синхронізовано');
+    setTimeout(() => setGHStatus(''), 3000);
+  }catch(err){
+    setGHStatus(`Помилка: ${err.message}`, true);
+    console.error('GitHub push error:', err);
+    showToast('Не вдалося синхронізувати з GitHub. Спробуй кнопку "Завантажити з GitHub" пізніше або перевір токен.');
+  }
 }
 
 document.getElementById('ghSaveBtn').addEventListener('click', saveGitHubSettings);
-document.getElementById('ghSyncBtn').addEventListener('click', syncToGitHub);
-document.getElementById('ghLoadBtn').addEventListener('click', syncFromGitHub);
-
-document.getElementById('loadFromGitHubBtn').addEventListener('click', () => {
-  const repo = prompt('Введіть репозиторій (наприклад: username/repo):', db.github.repo || '');
-  const path = prompt('Введіть шлях до файлу (наприклад: data/db.json):', db.github.path || 'data/db.json');
-  
-  if(!repo || !path){
-    showToast('Скасовано');
-    return;
-  }
-  
-  // Temporarily set GitHub config for this load
-  db.github = db.github || {};
-  db.github.repo = repo;
-  db.github.path = path;
-  
-  syncFromGitHub();
-});
+document.getElementById('ghLoadBtn').addEventListener('click', () => pullDBFromGitHub({force: true}));
 
 /* ---------------- init ---------------- */
-initMode();
-renderEvaluators();
-renderTracks();
-renderTopTracks();
-renderHistory();
-loadGitHubSettings();
+async function init(){
+  initMode();
+  loadGitHubSettings();
 
-// Auto-load from GitHub if no local data
-if(db.tracks.length === 0 && db.history.length === 0){
-  // Try to load from GitHub if repo is configured
-  if(db.github && db.github.repo && db.github.path){
-    console.log('No local data found, attempting to load from GitHub...');
-    try {
-      syncFromGitHub();
-    } catch(err) {
-      console.error('Auto-load from GitHub failed:', err);
-      // Continue with empty local data
-    }
-  } else {
-    console.log('No local data and no GitHub config - starting fresh');
+  const hasLocalData = db.evaluators.some(e => e.name.trim()) || db.history.length > 0;
+  if(!hasLocalData){
+    // Fresh browser/device: pull evaluators + history straight from GitHub,
+    // no token needed since it's a plain public-file read.
+    await pullDBFromGitHub({force: false});
   }
+
+  renderEvaluators();
+  renderTracks();
+  renderTopTracks();
+  renderHistory();
 }
+
+init();
 </script>
 </body>
 </html>

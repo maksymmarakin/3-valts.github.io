@@ -710,6 +710,14 @@
     <button class="btn btn-secondary btn-small" id="exportDBBtn" style="margin-top:12px;">Експортувати базу даних</button>
   </section>
 
+  <section class="panel admin-section">
+    <h2>Відновлення даних</h2>
+    <div class="file-hint" style="margin-bottom:12px;">Завантажте експортовану базу даних для відновлення.</div>
+    <input type="file" id="importDBFile" accept="application/json" style="width:100%;margin-bottom:12px;">
+    <button class="btn btn-primary btn-small" id="importDBBtn">Імпортувати базу даних</button>
+    <div id="importDBStatus" style="margin-top:12px;font-size:12px;color:var(--text-muted);"></div>
+  </section>
+
   <section class="panel admin-section add-track">
     <h2>Додати трек</h2>
     <form id="addTrackForm">
@@ -1362,6 +1370,45 @@ document.getElementById('exportDBBtn').addEventListener('click', () => {
   a.click();
   URL.revokeObjectURL(url);
   showToast('Базу даних експортовано.');
+});
+
+document.getElementById('importDBBtn').addEventListener('click', () => {
+  const fileInput = document.getElementById('importDBFile');
+  const statusEl = document.getElementById('importDBStatus');
+  
+  if(fileInput.files.length === 0){
+    statusEl.textContent = 'Оберіть файл для імпорту.';
+    statusEl.style.color = 'var(--red)';
+    return;
+  }
+  
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if(!imported.evaluators || !imported.tracks || !imported.history){
+        throw new Error('Файл не містить валідних даних');
+      }
+      
+      if(confirm('Замінити поточні дані імпортованими?')){
+        db = imported;
+        saveDB();
+        renderEvaluators();
+        renderTracks();
+        renderHistory();
+        renderTopTracks();
+        loadGitHubSettings();
+        statusEl.textContent = '✓ Дані відновлено.';
+        statusEl.style.color = 'var(--text-muted)';
+        showToast('Базу даних відновлено.');
+      }
+    } catch(err) {
+      statusEl.textContent = `Помилка: ${err.message}`;
+      statusEl.style.color = 'var(--red)';
+    }
+  };
+  reader.readAsText(file);
 });
 
 /* ---------------- History Search ---------------- */

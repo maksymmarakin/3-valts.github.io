@@ -977,8 +977,10 @@ document.getElementById('fCoverPick').addEventListener('change', e => {
 });
 
 document.getElementById('addTrackForm').addEventListener('submit', e => {
+  console.log('Form submitted');
   e.preventDefault();
   const title = document.getElementById('fTitle').value.trim();
+  console.log('Title:', title);
   if(!title){ showToast('Введи назву треку'); return; }
   const track = {
     id: db.nextId++,
@@ -992,11 +994,14 @@ document.getElementById('addTrackForm').addEventListener('submit', e => {
     addedAt: new Date().toISOString(),
     ratings: [null, null, null, null, null]
   };
+  console.log('Track to add:', track);
   db.tracks.unshift(track);
   saveDB();
   e.target.reset();
   currentCoverBase64 = null;
   renderTracks();
+  console.log('Track added, total tracks:', db.tracks.length);
+  showToast('Трек додано');
 });
 
 /* ---------------- Tracks ---------------- */

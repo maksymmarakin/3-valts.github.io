@@ -1120,20 +1120,21 @@ function renderTrackCard(track){
 }
 
 document.getElementById('tracksList').addEventListener('click', e => {
-  const toggle = e.target.closest('[data-toggle]');
-  if(toggle){
-    const id = +toggle.getAttribute('data-toggle');
-    openModal(id);
-    return;
-  }
   const quickDelBtn = e.target.closest('[data-quick-delete]');
   if(quickDelBtn){
+    e.stopPropagation();
     const id = +quickDelBtn.getAttribute('data-quick-delete');
     if(confirm('Видалити цей трек зі списку? (історія оцінок збережеться)')){
       db.tracks = db.tracks.filter(t => t.id !== id);
       saveDB();
       renderTracks();
     }
+    return;
+  }
+  const toggle = e.target.closest('[data-toggle]');
+  if(toggle){
+    const id = +toggle.getAttribute('data-toggle');
+    openModal(id);
     return;
   }
   const delBtn = e.target.closest('[data-delete]');

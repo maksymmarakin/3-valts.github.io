@@ -199,6 +199,18 @@
     text-align:right;
   }
   .track-score.pending{color:var(--text-muted);font-size:14px;}
+  .quick-delete{
+    background:none;
+    border:none;
+    color:var(--text-muted);
+    cursor:pointer;
+    font-size:18px;
+    padding:4px 8px;
+    opacity:0;
+    transition:opacity .15s, color .15s;
+  }
+  .quick-delete:hover{color:var(--red);}
+  .track-head:hover .quick-delete{opacity:1;}
   .chevron{color:var(--text-muted);font-size:14px;transition:transform .15s;}
   .track-card.open .chevron{transform:rotate(180deg);}
 
@@ -1085,6 +1097,7 @@ function renderTrackCard(track){
           <div class="meta">${track.year ? track.year : '—'} · ${track.length ? track.length : '—:—'}</div>
         </div>
         ${scoreHTML}
+        <button class="quick-delete" data-quick-delete="${track.id}" title="Видалити трек">✕</button>
         <div class="chevron">▾</div>
       </div>
       <div class="track-body">
@@ -1106,6 +1119,16 @@ document.getElementById('tracksList').addEventListener('click', e => {
   if(toggle){
     const id = +toggle.getAttribute('data-toggle');
     openModal(id);
+    return;
+  }
+  const quickDelBtn = e.target.closest('[data-quick-delete]');
+  if(quickDelBtn){
+    const id = +quickDelBtn.getAttribute('data-quick-delete');
+    if(confirm('Видалити цей трек зі списку? (історія оцінок збережеться)')){
+      db.tracks = db.tracks.filter(t => t.id !== id);
+      saveDB();
+      renderTracks();
+    }
     return;
   }
   const delBtn = e.target.closest('[data-delete]');

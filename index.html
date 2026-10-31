@@ -947,40 +947,58 @@ document.getElementById('evaluatorsGrid').addEventListener('change', e => {
   if(pickIdx !== null && e.target.files[0]){
     const file = e.target.files[0];
     
-    // Convert to base64
-    const reader = new FileReader();
-    reader.onload = (event) => {
+    compressImage(file, 150, 0.8).then(compressed => {
       db.evaluators[+pickIdx].avatar = file.name;
-      db.evaluators[+pickIdx].avatarBase64 = event.target.result;
+      db.evaluators[+pickIdx].avatarBase64 = compressed;
       saveDB();
       renderEvaluators();
       renderTracks();
-    };
-    reader.readAsDataURL(file);
+    });
   }
 });
 
 /* ---------------- Add track ---------------- */
 let currentCoverBase64 = null;
 
+function compressImage(file, maxWidth = 300, quality = 0.7) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 document.getElementById('fCoverPick').addEventListener('change', e => {
   if(e.target.files[0]){
     const file = e.target.files[0];
-    
-    // Convert to base64
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      currentCoverBase64 = event.target.result;
-    };
-    reader.readAsDataURL(file);
+    compressImage(file).then(compressed => {
+      currentCoverBase64 = compressed;
+    });
   }
 });
 
 document.getElementById('addTrackForm').addEventListener('submit', e => {
-  console.log('Form submitted');
   e.preventDefault();
   const title = document.getElementById('fTitle').value.trim();
-  console.log('Title:', title);
   if(!title){ showToast('Введи назву треку'); return; }
   const track = {
     id: db.nextId++,
@@ -994,13 +1012,11 @@ document.getElementById('addTrackForm').addEventListener('submit', e => {
     addedAt: new Date().toISOString(),
     ratings: [null, null, null, null, null]
   };
-  console.log('Track to add:', track);
   db.tracks.unshift(track);
   saveDB();
   e.target.reset();
   currentCoverBase64 = null;
   renderTracks();
-  console.log('Track added, total tracks:', db.tracks.length);
   showToast('Трек додано');
 });
 

@@ -654,10 +654,184 @@
     color:var(--text-muted);
     font-weight:400;
   }
+
+  /* ---- library ---- */
+  .library-subtabs{
+    display:flex;gap:8px;margin-bottom:16px;
+  }
+  .lib-subtab{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;font-size:13px;
+    padding:8px 16px;border-radius:8px;
+    border:1px solid var(--border);
+    background:var(--bg);color:var(--text);cursor:pointer;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .lib-subtab.active{
+    background:var(--amber);color:#1a1408;border-color:var(--amber);
+  }
+  .album-tag{
+    font-size:11px;color:var(--amber);margin-top:2px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .album-sibling{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    padding:8px 10px;border-radius:6px;cursor:pointer;
+    font-size:13px;border:1px solid var(--border);margin-bottom:6px;
+    transition:background .15s;
+  }
+  .album-sibling:hover{background:var(--surface-alt);}
+  .album-sibling .score{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--amber);}
+  .library-toolbar{
+    display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;
+  }
+  .library-toolbar input[type=text]{
+    flex:1;min-width:200px;
+  }
+  .library-toolbar select{
+    background:var(--bg);border:1px solid var(--border);color:var(--text);
+    border-radius:6px;padding:10px 12px;font-family:'Space Grotesk',sans-serif;font-size:14px;
+  }
+  .library-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    gap:18px;
+  }
+  .lib-card{
+    background:var(--surface-alt);
+    border:1px solid var(--border);
+    border-radius:8px;
+    overflow:hidden;
+    cursor:pointer;
+    transition:border-color .15s, transform .15s;
+    display:flex;flex-direction:column;
+  }
+  .lib-card:hover{border-color:var(--amber);transform:translateY(-2px);}
+  .lib-card .cover{
+    width:100%;aspect-ratio:1;object-fit:cover;background:var(--bg);display:block;
+  }
+  .lib-card .cover-placeholder{
+    width:100%;aspect-ratio:1;background:var(--bg);
+    display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--text-muted);
+  }
+  .lib-card .info{padding:12px 14px;}
+  .lib-card .title{
+    font-weight:600;font-size:15px;line-height:1.3;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:box-orient;
+    overflow:hidden;
+  }
+  .lib-card .artist{color:var(--text-muted);font-size:13px;margin-top:2px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .lib-card .meta-row{
+    display:flex;justify-content:space-between;align-items:center;margin-top:10px;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);
+  }
+  .lib-card .score{
+    font-weight:600;font-size:15px;color:var(--amber);
+  }
+  .lib-card .score.dim{color:var(--text-muted);}
+
+  /* library detail modal */
+  .lib-modal-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.85);
+    display:none;align-items:center;justify-content:center;padding:20px;z-index:100;
+  }
+  .lib-modal-overlay.open{display:flex;}
+  .lib-modal{
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    max-width:640px;width:100%;max-height:88vh;overflow-y:auto;padding:28px;
+  }
+  .lib-modal .head{display:flex;gap:20px;}
+  .lib-modal .cover{
+    width:160px;height:160px;object-fit:cover;border-radius:8px;background:var(--bg);flex-shrink:0;
+  }
+  .lib-modal h3{margin:0 0 6px;font-size:22px;}
+  .lib-modal .sub{color:var(--text-muted);font-size:14px;margin-bottom:8px;}
+  .lib-modal .final{
+    font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:600;color:var(--amber);margin:10px 0;
+  }
+  .lib-modal table{width:100%;border-collapse:collapse;font-size:14px;margin-top:14px;}
+  .lib-modal th,.lib-modal td{
+    text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);
+  }
+  .lib-modal th{color:var(--text-muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em;}
+  .lib-modal .mono{font-family:'IBM Plex Mono',monospace;}
+  .lib-modal .actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
+  .lib-modal .edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px;}
+  .lib-modal .edit-grid .full{grid-column:1/-1;}
+  .lib-modal label{display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;}
+  .lib-modal input[type=text],.lib-modal textarea{
+    width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);
+    border-radius:6px;padding:8px 10px;font-family:'Space Grotesk',sans-serif;font-size:14px;
+  }
+  .lib-modal textarea{resize:vertical;min-height:120px;}
+  .lib-modal .lyrics-box{
+    margin-top:14px;background:var(--bg);border:1px solid var(--border);border-radius:6px;
+    padding:14px;white-space:pre-wrap;font-size:13px;color:var(--text-muted);max-height:300px;overflow-y:auto;
+  }
+  .lib-modal .close-x{
+    position:absolute;top:14px;right:18px;background:none;border:none;color:var(--text-muted);
+    font-size:26px;cursor:pointer;line-height:1;
+  }
+  .lib-modal .close-x:hover{color:var(--text);}
+  .lib-modal-wrap{position:relative;}
+
+  /* ---- auth / login ---- */
+  #authOverlay{
+    position:fixed;inset:0;background:var(--bg);z-index:200;
+    display:flex;align-items:center;justify-content:center;padding:20px;
+  }
+  #authOverlay.hidden{display:none;}
+  .auth-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:36px;max-width:380px;width:100%;
+  }
+  .auth-card h1{margin:0 0 4px;font-size:26px;}
+  .auth-card .sub{color:var(--text-muted);font-size:14px;margin-bottom:24px;}
+  .auth-card label{display:block;font-size:12px;color:var(--text-muted);margin:14px 0 4px;}
+  .auth-card input[type=email],.auth-card input[type=password]{
+    width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);
+    border-radius:6px;padding:10px 12px;font-family:'Space Grotesk',sans-serif;font-size:15px;
+  }
+  .auth-card .auth-error{color:var(--red);font-size:13px;margin-top:12px;min-height:18px;}
+  .auth-card .auth-actions{display:flex;gap:10px;margin-top:20px;}
+  .auth-card .auth-toggle{
+    background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;
+    margin-top:16px;padding:0;
+  }
+  .auth-card .auth-toggle:hover{color:var(--text);}
+  .user-badge{
+    font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:8px;
+  }
+  .user-badge .role{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;padding:2px 8px;border-radius:10px;
+    border:1px solid var(--border);
+  }
+  .user-badge .role.admin{color:var(--amber);border-color:var(--amber);}
 </style>
 </head>
 <body>
-<div class="app">
+
+<!-- Auth Overlay -->
+<div id="authOverlay">
+  <div class="auth-card">
+    <h1>Три Вальта</h1>
+    <div class="sub" id="authSub">Увійди, щоб побачити бібліотеку</div>
+    <form id="authForm">
+      <label>Email</label>
+      <input type="email" id="authEmail" required autocomplete="email">
+      <label>Пароль</label>
+      <input type="password" id="authPassword" required autocomplete="current-password" minlength="6">
+      <div class="auth-error" id="authError"></div>
+      <div class="auth-actions">
+        <button type="submit" class="btn btn-primary" id="authSubmitBtn" style="flex:1;">Увійти</button>
+      </div>
+    </form>
+    <button class="auth-toggle" id="authToggle">Немає акаунту? Зареєструватись</button>
+  </div>
+</div>
+
+<div class="app" id="appRoot" style="display:none;">
 
   <header>
     <img src="3val.jpg" alt="Logo" width="40" height="40" style="border-radius:6px;object-fit:cover;" onerror="this.style.visibility='hidden'">
@@ -665,47 +839,41 @@
       <h1>Три Вальта</h1>
       <p>Оцінюй треки</p>
     </div>
-    <a href="https://music.youtube.com/playlist?list=PLVj-osNZEFnw" target="_blank" style="color:var(--text);text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;">
+    <div style="margin-left:auto;display:flex;align-items:center;gap:14px;">
+      <div class="user-badge" id="userBadge" style="display:none;">
+        <span id="userEmail"></span>
+        <span class="role" id="userRole"></span>
+        <button class="btn btn-secondary btn-small" id="logoutBtn">Вийти</button>
+      </div>
+      <a href="https://music.youtube.com/playlist?list=PLVj-osNZEFnw" target="_blank" style="color:var(--text);text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
       Playlist
-    </a>
+      </a>
+    </div>
   </header>
 
   <div class="mode-toggle">
     <button class="mode-btn" data-mode="admin">Адмін</button>
     <button class="mode-btn active" data-mode="friend">Оцінка</button>
-    <button class="mode-btn" data-mode="history">Історія</button>
+    <button class="mode-btn" data-mode="library">Бібліотека</button>
   </div>
 
   <section class="panel admin-section">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-      <h2 style="margin:0;">Три Вальта</h2>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn btn-danger btn-small" id="clearDataBtn">Очистити все</button>
-      </div>
+      <h2 style="margin:0;">Оцінювачі</h2>
+      <button class="btn btn-danger btn-small" id="clearDataBtn">Очистити локальні дані</button>
     </div>
     <div class="evaluators-grid" id="evaluatorsGrid"></div>
-  </section>
-
-  <section class="panel admin-section github-sync-panel">
-    <h2>GitHub Sync</h2>
-    <div class="file-hint" style="margin-bottom:12px;">Історія та оцінювачі зберігаються у файлі <code>data/db.json</code> в репозиторії. Читання (для всіх, хто відкриє сайт) відбувається автоматично й без токена. Токен потрібен лише тобі, щоб записувати нову історію після «Завершити оцінювання».</div>
-    <div class="form-grid">
-      <div class="field">
-        <label>GitHub Token (PAT)</label>
-        <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx">
-        <div class="file-hint">Токен з правами repo (створити в Settings > Developer settings > Personal access tokens)</div>
-      </div>
-      <div class="field">
-        <label>Репозиторій (owner/repo)</label>
-        <input type="text" id="ghRepo" placeholder="username/repo-name">
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:16px;align-items:center;flex-wrap:wrap;">
-      <button class="btn btn-primary btn-small" id="ghSaveBtn">Зберегти налаштування</button>
-      <button class="btn btn-secondary btn-small" id="ghLoadBtn">Завантажити з GitHub</button>
-      <button class="btn btn-secondary btn-small" id="ghSyncBtn">Синхронізувати зараз</button>
-      <span id="ghStatus" style="font-size:12px;color:var(--text-muted);"></span>
+    <div class="evaluator-setup-card" style="margin-top:14px;">
+      <h3 style="margin:0 0 10px;font-size:14px;">Додати оцінювача</h3>
+      <label>Ім'я</label>
+      <input type="text" id="newEvalName" placeholder="Ім'я">
+      <label>Аватар</label>
+      <label class="file-btn" style="margin-top:6px;padding:5px 10px;font-size:11px;">Обрати файл
+        <input type="file" accept="image/*" hidden id="newEvalAvatar">
+      </label>
+      <div id="newEvalAvatarName" class="file-hint" style="margin-top:4px;"></div>
+      <button class="btn btn-primary btn-small" id="addEvaluatorBtn" style="margin-top:10px;">Додати</button>
     </div>
   </section>
 
@@ -713,6 +881,23 @@
     <h2>Додати трек</h2>
     <form id="addTrackForm">
       <div class="form-grid">
+        <div class="field full">
+          <label>Посилання (YouTube або Genius, необов'язково)</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="fYoutube" placeholder="https://music.youtube.com/... або https://genius.com/..." style="flex:1;">
+            <button type="button" class="btn btn-secondary btn-small" id="fYoutubeFetch">Підтягнути</button>
+          </div>
+          <div class="file-hint" id="fYoutubeHint">Встав посилання — назва, виконавець, альбом, рік, тривалість, обкладинка і текст підставляться автоматично</div>
+        </div>
+        <div class="field full">
+          <label>Імпорт з плейлисту YouTube Music</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="fPlaylist" placeholder="https://music.youtube.com/playlist?list=..." style="flex:1;">
+            <button type="button" class="btn btn-secondary btn-small" id="fPlaylistFetch">Завантажити</button>
+          </div>
+          <div class="file-hint" id="fPlaylistHint"></div>
+          <div id="playlistResults" style="margin-top:10px;"></div>
+        </div>
         <div class="field full">
           <label>Обкладинка</label>
           <input type="file" id="fCoverPick" accept="image/*">
@@ -734,6 +919,10 @@
           <label>Рік випуску</label>
           <input type="text" id="fYear" placeholder="2024">
         </div>
+        <div class="field">
+          <label>Альбом</label>
+          <input type="text" id="fAlbum" placeholder="Назва альбому">
+        </div>
         <div class="field full">
           <label>Текст пісні (необов'язково)</label>
           <textarea id="fLyrics" placeholder="Встав текст пісні тут..." rows="4" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px 10px;font-family:'Space Grotesk', sans-serif;font-size:13px;resize:vertical;"></textarea>
@@ -747,36 +936,50 @@
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
       <h2 style="margin:0;">Треки для оцінювання</h2>
       <div style="display:flex;gap:8px;">
-        <button class="btn btn-primary btn-small" id="finishSessionBtn">Завершити оцінювання</button>
+        <button class="btn btn-secondary btn-small" id="finishSessionBtn">Очистити список</button>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:12px;background:var(--surface-alt);border-radius:6px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:12px;background:var(--surface-alt);border-radius:6px;flex-wrap:wrap;">
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;">
         <input type="checkbox" id="showAllTracks" style="width:16px;height:16px;">
         <span>Показати всі треки</span>
       </label>
+      <span style="color:var(--text-muted);font-size:13px;">Хто оцінює:</span>
+      <div id="evaluatorPicker" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
     </div>
     <div id="tracksList"></div>
   </section>
 
-  <section class="panel history-section">
-    <h2>Топ пісень</h2>
-    <div id="topTracksList"></div>
-  </section>
-
-  <section class="panel history-section">
-    <div class="history-header">
-      <h2>Історія оцінок</h2>
-      <div class="history-actions">
-        <button class="btn btn-secondary btn-small" id="historyRefreshBtn">Оновити з GitHub</button>
+  <section class="panel library-section">
+    <h2>Бібліотека треків</h2>
+    <div class="library-subtabs">
+      <button class="lib-subtab active" data-libtab="tracks">Треки</button>
+      <button class="lib-subtab" data-libtab="top">Топ 10</button>
+    </div>
+    <div id="libraryTracksPane">
+      <div class="library-toolbar">
+        <input type="text" id="librarySearch" placeholder="Пошук за назвою або виконавцем...">
+        <select id="librarySort">
+          <option value="score_desc">За оцінкою (спадання)</option>
+          <option value="score_asc">За оцінкою (зростання)</option>
+          <option value="title">За назвою</option>
+          <option value="artist">За виконавцем</option>
+          <option value="album">За альбомом</option>
+          <option value="date_desc">За датою додавання</option>
+        </select>
       </div>
+      <div class="library-grid" id="libraryGrid"></div>
     </div>
-    <div style="margin-bottom:16px;">
-      <input type="text" id="historySearch" placeholder="Пошук треку..." style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;font-size:13px;">
+    <div id="libraryTopPane" style="display:none;">
+      <div id="topTracksList"></div>
     </div>
-    <div id="historyList"></div>
   </section>
 
+</div>
+
+<!-- Library Detail Modal -->
+<div class="lib-modal-overlay" id="libModalOverlay">
+  <div class="lib-modal lib-modal-wrap" id="libModalBody"></div>
 </div>
 
 <!-- Fullscreen Modal -->
@@ -801,6 +1004,7 @@
       <div class="final-label">Фінальна оцінка треку</div>
       <div class="final-value" id="modalFinalScore">—</div>
     </div>
+    <div class="track-actions" id="modalActions" style="margin-top:18px;"></div>
     <div class="lyrics-section" id="modalLyricsSection" style="display:none;">
       <button class="lyrics-toggle" id="modalLyricsToggle">
         <span class="arrow">▾</span>
@@ -837,17 +1041,9 @@ function defaultDB(){
     ],
     tracks: [],
     history: [],
-    trackRandomOrder: {}, // Store persistent random order for each track
-    github: {
-      token: '',
-      repo: ''
-    }
+    trackRandomOrder: {} // Store persistent random order for each track
   };
 }
-
-// Only the DB fields that live on GitHub (evaluators + history).
-// Session-in-progress tracks stay local-only and never get synced.
-const DB_PATH = 'data/db.json';
 
 // True only when we actually found a usable DB in this browser's localStorage.
 // Placeholder evaluator names ("Оцінювач 1" etc.) from defaultDB() don't count -
@@ -862,11 +1058,6 @@ function loadDB(){
     if(!parsed.evaluators || !parsed.tracks || !parsed.history){
       dbLoadedFromStorage = false;
       return defaultDB();
-    }
-
-    // Migrate old data to add github config if missing
-    if(!parsed.github){
-      parsed.github = { token: '', repo: '' };
     }
 
     return parsed;
@@ -885,6 +1076,32 @@ let db = loadDB();
 let openTrackId = null;
 let currentMode = 'friend';
 let currentModalTrackId = null;
+let libraryTab = 'tracks'; // 'tracks' | 'top'
+
+// Активні оцінювачі для поточної сесії (індекси в db.evaluators)
+const ACTIVE_EVALS_KEY = 'trackRaterActiveEvals_v1';
+let activeEvalIdx = loadActiveEvals();
+
+function loadActiveEvals(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(ACTIVE_EVALS_KEY));
+    if(Array.isArray(raw)) return raw;
+  }catch(e){}
+  return null; // null = ще не обрано, виберемо всіх за замовчуванням
+}
+function saveActiveEvals(){
+  localStorage.setItem(ACTIVE_EVALS_KEY, JSON.stringify(activeEvalIdx));
+}
+// Повертає масив індексів активних оцінювачів (з урахуванням наявних імен)
+function getActiveEvalIndices(){
+  const named = db.evaluators.map((e,i)=>e.name.trim()?i:-1).filter(i=>i>=0);
+  if(activeEvalIdx === null) return named;
+  const valid = activeEvalIdx.filter(i => named.includes(i));
+  return valid.length ? valid : named;
+}
+// Поточна Supabase-сесія оцінювання (створюється ліниво при першому пуші)
+const SUPA_SESSION_KEY = 'trackRaterSupaSession_v1';
+let supaSessionId = localStorage.getItem(SUPA_SESSION_KEY) || null;
 
 function avatarHTML(avatar, name, size, avatarBase64 = null){
   const initial = (name||'?').trim().charAt(0).toUpperCase();
@@ -912,49 +1129,83 @@ function showToast(message){
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-/* ---------------- Evaluators setup ---------------- */
+/* ---------------- Evaluators (Supabase) ---------------- */
 function renderEvaluators(){
   const grid = document.getElementById('evaluatorsGrid');
-  grid.innerHTML = db.evaluators.map((ev, i) => `
+  const list = supa.evaluators.length ? supa.evaluators : db.evaluators.map(e => ({name: e.name, avatar_url: e.avatarBase64}));
+  grid.innerHTML = list.map(e => `
     <div class="evaluator-setup-card">
-      ${avatarHTML(ev.avatar, ev.name, 56, ev.avatarBase64)}
-      <label>Ім'я</label>
-      <input type="text" data-eval-name="${i}" value="${escapeAttr(ev.name)}">
-      <label>Аватар (шлях/назва файла)</label>
-      <input type="text" data-eval-avatar="${i}" value="${escapeAttr(ev.avatar)}" placeholder="avatars/name.jpg">
-      <label class="file-btn" style="margin-top:6px;padding:5px 10px;font-size:11px;">Обрати файл
-        <input type="file" accept="image/*" hidden data-eval-avatar-pick="${i}">
-      </label>
+      ${avatarHTML('', e.name || '?', 56, e.avatar_url || null)}
+      <div style="font-weight:600;margin-top:8px;">${escapeHTML(e.name || '—')}</div>
     </div>
-  `).join('');
+  `).join('') || '<div class="empty-state">Немає оцінювачів. Додай першого нижче.</div>';
 }
 
-document.getElementById('evaluatorsGrid').addEventListener('input', e => {
-  const nameIdx = e.target.getAttribute('data-eval-name');
-  const avatarIdx = e.target.getAttribute('data-eval-avatar');
-  if(nameIdx !== null){
-    db.evaluators[+nameIdx].name = e.target.value;
-    saveDB();
-    renderTracks();
-  }else if(avatarIdx !== null){
-    db.evaluators[+avatarIdx].avatar = e.target.value;
-    saveDB();
-    renderTracks();
+// Пікер активних оцінювачів на вкладці «Оцінка»
+function renderEvaluatorPicker(){
+  const box = document.getElementById('evaluatorPicker');
+  if(!box) return;
+  const active = getActiveEvalIndices();
+  box.innerHTML = db.evaluators.map((ev, i) => {
+    if(!ev.name.trim()) return '';
+    const checked = active.includes(i) ? 'checked' : '';
+    return `
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
+        <input type="checkbox" data-evalpick="${i}" ${checked}>
+        <span>${escapeHTML(ev.name)}</span>
+      </label>`;
+  }).join('');
+}
+
+document.getElementById('evaluatorPicker').addEventListener('change', e => {
+  const idx = e.target.getAttribute('data-evalpick');
+  if(idx === null) return;
+  const i = +idx;
+  const named = db.evaluators.map((ev,j)=>ev.name.trim()?j:-1).filter(j=>j>=0);
+  let active = getActiveEvalIndices();
+  if(e.target.checked){
+    if(!active.includes(i)) active.push(i);
+  }else{
+    active = active.filter(j => j !== i);
+  }
+  activeEvalIdx = active.length ? active : named;
+  saveActiveEvals();
+  renderTracks();
+});
+
+// Додавання оцінювача з адмінки -> Supabase
+document.getElementById('addEvaluatorBtn').addEventListener('click', async () => {
+  const name = document.getElementById('newEvalName').value.trim();
+  if(!name){ showToast('Введи ім\'я оцінювача'); return; }
+  const btn = document.getElementById('addEvaluatorBtn');
+  btn.disabled = true;
+  try{
+    let avatarUrl = null;
+    const file = document.getElementById('newEvalAvatar').files[0];
+    if(file){
+      const dataUrl = await new Promise(res => {
+        const r = new FileReader();
+        r.onload = () => res(r.result);
+        r.readAsDataURL(file);
+      });
+      avatarUrl = await supabaseUploadCover(dataUrl);
+    }
+    await supabaseRest('/evaluators', {method:'POST', body:[{name, avatar_url: avatarUrl}]});
+    await loadSupabaseData();
+    renderEvaluators(); renderEvaluatorPicker(); renderTracks();
+    document.getElementById('newEvalName').value = '';
+    document.getElementById('newEvalAvatar').value = '';
+    document.getElementById('newEvalAvatarName').textContent = '';
+    showToast('Оцінювача додано.');
+  }catch(err){
+    showToast('Помилка: ' + err.message);
+  }finally{
+    btn.disabled = false;
   }
 });
-document.getElementById('evaluatorsGrid').addEventListener('change', e => {
-  const pickIdx = e.target.getAttribute('data-eval-avatar-pick');
-  if(pickIdx !== null && e.target.files[0]){
-    const file = e.target.files[0];
-    
-    compressImage(file, 150, 0.8).then(compressed => {
-      db.evaluators[+pickIdx].avatar = file.name;
-      db.evaluators[+pickIdx].avatarBase64 = compressed;
-      saveDB();
-      renderEvaluators();
-      renderTracks();
-    });
-  }
+
+document.getElementById('newEvalAvatar').addEventListener('change', e => {
+  document.getElementById('newEvalAvatarName').textContent = e.target.files[0] ? e.target.files[0].name : '';
 });
 
 /* ---------------- Add track ---------------- */
@@ -996,18 +1247,515 @@ document.getElementById('fCoverPick').addEventListener('change', e => {
   }
 });
 
-document.getElementById('addTrackForm').addEventListener('submit', e => {
+/* ---------------- Link import (YouTube / Genius) ---------------- */
+function extractYouTubeId(url){
+  const m = url.match(/(?:youtube\.com\/(?:watch\?[^#]*v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{6,})/);
+  return m ? m[1] : null;
+}
+
+// Genius URL -> текст пісні через lyrics.ovh, метадані через iTunes.
+// Genius віддає лише JS-оболонку (ботозахист), тому сторінку не скрапимо.
+function geniusSlugToQuery(url){
+  try{
+    const u = new URL(url);
+    const seg = u.pathname.split('/').filter(Boolean).pop() || '';
+    return decodeURIComponent(seg)
+      .replace(/-lyrics$/i, '')
+      .replace(/[-_]+/g, ' ')
+      .trim();
+  }catch(e){ return ''; }
+}
+
+// Пошук у iTunes за довільним рядком (slug з Genius URL)
+async function fetchITunesSearch(term){
+  const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=song&limit=8&country=US`);
+  if(!res.ok) return null;
+  const data = await res.json();
+  const results = (data.results || []).filter(r => r.wrapperType === 'track');
+  return results.length ? results : null;
+}
+
+function itunesResultToMeta(r){
+  const year = r.releaseDate ? r.releaseDate.slice(0,4) : '';
+  const ms = r.trackTimeMillis || 0;
+  const length = ms ? `${Math.floor(ms/60000)}:${String(Math.floor(ms%60000/1000)).padStart(2,'0')}` : '';
+  return {
+    title: r.trackName || '',
+    artist: r.artistName || '',
+    album: r.collectionName || '',
+    year, length,
+    artworkUrl: r.artworkUrl100 ? r.artworkUrl100.replace('100x100bb','600x600bb') : null
+  };
+}
+
+async function urlToDataUrl(url){
+  try{
+    const res = await fetch(url);
+    if(!res.ok) return null;
+    const blob = await res.blob();
+    return await new Promise(res => {
+      const fr = new FileReader();
+      fr.onload = () => res(fr.result);
+      fr.readAsDataURL(blob);
+    });
+  }catch(e){ return null; }
+}
+
+// lyrics.ovh — безкоштовний API текстів пісень, CORS дозволений
+async function fetchLyricsOvh(artist, title){
+  const res = await fetch(`https://api.lyrics.ovh/v1/${encodeURIComponent(artist)}/${encodeURIComponent(title)}`);
+  if(!res.ok) return null;
+  const data = await res.json();
+  return (data.lyrics || '').trim() || null;
+}
+
+document.getElementById('fYoutubeFetch').addEventListener('click', async () => {
+  const url = document.getElementById('fYoutube').value.trim();
+  const hint = document.getElementById('fYoutubeHint');
+  if(!url){ showToast('Встав посилання'); return; }
+
+  // ---- Genius ----
+  if(/genius\.com/i.test(url)){
+    const query = geniusSlugToQuery(url);
+    if(!query){ showToast('Не вдалося розпізнати Genius посилання'); return; }
+
+    hint.textContent = 'Шукаю трек в iTunes...';
+    try{
+      const results = await fetchITunesSearch(query);
+      if(!results || !results.length) throw new Error('Трек не знайдено в iTunes');
+
+      // Вибираємо найкращий збіг за словами зі slug
+      const qWords = query.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+      let best = results[0], bestScore = -1;
+      results.forEach(r => {
+        const hay = `${r.trackName||''} ${r.artistName||''}`.toLowerCase();
+        const score = qWords.filter(w => hay.includes(w)).length;
+        if(score > bestScore){ bestScore = score; best = r; }
+      });
+      const meta = itunesResultToMeta(best);
+
+      document.getElementById('fTitle').value = meta.title;
+      document.getElementById('fArtist').value = meta.artist;
+      if(meta.album) document.getElementById('fAlbum').value = meta.album;
+      if(meta.year) document.getElementById('fYear').value = meta.year;
+      if(meta.length) document.getElementById('fLength').value = meta.length;
+      if(meta.artworkUrl){
+        currentCoverBase64 = await urlToDataUrl(meta.artworkUrl);
+      }
+
+      hint.textContent = 'Шукаю текст пісні...';
+      const lyrics = await fetchLyricsOvh(meta.artist, meta.title);
+      if(lyrics) document.getElementById('fLyrics').value = lyrics;
+
+      hint.textContent = lyrics
+        ? '✓ Все підставлено (Genius → iTunes + текст)'
+        : '✓ Метадані підставлено, текст не знайдено — встав вручну';
+    }catch(err){
+      hint.textContent = 'Не вдалося отримати дані. Заповни поля вручну.';
+      showToast('Помилка: ' + err.message);
+    }
+    return;
+  }
+
+  // ---- YouTube ----
+  const videoId = extractYouTubeId(url);
+  if(!videoId){ showToast('Не вдалося розпізнати посилання'); return; }
+
+  hint.textContent = 'Завантажую метадані...';
+  try{
+    const meta = await enrichYouTubeVideo(videoId);
+    document.getElementById('fTitle').value = meta.title;
+    document.getElementById('fArtist').value = meta.artist;
+    if(meta.album) document.getElementById('fAlbum').value = meta.album;
+    if(meta.year) document.getElementById('fYear').value = meta.year;
+    if(meta.length) document.getElementById('fLength').value = meta.length;
+    if(meta.lyrics) document.getElementById('fLyrics').value = meta.lyrics;
+    if(meta.coverDataUrl) currentCoverBase64 = meta.coverDataUrl;
+    hint.textContent = meta.album || meta.lyrics
+      ? '✓ Все підставлено (YouTube + iTunes + текст)'
+      : '✓ Назву та виконавця підставлено. Альбом/текст додай вручну.';
+  }catch(err){
+    hint.textContent = 'Не вдалося отримати дані з YouTube. Заповни поля вручну.';
+    showToast('Помилка завантаження метаданих');
+  }
+});
+
+// Повне збагачення YouTube-відео: oEmbed -> iTunes -> lyrics.ovh
+async function enrichYouTubeVideo(videoId, overrides = {}){
+  const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
+  if(!res.ok) throw new Error('oEmbed error');
+  const data = await res.json();
+
+  const rawTitle = data.title || '';
+  const channelArtist = data.author_name || '';
+
+  // Чистимо назву: "Artist - Title (Official Video)" -> "Artist - Title"
+  const cleanTitle = rawTitle
+    .replace(/\s*\((?:official|lyric|audio|music|video)[^)]*\)/gi, '')
+    .replace(/\s*\[(?:official|lyric|audio|music|video)[^\]]*\]/gi, '')
+    .replace(/\s*[-–—]\s*(?:official\s*)?(?:music\s*)?(?:video|audio|lyric\s*video)\s*$/i, '')
+    .trim();
+  const dashIdx = cleanTitle.indexOf(' - ');
+  const parsedArtist = dashIdx > 0 ? cleanTitle.slice(0, dashIdx).trim() : '';
+  const parsedTitle = dashIdx > 0 ? cleanTitle.slice(dashIdx + 3).trim() : cleanTitle;
+
+  const meta = {
+    title: overrides.title || rawTitle,
+    artist: overrides.artist || channelArtist,
+    album: '', year: '', length: '',
+    coverDataUrl: data.thumbnail_url || null,
+    lyrics: '',
+    youtubeUrl: `https://music.youtube.com/watch?v=${videoId}`
+  };
+
+  try{
+    const searchQuery = `${parsedArtist || channelArtist} ${parsedTitle || cleanTitle}`.trim();
+    const results = await fetchITunesSearch(searchQuery);
+    if(results && results.length){
+      const qWords = searchQuery.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+      let best = results[0], bestScore = -1;
+      results.forEach(r => {
+        const hay = `${r.trackName||''} ${r.artistName||''}`.toLowerCase();
+        let score = qWords.filter(w => hay.includes(w)).length;
+        // Бонус за співпадіння виконавця — критично для уникнення чужих треків
+        const artistWords = (parsedArtist || channelArtist).toLowerCase().split(/\s+/).filter(w => w.length > 2);
+        const ra = (r.artistName||'').toLowerCase();
+        const artistHits = artistWords.filter(w => ra.includes(w)).length;
+        score += artistHits * 2;
+        if(score > bestScore){ bestScore = score; best = r; }
+      });
+      // Поріг: треба хоча б 2 збіги слів + збіг виконавця, інакше iTunes неточний
+      const artistWords = (parsedArtist || channelArtist).toLowerCase().split(/\s+/).filter(w => w.length > 2);
+      const ra = (best.artistName||'').toLowerCase();
+      const artistHits = artistWords.filter(w => ra.includes(w)).length;
+      const wordHits = qWords.filter(w => `${best.trackName} ${best.artistName}`.toLowerCase().includes(w)).length;
+      const confident = wordHits >= 2 && artistHits >= 1;
+      if(confident){
+      const it = itunesResultToMeta(best);
+      if(!overrides.title && it.title) meta.title = it.title;
+      if(!overrides.artist && it.artist) meta.artist = it.artist;
+      meta.album = it.album || '';
+      meta.year = it.year || '';
+      meta.length = it.length || '';
+      if(it.artworkUrl){
+        const cover = await urlToDataUrl(it.artworkUrl);
+        if(cover) meta.coverDataUrl = cover;
+      }
+      } // end if(confident)
+    }
+    // Текст пісні пробуємо завжди — lyrics.ovh не залежить від iTunes
+    const lyrics = await fetchLyricsOvh(meta.artist, meta.title);
+    if(lyrics) meta.lyrics = lyrics;
+  }catch(e){ /* iTunes/lyrics optional */ }
+
+  return meta;
+}
+
+/* ---------------- Playlist import (YouTube Music) ---------------- */
+function extractPlaylistId(url){
+  const m = url.match(/[?&]list=([\w-]+)/);
+  return m ? m[1] : null;
+}
+
+// Тягнемо сторінку плейлисту через Edge Function проксі
+async function fetchViaEdgeProxy(url){
+  if(!SUPABASE_URL || !SUPABASE_ANON_KEY) throw new Error('Supabase не налаштовано');
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/genius-proxy?url=${encodeURIComponent(url)}`, {
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+    }
+  });
+  if(!res.ok) throw new Error(`Проксі HTTP ${res.status}`);
+  return res.text();
+}
+
+// POST-проксі через Edge Function (для youtubei API)
+async function postViaEdgeProxy(target, body){
+  if(!SUPABASE_URL || !SUPABASE_ANON_KEY) throw new Error('Supabase не налаштовано');
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/genius-proxy`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({url: target, body})
+  });
+  if(!res.ok) throw new Error(`Проксі HTTP ${res.status}`);
+  return res.json();
+}
+
+// Витягуємо API key / client version / browseId зі сторінки плейлисту
+function extractYtConfig(html, listId){
+  const key = (html.match(/"INNERTUBE_API_KEY":"([^"]+)"/) || [])[1];
+  const ver = (html.match(/"INNERTUBE_CONTEXT_CLIENT_VERSION":"([^"]+)"/) || [])[1];
+  const browseId = (html.match(new RegExp('"browseId\\\\?":\\\\?"(VL' + listId + ')"')) || [])[1]
+    || 'VL' + listId;
+  return {key, ver, browseId};
+}
+
+// Витягуємо JSON з ytInitialData (балансування дужок)
+function extractYtInitialData(html){
+  const idx = html.indexOf('ytInitialData');
+  if(idx === -1) return null;
+  const braceStart = html.indexOf('{', idx);
+  if(braceStart === -1) return null;
+  let depth = 0, inStr = false, esc = false;
+  for(let i = braceStart; i < html.length; i++){
+    const c = html[i];
+    if(inStr){
+      if(esc) esc = false;
+      else if(c === '\\') esc = true;
+      else if(c === '"') inStr = false;
+      continue;
+    }
+    if(c === '"') inStr = true;
+    else if(c === '{') depth++;
+    else if(c === '}'){
+      depth--;
+      if(depth === 0) return html.slice(braceStart, i + 1);
+    }
+  }
+  return null;
+}
+
+// Рекурсивно збираємо треки: playlistVideoRenderer (старий) + lockupViewModel (новий)
+function collectPlaylistVideos(node, out = []){
+  if(!node || typeof node !== 'object') return out;
+  if(node.playlistVideoRenderer){
+    const pvr = node.playlistVideoRenderer;
+    const videoId = pvr.videoId;
+    const title = (pvr.title && pvr.title.runs && pvr.title.runs[0] && pvr.title.runs[0].text) || '';
+    if(videoId && title) out.push({videoId, title});
+  }
+  if(node.lockupViewModel){
+    const lv = node.lockupViewModel;
+    const videoId = lv.contentId;
+    const meta = lv.metadata && lv.metadata.lockupMetadataViewModel;
+    let title = meta && meta.title && (meta.title.content || (meta.title.runs && meta.title.runs[0] && meta.title.runs[0].text));
+    // Артист: metadata.lockupMetadataViewModel.metadata.contentMetadataViewModel...
+    let artist = '';
+    const lmv = meta && meta.metadata;
+    const cmv = lmv && lmv.contentMetadataViewModel;
+    const parts = cmv && cmv.metadataRows && cmv.metadataRows[0] && cmv.metadataRows[0].metadataParts;
+    if(parts && parts[0] && parts[0].text) artist = parts[0].text.content || '';
+    if(videoId && title && lv.contentType === 'LOCKUP_CONTENT_TYPE_VIDEO'){
+      out.push({videoId, title, artist});
+    }
+  }
+  // youtubei browse API формат
+  if(node.musicResponsiveListItemRenderer){
+    const it = node.musicResponsiveListItemRenderer;
+    const videoId = it.playlistItemData && it.playlistItemData.videoId;
+    const cols = it.flexColumns || [];
+    const col = cols[0] && cols[0].musicResponsiveListItemFlexColumnRenderer;
+    const title = col && col.title && (col.title.content || (col.title.runs && col.title.runs[0] && col.title.runs[0].text));
+    if(videoId && title) out.push({videoId, title});
+  }
+  for(const k in node){
+    if(typeof node[k] === 'object') collectPlaylistVideos(node[k], out);
+  }
+  return out;
+}
+
+let playlistItems = []; // [{videoId, title, artist}]
+
+document.getElementById('fPlaylistFetch').addEventListener('click', async () => {
+  const url = document.getElementById('fPlaylist').value.trim();
+  const hint = document.getElementById('fPlaylistHint');
+  const box = document.getElementById('playlistResults');
+  if(!url){ showToast('Встав посилання на плейлист'); return; }
+  const listId = extractPlaylistId(url);
+  if(!listId){ showToast('Не вдалося розпізнати плейлист (потрібен параметр list=...)'); return; }
+
+  hint.textContent = 'Завантажую плейлист...';
+  box.innerHTML = '';
+  playlistItems = [];
+  try{
+    // youtube.com/playlist віддає ytInitialData серверно — надійніше за music.youtube.com
+    const playlistUrl = `https://www.youtube.com/playlist?list=${listId}`;
+    const html = await fetchViaEdgeProxy(playlistUrl);
+    const jsonStr = extractYtInitialData(html);
+    console.log('[playlist] html size:', html.length, 'ytInitialData found:', !!jsonStr);
+    let videos = [];
+    if(jsonStr){
+      try{
+        videos = collectPlaylistVideos(JSON.parse(jsonStr));
+        console.log('[playlist] ytInitialData videos:', videos.length, videos.slice(0,3));
+      }catch(e){ console.log('[playlist] JSON parse error:', e); }
+    }
+
+    // Фолбек: youtubei browse API (для music.youtube.com плейлистів)
+    if(!videos.length){
+      const cfg = extractYtConfig(html, listId);
+      if(cfg.key){
+        const apiUrl = `https://music.youtube.com/youtubei/v1/browse?key=${cfg.key}`;
+        const apiBody = {
+          context: {client: {clientName: 'WEB_REMIX', clientVersion: cfg.ver || '1.20261104.00.00'}},
+          browseId: cfg.browseId
+        };
+        const data = await postViaEdgeProxy(apiUrl, apiBody);
+        videos = collectPlaylistVideos(data);
+        console.log('[playlist] youtubei videos:', videos.length, videos.slice(0,3));
+      }
+    }
+    // Дедуплікація по videoId
+    const seen = new Set();
+    playlistItems = videos.filter(v => !seen.has(v.videoId) && seen.add(v.videoId));
+
+    if(!playlistItems.length) throw new Error('У плейлисті не знайдено треків');
+
+    hint.textContent = `Знайдено ${playlistItems.length} треків. Обери які додати:`;
+    box.innerHTML = `
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <button class="btn btn-secondary btn-small" id="plSelectAll">Всі</button>
+        <button class="btn btn-secondary btn-small" id="plSelectNone">Жоден</button>
+        <button class="btn btn-primary btn-small" id="plAddSelected" style="margin-left:auto;">Додати обрані</button>
+      </div>
+      <div style="max-height:300px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;">
+        ${playlistItems.map((v, i) => `
+          <div style="display:grid;grid-template-columns:auto minmax(0,2fr) minmax(0,1fr);gap:8px;align-items:center;padding:6px 10px;border-bottom:1px solid var(--border);font-size:13px;">
+            <input type="checkbox" data-pl-idx="${i}" checked style="flex-shrink:0;">
+            <input type="text" data-pl-title="${i}" placeholder="Назва" style="width:100%;min-width:0;padding:4px 8px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:12px;box-sizing:border-box;">
+            <input type="text" data-pl-artist="${i}" placeholder="Виконавець" style="width:100%;min-width:0;padding:4px 8px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:12px;box-sizing:border-box;">
+          </div>`).join('')}
+      </div>`;
+
+    // Значення ставимо через JS — надійніше за value-атрибут при спецсимволах
+    box.querySelectorAll('[data-pl-title]').forEach(el => {
+      el.value = playlistItems[+el.getAttribute('data-pl-title')].title;
+    });
+    box.querySelectorAll('[data-pl-artist]').forEach(el => {
+      const it = playlistItems[+el.getAttribute('data-pl-artist')];
+      if(it.artist) el.value = it.artist;
+    });
+
+    document.getElementById('plSelectAll').addEventListener('click', () => {
+      box.querySelectorAll('input[type=checkbox]').forEach(c => c.checked = true);
+    });
+    document.getElementById('plSelectNone').addEventListener('click', () => {
+      box.querySelectorAll('input[type=checkbox]').forEach(c => c.checked = false);
+    });
+    document.getElementById('plAddSelected').addEventListener('click', addSelectedPlaylistTracks);
+  }catch(err){
+    hint.textContent = 'Помилка: ' + err.message;
+    showToast('Не вдалося завантажити плейлист');
+  }
+});
+
+let playlistPreview = []; // [{meta, videoId}] — після enrich, до підтвердження
+
+async function addSelectedPlaylistTracks(){
+  const checked = Array.from(document.querySelectorAll('#playlistResults input[type=checkbox]:checked'));
+  if(!checked.length){ showToast('Нічого не обрано'); return; }
+  const btn = document.getElementById('plAddSelected');
+  btn.disabled = true;
+  const hint = document.getElementById('fPlaylistHint');
+  const box = document.getElementById('playlistResults');
+  const enriched = [];
+  try{
+    // 1) Збагачуємо всі обрані треки
+    for(let n = 0; n < checked.length; n++){
+      const cb = checked[n];
+      const idx = +cb.getAttribute('data-pl-idx');
+      const item = playlistItems[idx];
+      const titleVal = (document.querySelector(`[data-pl-title="${idx}"]`) || {}).value || '';
+      const artistVal = (document.querySelector(`[data-pl-artist="${idx}"]`) || {}).value || '';
+      hint.textContent = `Завантажую дані ${n + 1}/${checked.length}: ${titleVal || item.title}...`;
+      try{
+        // Overrides тільки якщо юзер реально змінив поля — інакше oEmbed парсить як для одиночного треку
+        const meta = await enrichYouTubeVideo(item.videoId, {
+          title: (titleVal.trim() && titleVal.trim() !== item.title) ? titleVal.trim() : undefined,
+          artist: (artistVal.trim() && artistVal.trim() !== item.artist) ? artistVal.trim() : undefined
+        });
+        enriched.push({meta, videoId: item.videoId});
+      }catch(e){
+        console.error('Skip track', item.title, e);
+      }
+    }
+    if(!enriched.length){ hint.textContent = 'Не вдалося завантажити дані жодного треку'; return; }
+
+    // 2) Прев'ю — перевірка всіх полів перед додаванням
+    playlistPreview = enriched;
+    hint.textContent = `Перевір ${enriched.length} треків і підтверди: `;
+    box.innerHTML = `
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-small" id="plConfirm">Підтвердити і додати (${enriched.length})</button>
+        <button class="btn btn-secondary btn-small" id="plCancel">Скасувати</button>
+      </div>
+      <div style="max-height:420px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;">
+        ${enriched.map((t, i) => `
+          <div style="display:grid;grid-template-columns:56px 1fr;gap:10px;padding:10px;border-bottom:1px solid var(--border);align-items:start;">
+            ${t.meta.coverDataUrl
+              ? `<img src="${escapeAttr(t.meta.coverDataUrl)}" style="width:56px;height:56px;object-fit:cover;border-radius:6px;background:var(--surface-alt);">`
+              : `<div style="width:56px;height:56px;border-radius:6px;background:var(--surface-alt);"></div>`}
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;min-width:0;">
+              <div class="field" style="margin:0;"><label>Назва</label><input type="text" data-pv-title="${i}" value="${escapeAttr(t.meta.title)}" style="font-size:12px;padding:4px 8px;"></div>
+              <div class="field" style="margin:0;"><label>Виконавець</label><input type="text" data-pv-artist="${i}" value="${escapeAttr(t.meta.artist)}" style="font-size:12px;padding:4px 8px;"></div>
+              <div class="field" style="margin:0;"><label>Альбом</label><input type="text" data-pv-album="${i}" value="${escapeAttr(t.meta.album)}" style="font-size:12px;padding:4px 8px;"></div>
+              <div style="display:flex;gap:6px;">
+                <div class="field" style="margin:0;flex:1;"><label>Рік</label><input type="text" data-pv-year="${i}" value="${escapeAttr(t.meta.year)}" style="font-size:12px;padding:4px 8px;"></div>
+                <div class="field" style="margin:0;flex:1;"><label>Тривалість</label><input type="text" data-pv-length="${i}" value="${escapeAttr(t.meta.length)}" style="font-size:12px;padding:4px 8px;"></div>
+              </div>
+              <div class="field" style="margin:0;grid-column:1/-1;"><label>Текст пісні ${t.meta.lyrics ? '(є)' : '(немає)'}</label><textarea data-pv-lyrics="${i}" rows="2" style="font-size:11px;padding:4px 8px;resize:vertical;">${escapeHTML(t.meta.lyrics || '')}</textarea></div>
+            </div>
+          </div>`).join('')}
+      </div>`;
+
+    document.getElementById('plCancel').addEventListener('click', () => {
+      playlistPreview = [];
+      box.innerHTML = '';
+      hint.textContent = 'Скасовано. Треки не додані.';
+    });
+    document.getElementById('plConfirm').addEventListener('click', () => {
+      // 3) Читаємо можливі правки і пушимо в сесію
+      let added = 0;
+      playlistPreview.forEach((t, i) => {
+        const val = sel => { const el = document.querySelector(`[data-pv-${sel}="${i}"]`); return el ? el.value.trim() : ''; };
+        db.tracks.unshift({
+          id: db.nextId++,
+          title: val('title') || t.meta.title,
+          artist: val('artist') || t.meta.artist,
+          cover: '',
+          coverBase64: t.meta.coverDataUrl,
+          youtubeUrl: t.meta.youtubeUrl,
+          length: val('length') || t.meta.length,
+          year: val('year') || t.meta.year,
+          album: val('album') || t.meta.album,
+          lyrics: val('lyrics') || t.meta.lyrics,
+          addedAt: new Date().toISOString(),
+          ratings: [null, null, null, null, null]
+        });
+        added++;
+      });
+      playlistPreview = [];
+      saveDB();
+      renderTracks();
+      box.innerHTML = '';
+      hint.textContent = `✓ Додано ${added} треків до оцінки`;
+      showToast(`Додано ${added} треків`);
+    });
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+document.getElementById('addTrackForm').addEventListener('submit', async e => {
   e.preventDefault();
   const title = document.getElementById('fTitle').value.trim();
   if(!title){ showToast('Введи назву треку'); return; }
+  const ytUrl = document.getElementById('fYoutube').value.trim();
   const track = {
     id: db.nextId++,
     title,
     artist: document.getElementById('fArtist').value.trim(),
     cover: '',
     coverBase64: currentCoverBase64,
+    youtubeUrl: ytUrl,
     length: document.getElementById('fLength').value.trim(),
     year: document.getElementById('fYear').value.trim(),
+    album: document.getElementById('fAlbum').value.trim(),
     lyrics: document.getElementById('fLyrics').value.trim(),
     addedAt: new Date().toISOString(),
     ratings: [null, null, null, null, null]
@@ -1016,8 +1764,20 @@ document.getElementById('addTrackForm').addEventListener('submit', e => {
   saveDB();
   e.target.reset();
   currentCoverBase64 = null;
+  document.getElementById('fYoutubeHint').textContent = 'Встав посилання — назва, виконавець і обкладинка підставляться автоматично';
   renderTracks();
   showToast('Трек додано');
+
+  if(SUPABASE_URL && SUPABASE_ANON_KEY && currentRole === 'admin'){
+    try{
+      await supabaseUpsertTrack(track);
+      await loadSupabaseData();
+      renderLibrary();
+    }catch(err){
+      console.error('Supabase add track failed:', err);
+      showToast('Трек додано локально, але не в Supabase: ' + err.message);
+    }
+  }
 });
 
 /* ---------------- Tracks ---------------- */
@@ -1075,6 +1835,16 @@ function renderTracks(){
   document.body.classList.toggle('blind-mode', currentMode === 'friend');
 }
 
+function cardActionsHTML(track){
+  const hasRating = track.ratings.some(r => r && evalAvg(r) !== null);
+  const canSave = currentRole === 'admin' && hasRating && !track.pushedToSupabase;
+  const saved = track.pushedToSupabase;
+  const saveHTML = saved
+    ? `<span class="btn btn-secondary btn-small" style="opacity:.6;cursor:default;">✓ В бібліотеці</span>`
+    : (canSave ? `<button class="btn btn-primary btn-small" data-save="${track.id}">Зберегти в бібліотеку</button>` : '');
+  return `${saveHTML}<button class="btn btn-danger btn-small" data-delete="${track.id}">Видалити трек</button>`;
+}
+
 function renderTrackCard(track){
   const score = finalScore(track);
   const isOpen = openTrackId === track.id;
@@ -1087,7 +1857,8 @@ function renderTrackCard(track){
     ? `<img class="track-cover" src="${escapeAttr(track.coverBase64)}">`
     : `<div class="track-cover"></div>`;
 
-  const ratersHTML = db.evaluators.map((ev, i) => {
+  const ratersHTML = getActiveEvalIndices().map(i => {
+    const ev = db.evaluators[i];
     if(!ev.name.trim()) return ''; // Skip empty evaluators
     const r = track.ratings[i] || {vibe:5, text:5, beat:5};
     const avg = evalAvg(track.ratings[i]);
@@ -1099,7 +1870,7 @@ function renderTrackCard(track){
         </div>
         ${CATS.map(c => `
           <div class="slider-row">
-            <div class="slider-label"><span>${c.label}<div class="category-tooltip">${c.hint}</div></span><span class="val" data-val="${track.id}-${i}-${c.key}">${r[c.key]}</span></div>
+            <div class="slider-label"><span>${c.label}</span><span class="val" data-val="${track.id}-${i}-${c.key}">${r[c.key]}</span></div>
             <input type="range" class="${c.cls}" min="1" max="10" step="1" value="${r[c.key]}"
               data-track="${track.id}" data-eval="${i}" data-cat="${c.key}">
           </div>
@@ -1115,7 +1886,7 @@ function renderTrackCard(track){
         ${cover}
         <div class="track-info">
           <div class="title">${escapeHTML(track.title)}${track.artist ? ' — ' + escapeHTML(track.artist) : ''}</div>
-          <div class="meta">${track.year ? track.year : '—'} · ${track.length ? track.length : '—:—'}</div>
+          <div class="meta">${track.year ? track.year : '—'} · ${track.length ? track.length : '—:—'}${track.album ? ' · ' + escapeHTML(track.album) : ''}</div>
         </div>
         ${scoreHTML}
         <button class="quick-delete" data-quick-delete="${track.id}" title="Видалити трек">✕</button>
@@ -1127,9 +1898,7 @@ function renderTrackCard(track){
           <div class="final-label">Фінальна оцінка треку</div>
           <div class="final-value" data-final="${track.id}">${score===null?'—':fmt1(score)}</div>
         </div>
-        <div class="track-actions">
-          <button class="btn btn-danger btn-small" data-delete="${track.id}">Видалити трек</button>
-        </div>
+        <div class="track-actions" data-actions="${track.id}">${cardActionsHTML(track)}</div>
       </div>
     </div>
   `;
@@ -1153,6 +1922,13 @@ document.getElementById('tracksList').addEventListener('click', e => {
     openModal(id);
     return;
   }
+  const saveBtn = e.target.closest('[data-save]');
+  if(saveBtn){
+    const id = +saveBtn.getAttribute('data-save');
+    const track = db.tracks.find(t => t.id === id);
+    if(track) saveTrackToLibrary(track, saveBtn);
+    return;
+  }
   const delBtn = e.target.closest('[data-delete]');
   if(delBtn){
     const id = +delBtn.getAttribute('data-delete');
@@ -1164,6 +1940,22 @@ document.getElementById('tracksList').addEventListener('click', e => {
     return;
   }
 });
+
+async function saveTrackToLibrary(track, btn){
+  if(track.pushedToSupabase) return;
+  if(btn){ btn.disabled = true; btn.textContent = 'Зберігаю...'; }
+  try{
+    await supabasePushTrack(track);
+    track.pushedToSupabase = true;
+    saveDB();
+    showToast(`«${track.title}» збережено в бібліотеку`);
+    renderTracks();
+  }catch(err){
+    console.error('Save to library failed:', err);
+    showToast('Не вдалося зберегти: ' + (err.message || err));
+    if(btn){ btn.disabled = false; btn.textContent = 'Зберегти в бібліотеку'; }
+  }
+}
 
 document.getElementById('tracksList').addEventListener('input', e => {
   if(e.target.type !== 'range') return;
@@ -1195,74 +1987,50 @@ document.getElementById('tracksList').addEventListener('input', e => {
       headScoreEl.classList.remove('pending');
     }
   }
+
+  // Оновлюємо кнопки дій в картці (Зберегти з'являється після оцінки)
+  const actionsEl = document.querySelector(`[data-actions="${trackId}"]`);
+  if(actionsEl) actionsEl.innerHTML = cardActionsHTML(track);
+
+  // Якщо всі активні оцінювачі оцінили трек — одразу пушимо в Supabase
+  maybePushTrackToSupabase(track);
 });
 
-function buildHistoryEntry(track){
-  const evaluatorScores = db.evaluators.map((ev, i) => {
-    const r = track.ratings[i];
-    return {
-      name: ev.name,
-      vibe: r ? r.vibe : null,
-      text: r ? r.text : null,
-      beat: r ? r.beat : null,
-      avg: r ? evalAvg(r) : null
-    };
+// Пушить трек у Supabase, коли його оцінили всі активні оцінювачі.
+// Повертає true, якщо трек був повністю оцінений (щоб не спамити запитами).
+function maybePushTrackToSupabase(track){
+  if(!SUPABASE_URL || !SUPABASE_ANON_KEY || currentRole !== 'admin') return;
+  if(track.pushedToSupabase) return;
+  const active = getActiveEvalIndices();
+  const allRated = active.every(i => track.ratings[i] && evalAvg(track.ratings[i]) !== null);
+  if(!allRated) return;
+  track.pushedToSupabase = true;
+  saveDB();
+  supabasePushTrack(track).catch(err => {
+    console.error('Auto-push failed:', err);
+    track.pushedToSupabase = false;
+    saveDB();
   });
-  return {
-    id: db.nextId++,
-    trackId: track.id,
-    title: track.title,
-    artist: track.artist,
-    coverBase64: track.coverBase64,
-    year: track.year,
-    length: track.length,
-    lyrics: track.lyrics,
-    timestamp: new Date().toISOString(),
-    evaluatorScores,
-    finalScore: finalScore(track)
-  };
 }
 
-/* ---------------- Finish Evaluation ---------------- */
-// One button does the whole Friday-night ritual:
-// 1) turns every rated track into a history entry
-// 2) empties the working session (ready for next Friday's tracks)
-// 3) pushes the updated history straight to GitHub
-document.getElementById('finishSessionBtn').addEventListener('click', async () => {
-  const ratedTracks = db.tracks.filter(t => finalScore(t) !== null);
-
-  if(ratedTracks.length === 0){
-    showToast('Немає оцінених треків для запису в історію.');
+/* ---------------- Clear session list ---------------- */
+// Оцінки пушаться в Supabase автоматично, щойно всі активні оцінювачі
+// оцінили трек. Ця кнопка просто очищає локальний список для нової сесії.
+document.getElementById('finishSessionBtn').addEventListener('click', () => {
+  if(db.tracks.length === 0){
+    showToast('Список уже порожній.');
     return;
   }
-
-  if(!confirm(`Записати ${ratedTracks.length} оцінених треків в історію та завершити оцінювання?`)){
+  if(!confirm(`Очистити список з ${db.tracks.length} треків? Оцінки вже збережені в базі.`)){
     return;
   }
-
-  ratedTracks.forEach(track => {
-    db.history.unshift(buildHistoryEntry(track));
-  });
-  db.tracks = db.tracks.filter(t => finalScore(t) === null);
-
+  db.tracks = [];
+  db.trackRandomOrder = {};
+  supaSessionId = null;
+  localStorage.removeItem(SUPA_SESSION_KEY);
   saveDB();
   renderTracks();
-  renderHistory();
-  renderTopTracks();
-  showToast(`Записано ${ratedTracks.length} треків в історію.`);
-
-  // Try to sync to GitHub if token is configured
-  if(db.github && db.github.token && db.github.repo && db.github.path){
-    try {
-      await pushDBToGitHub();
-      showToast('Дані синхронізовано з GitHub.');
-    } catch(err) {
-      console.error('GitHub sync failed:', err);
-      showToast('Помилка синхронізації з GitHub. Дані збережено локально.');
-    }
-  } else {
-    showToast('GitHub токен не налаштовано. Дані збережено локально.');
-  }
+  showToast('Список очищено.');
 });
 
 /* ---------------- Show All Tracks Toggle ---------------- */
@@ -1279,162 +2047,30 @@ document.getElementById('showAllTracks').addEventListener('change', e => {
   });
 });
 
-/* ---------------- History Search ---------------- */
-document.getElementById('historySearch').addEventListener('input', e => {
-  const searchTerm = e.target.value.toLowerCase().trim();
-  const daySections = document.querySelectorAll('.history-day-section');
-  
-  daySections.forEach(section => {
-    const rows = section.querySelectorAll('tbody tr');
-    let hasVisibleRows = false;
-    
-    rows.forEach(row => {
-      const titleCell = row.cells[1];
-      const title = titleCell.textContent.toLowerCase();
-      
-      if(searchTerm === '' || title.includes(searchTerm)){
-        row.style.display = '';
-        hasVisibleRows = true;
-      }else{
-        row.style.display = 'none';
-      }
-    });
-    
-    // Hide entire day section if no visible rows
-    if(hasVisibleRows){
-      section.style.display = '';
-      // Auto-open day section when searching
-      if(searchTerm !== ''){
-        section.classList.add('open');
-      }
-    }else{
-      section.style.display = 'none';
-      section.classList.remove('open');
-    }
-  });
-  
-  // Close all sections when search is cleared
-  if(searchTerm === ''){
-    daySections.forEach(section => {
-      section.classList.remove('open');
-    });
-  }
-});
-
-/* ---------------- History ---------------- */
-function renderHistory(){
-  const container = document.getElementById('historyList');
-  if(db.history.length === 0){
-    container.innerHTML = '<div class="history-empty">Історія порожня. Оціни трек і натисни «Зберегти оцінку в історію».</div>';
-    return;
-  }
-  
-  // Group by day
-  const grouped = {};
-  db.history.forEach(h => {
-    const date = new Date(h.timestamp);
-    const dateKey = date.toLocaleDateString('uk-UA', {day:'2-digit', month:'2-digit', year:'numeric'});
-    if(!grouped[dateKey]) grouped[dateKey] = [];
-    grouped[dateKey].push(h);
-  });
-  
-  const daysHTML = Object.entries(grouped).map(([dateKey, entries]) => {
-    // Get active evaluators
-    const activeEvaluators = db.evaluators.filter(e => e.name.trim());
-    
-    const rows = entries.map(h => {
-      const evaluatorCells = activeEvaluators.map((ev, i) => {
-        const score = h.evaluatorScores[i] ? h.evaluatorScores[i].avg : null;
-        return `<td class="score-cell" style="font-size:11px;">${score===null ? '—' : fmt1(score)}</td>`;
-      }).join('');
-      
-      return `
-        <tr>
-          <td>${h.coverBase64 ? `<img src="${escapeAttr(h.coverBase64)}">` : ''}</td>
-          <td>${escapeHTML(h.title)}${h.artist ? ' — ' + escapeHTML(h.artist) : ''}</td>
-          <td>${h.year || '—'}</td>
-          ${evaluatorCells}
-          <td class="score-cell">${h.finalScore===null ? '—' : fmt1(h.finalScore)}</td>
-          <td>${new Date(h.timestamp).toLocaleTimeString('uk-UA', {hour:'2-digit', minute:'2-digit'})}</td>
-          <td class="del-cell"><button class="hist-del" data-hist-del="${h.id}" title="Видалити запис">✕</button></td>
-        </tr>
-      `;
-    }).join('');
-    
-    const evaluatorHeaders = activeEvaluators.map((ev, i) => 
-      `<th style="cursor:pointer;" data-sort-eval="${i}">${escapeHTML(ev.name)}</th>`
-    ).join('');
-    
-    return `
-      <div class="history-day-section">
-        <div class="history-day-header" data-day-toggle="${dateKey}">
-          <span>${dateKey}</span>
-          <div style="display:flex;align-items:center;gap:12px;">
-            <span class="history-day-count">${entries.length} записів</span>
-            <span class="arrow">▾</span>
-          </div>
-        </div>
-        <div class="history-day-content">
-          <table class="history-table">
-            <thead>
-              <tr><th></th><th>Трек</th><th>Рік</th>${evaluatorHeaders}<th style="cursor:pointer;" data-sort-final>Загальна</th><th>Час</th><th></th></tr>
-            </thead>
-            <tbody>${rows}</tbody>
-          </table>
-        </div>
-      </div>
-    `;
-  }).join('');
-  
-  container.innerHTML = daysHTML;
-}
-
-/* ---------------- Top Tracks ---------------- */
+/* ---------------- Top 10 (Бібліотека) ---------------- */
 function renderTopTracks(){
   const container = document.getElementById('topTracksList');
-  
-  // Aggregate scores from history
-  const trackScores = {};
-  db.history.forEach(h => {
-    if(h.finalScore === null) return;
-    const key = h.title + '|' + (h.artist || '');
-    if(!trackScores[key]){
-      trackScores[key] = {
-        title: h.title,
-        artist: h.artist,
-        coverBase64: h.coverBase64,
-        year: h.year,
-        scores: [],
-        count: 0
-      };
-    }
-    trackScores[key].scores.push(h.finalScore);
-    trackScores[key].count++;
-  });
-  
-  // Calculate average for each track
-  const topTracks = Object.values(trackScores)
-    .map(t => ({
-      ...t,
-      avgScore: t.scores.reduce((a,b)=>a+b,0) / t.scores.length
-    }))
+  if(!container) return;
+
+  const tracks = getLibraryTracks()
+    .filter(t => t.avgScore !== null)
     .sort((a,b) => b.avgScore - a.avgScore)
-    .slice(0, 10); // Top 10
-  
-  if(topTracks.length === 0){
-    container.innerHTML = '<div class="empty-state">Ще немає оцінених треків в історії.</div>';
+    .slice(0, 10);
+
+  if(tracks.length === 0){
+    container.innerHTML = '<div class="empty-state">Ще немає оцінених треків.</div>';
     return;
   }
-  
-  const rows = topTracks.map((t, i) => `
+
+  const rows = tracks.map((t, i) => `
     <tr>
       <td style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--amber);">#${i+1}</td>
       <td>${t.coverBase64 ? `<img src="${escapeAttr(t.coverBase64)}">` : ''}</td>
-      <td>${escapeHTML(t.title)}${t.artist ? ' — ' + escapeHTML(t.artist) : ''}</td>
+      <td>${escapeHTML(t.title)}${t.artist ? ' — ' + escapeHTML(t.artist) : ''}${t.album ? `<div style="font-size:11px;color:var(--text-muted);">${escapeHTML(t.album)}</div>` : ''}</td>
       <td class="score-cell" style="font-size:16px;font-weight:600;">${fmt1(t.avgScore)}</td>
     </tr>
   `).join('');
-  
+
   container.innerHTML = `
     <table class="history-table">
       <thead>
@@ -1445,83 +2081,16 @@ function renderTopTracks(){
   `;
 }
 
-document.getElementById('historyList').addEventListener('click', e => {
-  const dayToggle = e.target.closest('[data-day-toggle]');
-  if(dayToggle){
-    const section = dayToggle.closest('.history-day-section');
-    section.classList.toggle('open');
-    return;
-  }
-  
-  const sortEval = e.target.closest('[data-sort-eval]');
-  if(sortEval){
-    const evalIdx = +sortEval.getAttribute('data-sort-eval');
-    const table = sortEval.closest('table');
-    const tbody = table.querySelector('tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr'));
-    
-    rows.sort((a, b) => {
-      const scoreA = a.children[3 + evalIdx].textContent;
-      const scoreB = b.children[3 + evalIdx].textContent;
-      const numA = scoreA === '—' ? -1 : parseFloat(scoreA);
-      const numB = scoreB === '—' ? -1 : parseFloat(scoreB);
-      return numB - numA; // Descending
-    });
-    
-    rows.forEach(row => tbody.appendChild(row));
-    return;
-  }
-  
-  const sortFinal = e.target.closest('[data-sort-final]');
-  if(sortFinal){
-    const table = sortFinal.closest('table');
-    const tbody = table.querySelector('tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr'));
-    const activeEvaluators = db.evaluators.filter(e => e.name.trim());
-    const finalColIdx = 3 + activeEvaluators.length;
-    
-    rows.sort((a, b) => {
-      const scoreA = a.children[finalColIdx].textContent;
-      const scoreB = b.children[finalColIdx].textContent;
-      const numA = scoreA === '—' ? -1 : parseFloat(scoreA);
-      const numB = scoreB === '—' ? -1 : parseFloat(scoreB);
-      return numB - numA; // Descending
-    });
-    
-    rows.forEach(row => tbody.appendChild(row));
-    return;
-  }
-  
-  const btn = e.target.closest('[data-hist-del]');
-  if(!btn) return;
-  const id = +btn.getAttribute('data-hist-del');
-  if(confirm('Видалити цей запис з історії?')){
-    db.history = db.history.filter(h => h.id !== id);
-    saveDB();
-    renderHistory();
-    renderTopTracks();
-  }
-});
-
-/* ---------------- History refresh from GitHub ---------------- */
-document.getElementById('historyRefreshBtn').addEventListener('click', async () => {
-  if(!confirm('Підтягнути історію з GitHub? Це замінить локальну історію та список оцінювачів даними з репозиторію.')){
-    return;
-  }
-  await pullDBFromGitHub({force: true});
-});
-
-/* ---------------- Clear Data ---------------- */
+/* ---------------- Clear local data ---------------- */
 document.getElementById('clearDataBtn').addEventListener('click', () => {
-  if(confirm('Видалити всі треки та історію? Цю дію не можна скасувати.')){
-    // Clear localStorage completely so auto-load from GitHub will work on next page load
+  if(confirm('Очистити локальні дані сесії (треки для оцінювання)? Дані в Supabase не постраждають.')){
     localStorage.removeItem(STORAGE_KEY);
-    db = loadDB(); // Reload with default empty data
+    db = loadDB();
     renderEvaluators();
+    renderEvaluatorPicker();
     renderTracks();
-    renderHistory();
     renderTopTracks();
-    showToast('Дані очищено. Перезавантаж сторінку для завантаження з GitHub.');
+    showToast('Локальні дані очищено.');
   }
 });
 
@@ -1536,18 +2105,19 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
     // Hide/show sections based on mode
     const adminSections = document.querySelectorAll('.admin-section');
     const ratingSections = document.querySelectorAll('.rating-section');
-    const historySections = document.querySelectorAll('.history-section');
+    const librarySections = document.querySelectorAll('.library-section');
     
     adminSections.forEach(s => s.style.display = 'none');
     ratingSections.forEach(s => s.style.display = 'none');
-    historySections.forEach(s => s.style.display = 'none');
+    librarySections.forEach(s => s.style.display = 'none');
     
     if(mode === 'admin'){
       adminSections.forEach(s => s.style.display = '');
     }else if(mode === 'friend'){
       ratingSections.forEach(s => s.style.display = '');
-    }else if(mode === 'history'){
-      historySections.forEach(s => s.style.display = '');
+    }else if(mode === 'library'){
+      librarySections.forEach(s => s.style.display = '');
+      renderLibrary();
     }
     
     renderTracks();
@@ -1558,11 +2128,11 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
 function initMode(){
   const adminSections = document.querySelectorAll('.admin-section');
   const ratingSections = document.querySelectorAll('.rating-section');
-  const historySections = document.querySelectorAll('.history-section');
+  const librarySections = document.querySelectorAll('.library-section');
   
   adminSections.forEach(s => s.style.display = 'none');
   ratingSections.forEach(s => s.style.display = 'none');
-  historySections.forEach(s => s.style.display = 'none');
+  librarySections.forEach(s => s.style.display = 'none');
   
   // Set active button based on currentMode
   document.querySelectorAll('.mode-btn').forEach(btn => {
@@ -1576,8 +2146,331 @@ function initMode(){
     adminSections.forEach(s => s.style.display = '');
   }else if(currentMode === 'friend'){
     ratingSections.forEach(s => s.style.display = '');
-  }else if(currentMode === 'history'){
-    historySections.forEach(s => s.style.display = '');
+  }else if(currentMode === 'library'){
+    librarySections.forEach(s => s.style.display = '');
+    renderLibrary();
+  }
+}
+
+/* ---------------- Library ---------------- */
+// Якщо дані з Supabase — будуємо бібліотеку з усіх треків (включно з неоціненими)
+function getLibraryTracksFromSupa(){
+  const evalNameById = supa.evalNameById || {};
+  return supa.tracks.map(t => {
+    const ratings = supa.ratingsByTrack[t.id] || [];
+    const evals = {};
+    let sum = 0, cnt = 0;
+    ratings.forEach(r => {
+      const name = evalNameById[r.evaluator_id] || '';
+      if(!name) return;
+      if(!evals[name]) evals[name] = {vibe:[], text:[], beat:[]};
+      ['vibe','text','beat'].forEach(k => { if(r[k] !== null && r[k] !== undefined) evals[name][k].push(r[k]); });
+    });
+    const evalAvgs = {};
+    Object.entries(evals).forEach(([name, sc]) => {
+      const avg = k => sc[k].length ? sc[k].reduce((a,b)=>a+b,0)/sc[k].length : null;
+      const vals = ['vibe','text','beat'].map(avg).filter(v => v !== null);
+      const eAvg = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
+      evalAvgs[name] = {vibe: avg('vibe'), text: avg('text'), beat: avg('beat'), avg: eAvg};
+      if(eAvg !== null){ sum += eAvg; cnt++; }
+    });
+    const dates = [...new Set(ratings.map(r => r.sessions && r.sessions.created_at).filter(Boolean))];
+    return {
+      key: 'supa:' + t.id,
+      supaId: t.id,
+      title: t.title || '', artist: t.artist || '',
+      coverBase64: t.cover_url || '', year: t.year || '', length: t.length || '',
+      lyrics: t.lyrics || '', youtubeUrl: t.youtube_url || '',
+      entries: [{id: t.id, timestamp: t.created_at}],
+      evals: evalAvgs,
+      avgScore: cnt ? sum/cnt : null,
+      ratingsCount: cnt,
+      lastTs: new Date(t.created_at).getTime() || 0
+    };
+  });
+}
+
+// Згруповує db.history по trackId: один трек може бути оцінений у кількох сесіях.
+function getLibraryTracks(){
+  if(supa.loaded && supa.tracks.length){
+    return getLibraryTracksFromSupa();
+  }
+  const map = {};
+  db.history.forEach(h => {
+    const key = h.trackId !== undefined && h.trackId !== null
+      ? 'id:' + h.trackId
+      : 'meta:' + (h.title || '') + '|' + (h.artist || '');
+    if(!map[key]){
+      map[key] = {
+        key, trackId: h.trackId,
+        title: h.title || '', artist: h.artist || '',
+        coverBase64: h.coverBase64 || '', year: h.year || '', length: h.length || '',
+        lyrics: h.lyrics || '', youtubeUrl: h.youtubeUrl || '',
+        entries: [], evalScores: {}, lastTs: 0
+      };
+    }
+    const t = map[key];
+    t.entries.push(h);
+    const ts = new Date(h.timestamp).getTime();
+    if(ts > t.lastTs){
+      t.lastTs = ts;
+      // найсвіжіші метадані
+      if(h.coverBase64) t.coverBase64 = h.coverBase64;
+      if(h.title) t.title = h.title;
+      if(h.artist) t.artist = h.artist;
+      if(h.year) t.year = h.year;
+      if(h.length) t.length = h.length;
+      if(h.lyrics) t.lyrics = h.lyrics;
+      if(h.youtubeUrl) t.youtubeUrl = h.youtubeUrl;
+    }
+    (h.evaluatorScores || []).forEach(s => {
+      if(!s.name) return;
+      if(!t.evalScores[s.name]) t.evalScores[s.name] = {vibe:[], text:[], beat:[]};
+      ['vibe','text','beat'].forEach(k => { if(s[k] !== null && s[k] !== undefined) t.evalScores[s.name][k].push(s[k]); });
+    });
+  });
+
+  return Object.values(map).map(t => {
+    // Середні оцінки по кожному оцінювачу
+    const evals = {};
+    let sum = 0, cnt = 0;
+    Object.entries(t.evalScores).forEach(([name, sc]) => {
+      const avg = k => sc[k].length ? sc[k].reduce((a,b)=>a+b,0)/sc[k].length : null;
+      const vibe = avg('vibe'), text = avg('text'), beat = avg('beat');
+      const vals = [vibe,text,beat].filter(v => v !== null);
+      const eAvg = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
+      evals[name] = {vibe, text, beat, avg: eAvg};
+      if(eAvg !== null){ sum += eAvg; cnt++; }
+    });
+    t.evals = evals;
+    t.avgScore = cnt ? sum/cnt : null;
+    t.ratingsCount = cnt;
+    return t;
+  });
+}
+
+let libraryFilter = {q:'', sort:'score_desc'};
+
+// Підвкладки бібліотеки: «Треки» / «Топ 10»
+document.querySelectorAll('.lib-subtab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    libraryTab = btn.getAttribute('data-libtab');
+    document.querySelectorAll('.lib-subtab').forEach(b => b.classList.toggle('active', b === btn));
+    document.getElementById('libraryTracksPane').style.display = libraryTab === 'tracks' ? '' : 'none';
+    document.getElementById('libraryTopPane').style.display = libraryTab === 'top' ? '' : 'none';
+    if(libraryTab === 'top') renderTopTracks();
+  });
+});
+
+function renderLibrary(){
+  const grid = document.getElementById('libraryGrid');
+  let tracks = getLibraryTracks();
+
+  const q = libraryFilter.q.toLowerCase().trim();
+  if(q){
+    tracks = tracks.filter(t =>
+      t.title.toLowerCase().includes(q) || t.artist.toLowerCase().includes(q) ||
+      (t.album || '').toLowerCase().includes(q));
+  }
+
+  const sorters = {
+    score_desc: (a,b) => (b.avgScore ?? -1) - (a.avgScore ?? -1),
+    score_asc:  (a,b) => (a.avgScore ?? 999) - (b.avgScore ?? 999),
+    title:      (a,b) => a.title.localeCompare(b.title, 'uk'),
+    artist:     (a,b) => (a.artist||'').localeCompare(b.artist||'', 'uk'),
+    album:      (a,b) => (a.album||'').localeCompare(b.album||'', 'uk') || a.title.localeCompare(b.title, 'uk'),
+    date_desc:  (a,b) => b.lastTs - a.lastTs,
+  };
+  tracks.sort(sorters[libraryFilter.sort] || sorters.score_desc);
+
+  if(tracks.length === 0){
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;">Нічого не знайдено.</div>';
+    return;
+  }
+
+  grid.innerHTML = tracks.map(t => `
+    <div class="lib-card" data-lib-key="${escapeAttr(t.key)}">
+      ${t.coverBase64
+        ? `<img class="cover" src="${escapeAttr(t.coverBase64)}" alt="">`
+        : `<div class="cover-placeholder">🎵</div>`}
+      <div class="info">
+        <div class="title">${escapeHTML(t.title)}</div>
+        <div class="artist">${escapeHTML(t.artist)}</div>
+        ${t.album ? `<div class="album-tag">${escapeHTML(t.album)}</div>` : ''}
+        <div class="meta-row">
+          <span>${t.ratingsCount} оцінок</span>
+          <span class="score${t.avgScore===null?' dim':''}">${t.avgScore===null?'—':fmt1(t.avgScore)}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('librarySearch').addEventListener('input', e => {
+  libraryFilter.q = e.target.value;
+  renderLibrary();
+});
+document.getElementById('librarySort').addEventListener('change', e => {
+  libraryFilter.sort = e.target.value;
+  renderLibrary();
+});
+
+document.getElementById('libraryGrid').addEventListener('click', e => {
+  const card = e.target.closest('[data-lib-key]');
+  if(!card) return;
+  const t = getLibraryTracks().find(x => x.key === card.getAttribute('data-lib-key'));
+  if(t) openLibraryModal(t);
+});
+
+function openLibraryModal(t){
+  const overlay = document.getElementById('libModalOverlay');
+  const body = document.getElementById('libModalBody');
+
+  const evalRows = Object.entries(t.evals).map(([name, sc]) => `
+    <tr>
+      <td>${escapeHTML(name)}</td>
+      <td class="mono">${sc.vibe===null?'—':fmt1(sc.vibe)}</td>
+      <td class="mono">${sc.text===null?'—':fmt1(sc.text)}</td>
+      <td class="mono">${sc.beat===null?'—':fmt1(sc.beat)}</td>
+      <td class="mono" style="font-weight:600;color:var(--amber);">${sc.avg===null?'—':fmt1(sc.avg)}</td>
+    </tr>
+  `).join('');
+
+  const meta = [t.year, t.length, t.album].filter(Boolean).join(' · ');
+  const dates = t.entries.map(h => new Date(h.timestamp).toLocaleDateString('uk-UA')).filter((v,i,a)=>a.indexOf(v)===i);
+
+  // Інші треки з того ж альбому
+  const albumSiblings = t.album
+    ? getLibraryTracks().filter(x => x.key !== t.key && x.album === t.album)
+    : [];
+  const siblingsHTML = albumSiblings.length ? `
+    <div style="margin-top:14px;">
+      <div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Ще з альбому «${escapeHTML(t.album)}»</div>
+      ${albumSiblings.map(s => `
+        <div class="album-sibling" data-sibling-key="${escapeAttr(s.key)}">
+          <span>${escapeHTML(s.title)}${s.artist ? ' — ' + escapeHTML(s.artist) : ''}</span>
+          <span class="score${s.avgScore===null?' dim':''}">${s.avgScore===null?'—':fmt1(s.avgScore)}</span>
+        </div>
+      `).join('')}
+    </div>` : '';
+
+  body.innerHTML = `
+    <button class="close-x" id="libModalClose">&times;</button>
+    <div class="head">
+      ${t.coverBase64
+        ? `<img class="cover" src="${escapeAttr(t.coverBase64)}" alt="">`
+        : `<div class="cover" style="display:flex;align-items:center;justify-content:center;font-size:48px;">🎵</div>`}
+      <div style="flex:1;min-width:0;">
+        <h3>${escapeHTML(t.title)}</h3>
+        <div class="sub">${escapeHTML(t.artist)}${meta ? ' · ' + escapeHTML(meta) : ''}</div>
+        <div class="sub">Оцінено: ${dates.join(', ') || '—'}</div>
+        <div class="final">${t.avgScore===null?'—':fmt1(t.avgScore)}</div>
+        ${t.youtubeUrl ? `<a href="${escapeAttr(t.youtubeUrl)}" target="_blank" style="font-size:13px;">▶ YouTube</a>` : ''}
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>Оцінювач</th><th>Вайб</th><th>Текст</th><th>Біт</th><th>Сер.</th></tr></thead>
+      <tbody>${evalRows || '<tr><td colspan="5" style="color:var(--text-muted);">Немає оцінок</td></tr>'}</tbody>
+    </table>
+    ${t.lyrics ? `<div class="lyrics-box">${escapeHTML(t.lyrics)}</div>` : ''}
+    ${siblingsHTML}
+    ${currentRole === 'admin' ? `
+    <div class="actions">
+      <button class="btn btn-secondary btn-small" id="libEditBtn">Редагувати</button>
+      <button class="btn btn-danger btn-small" id="libDeleteBtn">Видалити трек</button>
+    </div>` : ''}
+    ${currentRole === 'admin' ? `
+    <div id="libEditForm" style="display:none;">
+      <div class="edit-grid">
+        <div><label>Назва</label><input type="text" id="libEditTitle" value="${escapeAttr(t.title)}"></div>
+        <div><label>Виконавець</label><input type="text" id="libEditArtist" value="${escapeAttr(t.artist)}"></div>
+        <div><label>Рік</label><input type="text" id="libEditYear" value="${escapeAttr(t.year)}"></div>
+        <div><label>Тривалість</label><input type="text" id="libEditLength" value="${escapeAttr(t.length)}"></div>
+        <div><label>Альбом</label><input type="text" id="libEditAlbum" value="${escapeAttr(t.album)}"></div>
+        <div class="full"><label>YouTube URL</label><input type="text" id="libEditYoutube" value="${escapeAttr(t.youtubeUrl)}"></div>
+        <div class="full"><label>Текст пісні</label><textarea id="libEditLyrics">${escapeHTML(t.lyrics)}</textarea></div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary btn-small" id="libEditSave">Зберегти</button>
+        <button class="btn btn-secondary btn-small" id="libEditCancel">Скасувати</button>
+      </div>
+    </div>
+    ` : ''}
+  `;
+
+  overlay.classList.add('open');
+
+  document.getElementById('libModalClose').addEventListener('click', () => overlay.classList.remove('open'));
+  overlay.addEventListener('click', ev => { if(ev.target === overlay) overlay.classList.remove('open'); });
+
+  const delBtn = document.getElementById('libDeleteBtn');
+  if(delBtn) delBtn.addEventListener('click', async () => {
+    if(!confirm(`Видалити «${t.title}»?`)) return;
+    if(t.supaId){
+      try{
+        await supabaseRest(`/tracks?id=eq.${t.supaId}`, {method:'DELETE'});
+        await loadSupabaseData();
+        renderTopTracks(); renderLibrary();
+        overlay.classList.remove('open');
+        showToast('Трек видалено.');
+      }catch(err){
+        showToast('Помилка видалення: ' + err.message);
+      }
+      return;
+    }
+    const ids = new Set(t.entries.map(h => h.id));
+    db.history = db.history.filter(h => !ids.has(h.id));
+    saveDB();
+    renderTopTracks(); renderLibrary();
+    overlay.classList.remove('open');
+    showToast('Трек видалено.');
+  });
+
+  const editBtn = document.getElementById('libEditBtn');
+  if(editBtn){
+    editBtn.addEventListener('click', () => {
+      document.getElementById('libEditForm').style.display = '';
+    });
+    document.getElementById('libEditCancel').addEventListener('click', () => {
+      document.getElementById('libEditForm').style.display = 'none';
+    });
+    document.getElementById('libEditSave').addEventListener('click', async () => {
+    const patch = {
+      title: document.getElementById('libEditTitle').value.trim(),
+      artist: document.getElementById('libEditArtist').value.trim(),
+      year: document.getElementById('libEditYear').value.trim(),
+      length: document.getElementById('libEditLength').value.trim(),
+      album: document.getElementById('libEditAlbum').value.trim(),
+      youtubeUrl: document.getElementById('libEditYoutube').value.trim(),
+      lyrics: document.getElementById('libEditLyrics').value,
+    };
+    if(t.supaId){
+      try{
+        await supabaseRest(`/tracks?id=eq.${t.supaId}`, {
+          method: 'PATCH',
+          body: {
+            title: patch.title, artist: patch.artist,
+            year: patch.year || null, length: patch.length || null,
+            album: patch.album || null,
+            youtube_url: patch.youtubeUrl || null, lyrics: patch.lyrics || null
+          }
+        });
+        await loadSupabaseData();
+        renderTopTracks(); renderLibrary();
+        overlay.classList.remove('open');
+        showToast('Зміни збережено.');
+      }catch(err){
+        showToast('Помилка збереження: ' + err.message);
+      }
+      return;
+    }
+    const ids = new Set(t.entries.map(h => h.id));
+    db.history.forEach(h => { if(ids.has(h.id)) Object.assign(h, patch); });
+    saveDB();
+    renderTopTracks(); renderLibrary();
+    overlay.classList.remove('open');
+    showToast('Зміни збережено.');
+    });
   }
 }
 
@@ -1616,7 +2509,8 @@ function openModal(trackId){
     lyricsSection.style.display = 'none';
   }
   
-  const ratersHTML = db.evaluators.map((ev, i) => {
+  const ratersHTML = getActiveEvalIndices().map(i => {
+    const ev = db.evaluators[i];
     if(!ev.name.trim()) return ''; // Skip empty evaluators
     const r = track.ratings[i] || {vibe:5, text:5, beat:5};
     const avg = evalAvg(track.ratings[i]);
@@ -1628,7 +2522,7 @@ function openModal(trackId){
         </div>
         ${CATS.map(c => `
           <div class="slider-row">
-            <div class="slider-label"><span>${c.label}<div class="category-tooltip">${c.hint}</div></span><span class="val" data-modal-val="${i}-${c.key}">${r[c.key]}</span></div>
+            <div class="slider-label"><span>${c.label}</span><span class="val" data-modal-val="${i}-${c.key}">${r[c.key]}</span></div>
             <input type="range" class="${c.cls}" min="1" max="10" step="1" value="${r[c.key]}"
               data-modal-eval="${i}" data-modal-cat="${c.key}">
           </div>
@@ -1642,10 +2536,45 @@ function openModal(trackId){
   
   const score = finalScore(track);
   document.getElementById('modalFinalScore').textContent = score===null ? '—' : fmt1(score);
-  
+
+  updateModalActions(track);
+
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
+
+function updateModalActions(track){
+  const modalActions = document.getElementById('modalActions');
+  const hasRating = track.ratings.some(r => r && evalAvg(r) !== null);
+  if(track.pushedToSupabase){
+    modalActions.innerHTML = `<span class="btn btn-secondary btn-small" style="opacity:.6;cursor:default;">✓ В бібліотеці</span>`;
+  }else if(currentRole === 'admin' && hasRating){
+    modalActions.innerHTML = `<button class="btn btn-primary btn-small" id="modalSaveBtn">Зберегти в бібліотеку</button>`;
+  }else{
+    modalActions.innerHTML = '';
+  }
+}
+
+document.getElementById('modalActions').addEventListener('click', e => {
+  const btn = e.target.closest('#modalSaveBtn');
+  if(!btn) return;
+  const track = db.tracks.find(t => t.id === currentModalTrackId);
+  if(!track) return;
+  btn.disabled = true;
+  btn.textContent = 'Зберігаю...';
+  supabasePushTrack(track).then(() => {
+    track.pushedToSupabase = true;
+    saveDB();
+    showToast(`«${track.title}» збережено в бібліотеку`);
+    updateModalActions(track);
+    renderTracks();
+  }).catch(err => {
+    console.error('Modal save failed:', err);
+    showToast('Не вдалося зберегти: ' + (err.message || err));
+    btn.disabled = false;
+    btn.textContent = 'Зберегти в бібліотеку';
+  });
+});
 
 function closeModal(){
   document.getElementById('modalOverlay').classList.remove('open');
@@ -1672,7 +2601,8 @@ document.getElementById('modalRaters').addEventListener('input', e => {
   document.querySelector(`[data-modal-avg="${evalIdx}"]`).textContent = fmt1(avg);
   const fin = finalScore(track);
   document.getElementById('modalFinalScore').textContent = fin===null ? '—' : fmt1(fin);
-  
+  updateModalActions(track);
+
   saveDB();
 });
 
@@ -1692,170 +2622,388 @@ document.getElementById('modalLyricsToggle').addEventListener('click', () => {
   }
 });
 
-/* ---------------- GitHub Sync ----------------
-   Reading: plain fetch from raw.githubusercontent.com — public, no token,
-   works for anyone who opens the page.
-   Writing: GitHub Contents API with a personal token — only used by the
-   host, only when "Завершити оцінювання" is clicked (or a manual retry).
-   Nothing auto-syncs on every click anymore.
-------------------------------------------------- */
-function loadGitHubSettings(){
-  document.getElementById('ghToken').value = db.github.token || '';
-  document.getElementById('ghRepo').value = db.github.repo || detectGitHubRepo() || '';
+/* ---------------- Auth (Supabase) ---------------- */
+// Вставити значення з Supabase Dashboard -> Project Settings -> API
+const SUPABASE_URL = 'https://qgzywelljwjvvanwlyor.supabase.co';        // https://xxxx.supabase.co
+const SUPABASE_ANON_KEY = 'sb_publishable_gYOtJZetjGRn8-jRSvEfOw_ayIaM93W';   // anon public key
+const AUTH_STORAGE_KEY = 'trackRaterAuth_v1';
+
+let currentUser = null;   // {id, email}
+let currentRole = null;   // 'admin' | 'user'
+let authMode = 'login';   // 'login' | 'signup'
+
+function getSession(){
+  try{ return JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY)); }catch(e){ return null; }
 }
+function saveSession(s){ localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(s)); }
+function clearSession(){ localStorage.removeItem(AUTH_STORAGE_KEY); }
 
-function saveGitHubSettings(){
-  db.github.token = document.getElementById('ghToken').value.trim();
-  db.github.repo = document.getElementById('ghRepo').value.trim();
-  saveDB();
-  showToast('Налаштування GitHub збережено.');
-}
-
-// Figures out "owner/repo" from where this page is actually hosted
-// (username.github.io/repo-name/...), so reading history never depends on
-// a setting that lives only in localStorage. Falls back to the manually
-// entered repo field, which matters when testing the file locally
-// (file:// or localhost, where there's no GitHub Pages URL to read).
-function detectGitHubRepo(){
-  const host = location.hostname;
-  if(host.endsWith('.github.io')){
-    const owner = host.split('.')[0];
-    const repoName = location.pathname.split('/').filter(Boolean)[0];
-    if(owner && repoName) return `${owner}/${repoName}`;
-  }
-  return (db.github && db.github.repo) || null;
-}
-
-function setGHStatus(msg, isError = false){
-  const el = document.getElementById('ghStatus');
-  el.textContent = msg;
-  el.style.color = isError ? 'var(--red)' : 'var(--text-muted)';
-}
-
-// Public read: evaluators + history only. No token needed, works for
-// anyone who opens the site, including on a device that's never touched
-// GitHub settings before.
-async function fetchDBFromGitHub(){
-  const repo = detectGitHubRepo();
-  if(!repo) return null;
-  const url = `https://raw.githubusercontent.com/${repo}/main/${DB_PATH}?t=${Date.now()}`;
-  const response = await fetch(url);
-  if(!response.ok){
-    throw new Error(`Не вдалося прочитати ${DB_PATH} з ${repo}`);
-  }
-  const remote = await response.json();
-  if(!remote.evaluators || !remote.history){
-    throw new Error('Файл на GitHub не містить очікуваних даних');
-  }
-  return remote;
-}
-
-// Pull remote evaluators+history into the local DB.
-// force=true overwrites local data even if some already exists (manual button).
-// force=false only fills in when local is empty (first load on a new device).
-async function pullDBFromGitHub({force = false} = {}){
-  if(!detectGitHubRepo()){
-    if(force) setGHStatus('Спочатку вкажи репозиторій', true);
-    return;
-  }
-  setGHStatus('Завантаження...');
-  try{
-    const remote = await fetchDBFromGitHub();
-    if(!remote) return;
-    db.evaluators = remote.evaluators;
-    db.history = remote.history;
-    if(remote.nextId) db.nextId = Math.max(db.nextId, remote.nextId);
-    saveDB();
-    renderEvaluators();
-    renderTracks();
-    renderHistory();
-    renderTopTracks();
-    setGHStatus('✓ Завантажено');
-    setTimeout(() => setGHStatus(''), 3000);
-  }catch(err){
-    setGHStatus(`Помилка: ${err.message}`, true);
-    console.error('GitHub pull error:', err);
-  }
-}
-
-// Write: only evaluators + history go to GitHub. The token never leaves
-// this one function, and is never written into the synced file itself.
-async function pushDBToGitHub(){
-  const {token, repo} = db.github || {};
-  if(!token || !repo){
-    setGHStatus('Вкажи токен і репозиторій в GitHub Sync', true);
-    return;
-  }
-
-  setGHStatus('Синхронізація...');
-  try{
-    const contentsUrl = `https://api.github.com/repos/${repo}/contents/${DB_PATH}`;
-    const headers = {
-      'Authorization': `token ${token}`,
-      'Accept': 'application/vnd.github.v3+json'
-    };
-
-    let sha = null;
-    const getRes = await fetch(contentsUrl, {headers});
-    if(getRes.ok){
-      sha = (await getRes.json()).sha;
-    }else if(getRes.status !== 404){
-      throw new Error(`Не вдалося перевірити файл (${getRes.status})`);
+async function authRequest(path, options = {}){
+  const res = await fetch(`${SUPABASE_URL}/auth/v1${path}`, {
+    ...options,
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Content-Type': 'application/json',
+      ...(options.headers || {})
     }
+  });
+  const data = await res.json().catch(() => ({}));
+  if(!res.ok) throw new Error(data.error_description || data.msg || data.message || `HTTP ${res.status}`);
+  return data;
+}
 
-    const payload = {
-      evaluators: db.evaluators,
-      history: db.history,
-      nextId: db.nextId
-    };
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+async function restRequest(path, token){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1${path}`, {
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  if(!res.ok) throw new Error(`REST HTTP ${res.status}`);
+  return res.json();
+}
 
-    const putRes = await fetch(contentsUrl, {
-      method: 'PUT',
-      headers: {...headers, 'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        message: `Оцінювання ${new Date().toLocaleDateString('uk-UA')}`,
-        content,
-        ...(sha ? {sha} : {})
-      })
+async function fetchMyRole(token, userId){
+  try{
+    const rows = await restRequest(`/profiles?id=eq.${userId}&select=role`, token);
+    return rows && rows[0] ? rows[0].role : 'user';
+  }catch(e){
+    return 'user';
+  }
+}
+
+async function enterApp(session){
+  currentUser = {id: session.user.id, email: session.user.email};
+  currentRole = await fetchMyRole(session.access_token, session.user.id);
+
+  document.getElementById('authOverlay').classList.add('hidden');
+  document.getElementById('appRoot').style.display = '';
+
+  const badge = document.getElementById('userBadge');
+  badge.style.display = 'flex';
+  document.getElementById('userEmail').textContent = currentUser.email;
+  const roleEl = document.getElementById('userRole');
+  roleEl.textContent = currentRole === 'admin' ? 'admin' : 'user';
+  roleEl.className = 'role' + (currentRole === 'admin' ? ' admin' : '');
+
+  applyRoleUI();
+
+  // Дефолтна вкладка: адмін -> Оцінка, юзер -> Бібліотека
+  if(currentRole !== 'admin' && currentMode === 'friend'){
+    currentMode = 'library';
+    document.querySelectorAll('.mode-btn').forEach(b =>
+      b.classList.toggle('active', b.getAttribute('data-mode') === 'library'));
+  }
+  initMode();
+  await init();
+}
+
+function applyRoleUI(){
+  const isAdmin = currentRole === 'admin';
+  // Адмін-панелі та кнопки редагування — тільки адмінам
+  document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none');
+  // Ховаємо не-адмінські таби для user
+  document.querySelector('.mode-btn[data-mode="admin"]').style.display = isAdmin ? '' : 'none';
+  document.querySelector('.mode-btn[data-mode="friend"]').style.display = isAdmin ? '' : 'none';
+  // Кнопки редагування/видалення в бібліотеці — тільки адмінам
+  document.querySelectorAll('#libEditBtn, #libDeleteBtn').forEach(b => b.style.display = isAdmin ? '' : 'none');
+}
+
+document.getElementById('authToggle').addEventListener('click', () => {
+  authMode = authMode === 'login' ? 'signup' : 'login';
+  document.getElementById('authSubmitBtn').textContent = authMode === 'login' ? 'Увійти' : 'Зареєструватись';
+  document.getElementById('authToggle').textContent =
+    authMode === 'login' ? 'Немає акаунту? Зареєструватись' : 'Вже є акаунт? Увійти';
+  document.getElementById('authSub').textContent =
+    authMode === 'login' ? 'Увійди, щоб побачити бібліотеку' : 'Створи акаунт, щоб побачити бібліотеку';
+  document.getElementById('authError').textContent = '';
+});
+
+document.getElementById('authForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const errEl = document.getElementById('authError');
+  errEl.textContent = '';
+  document.getElementById('authSubmitBtn').disabled = true;
+
+  try{
+    if(authMode === 'signup'){
+      // POST /auth/v1/signup — якщо email-confirm вимкнено, повертає сесію одразу
+      const res = await authRequest('/signup', {
+        method: 'POST',
+        body: JSON.stringify({email, password})
+      });
+      if(res && res.access_token){
+        saveSession(res);
+        await enterApp(res);
+      }else{
+        errEl.textContent = 'Акаунт створено! Підтверди email і увійди.';
+        authMode = 'login';
+        document.getElementById('authSubmitBtn').textContent = 'Увійти';
+        document.getElementById('authToggle').textContent = 'Немає акаунту? Зареєструватись';
+      }
+      return;
+    }
+    const session = await authRequest('/token?grant_type=password', {
+      method: 'POST',
+      body: JSON.stringify({email, password})
     });
-
-    if(!putRes.ok){
-      const error = await putRes.json().catch(() => ({}));
-      throw new Error(error.message || `Помилка запису (${putRes.status})`);
-    }
-
-    setGHStatus('✓ Синхронізовано');
-    setTimeout(() => setGHStatus(''), 3000);
+    saveSession(session);
+    await enterApp(session);
   }catch(err){
-    setGHStatus(`Помилка: ${err.message}`, true);
-    console.error('GitHub push error:', err);
-    showToast('Не вдалося синхронізувати з GitHub. Спробуй кнопку "Завантажити з GitHub" пізніше або перевір токен.');
+    errEl.textContent = authMode === 'login'
+      ? 'Невірний email або пароль'
+      : (err.message || 'Помилка реєстрації');
+  }finally{
+    document.getElementById('authSubmitBtn').disabled = false;
   }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  clearSession();
+  currentUser = null; currentRole = null;
+  document.getElementById('appRoot').style.display = 'none';
+  document.getElementById('authOverlay').classList.remove('hidden');
+  document.getElementById('authPassword').value = '';
+});
+
+/* ---------------- Supabase data layer ---------------- */
+let supa = {tracks: [], ratingsByTrack: {}, evalNameById: {}, evaluators: [], loaded: false};
+
+async function supabaseRest(path, opts = {}){
+  const session = getSession();
+  if(!session || !session.access_token) throw new Error('Not authenticated');
+  const res = await fetch(`${SUPABASE_URL}/rest/v1${path}`, {
+    method: opts.method || 'GET',
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${session.access_token}`,
+      'Content-Type': 'application/json',
+      'Prefer': opts.prefer || 'return=representation'
+    },
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  if(res.status === 204) return null;
+  const text = await res.text();
+  if(!res.ok) throw new Error(`Supabase ${res.status}: ${text.slice(0,200)}`);
+  return text ? JSON.parse(text) : null;
 }
 
-document.getElementById('ghSaveBtn').addEventListener('click', saveGitHubSettings);
-document.getElementById('ghLoadBtn').addEventListener('click', () => pullDBFromGitHub({force: true}));
-document.getElementById('ghSyncBtn').addEventListener('click', pushDBToGitHub);
+// Завантажує треки/оцінки/оцінювачів з Supabase і синхронізує локальні структури
+async function loadSupabaseData(){
+  const [tracks, ratings, evaluators] = await Promise.all([
+    supabaseRest('/tracks?select=id,title,artist,album,cover_url,year,length,lyrics,youtube_url,created_at&order=created_at.desc'),
+    supabaseRest('/ratings?select=track_id,vibe,text,beat,evaluator_id,sessions(created_at)'),
+    supabaseRest('/evaluators?select=id,name,avatar_url&order=created_at')
+  ]);
+
+  supa.evaluators = evaluators || [];
+  supa.evalNameById = {};
+  (evaluators || []).forEach(e => supa.evalNameById[e.id] = e.name);
+  supa.tracks = tracks || [];
+  supa.ratingsByTrack = {};
+  (ratings || []).forEach(r => {
+    if(!supa.ratingsByTrack[r.track_id]) supa.ratingsByTrack[r.track_id] = [];
+    supa.ratingsByTrack[r.track_id].push(r);
+  });
+  supa.loaded = true;
+
+  // Оцінювачі -> локальний db.evaluators (порядок = порядок з БД)
+  db.evaluators = supa.evaluators.map(e => ({
+    name: e.name || '',
+    avatar: '',
+    avatarBase64: e.avatar_url || ''
+  }));
+  while(db.evaluators.length < 5) db.evaluators.push({name:'', avatar:'', avatarBase64:''});
+
+  // Рейтинги -> локальний db.history (групуємо по session+track)
+  const trackById = {};
+  supa.tracks.forEach(t => trackById[t.id] = t);
+  const groups = {};
+  (ratings || []).forEach(r => {
+    const sessTs = r.sessions ? r.sessions.created_at : '';
+    const key = `${sessTs}|${r.track_id}`;
+    if(!groups[key]) groups[key] = {ts: sessTs, track_id: r.track_id, scores: []};
+    groups[key].scores.push(r);
+  });
+
+  db.history = Object.values(groups).map((g, idx) => {
+    const t = trackById[g.track_id] || {};
+    const byEval = {};
+    g.scores.forEach(r => { byEval[r.evaluator_id] = r; });
+    const evaluatorScores = supa.evaluators.map(e => {
+      const r = byEval[e.id];
+      const avg = r && r.vibe !== null ? (r.vibe + r.text + r.beat) / 3 : null;
+      return {
+        name: e.name || '',
+        vibe: r ? r.vibe : null,
+        text: r ? r.text : null,
+        beat: r ? r.beat : null,
+        avg
+      };
+    });
+    const avgs = evaluatorScores.map(s => s.avg).filter(v => v !== null);
+    return {
+      id: 'supa-' + idx,
+      trackId: g.track_id,
+      title: t.title || '',
+      artist: t.artist || '',
+      coverBase64: t.cover_url || '',
+      youtubeUrl: t.youtube_url || '',
+      year: t.year || '',
+      length: t.length || '',
+      album: t.album || '',
+      lyrics: t.lyrics || '',
+      timestamp: g.ts || new Date().toISOString(),
+      evaluatorScores,
+      finalScore: avgs.length ? avgs.reduce((a,b)=>a+b,0)/avgs.length : null
+    };
+  });
+  // сортуємо історію за часом (новіші зверху)
+  db.history.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+  saveDB();
+}
+
+// Створює трек у Supabase (якщо ще немає) і повертає його id.
+// Шукає співпадіння по youtube_url, потім по title+artist.
+async function supabaseUpsertTrack(track){
+  const yt = (track.youtubeUrl || '').trim();
+  const title = (track.title || '').trim();
+  const artist = (track.artist || '').trim();
+
+  if(yt){
+    const found = await supabaseRest(`/tracks?youtube_url=eq.${encodeURIComponent(yt)}&select=id&limit=1`);
+    if(found && found.length) return found[0].id;
+  }
+  if(title){
+    let q = `/tracks?title=eq.${encodeURIComponent(title)}&select=id&limit=1`;
+    if(artist) q += `&artist=eq.${encodeURIComponent(artist)}`;
+    const found = await supabaseRest(q);
+    if(found && found.length) return found[0].id;
+  }
+
+  let coverUrl = track.coverBase64 || null;
+  // Якщо обкладинка — dataURL, вантажимо у Storage
+  if(coverUrl && coverUrl.startsWith('data:')){
+    coverUrl = await supabaseUploadCover(coverUrl);
+  }
+
+  const rows = await supabaseRest('/tracks', {
+    method: 'POST',
+    body: [{
+      title, artist,
+      cover_url: coverUrl,
+      year: track.year || null,
+      length: track.length || null,
+      album: track.album || null,
+      lyrics: track.lyrics || null,
+      youtube_url: yt || null
+    }]
+  });
+  return rows[0].id;
+}
+
+async function supabaseUploadCover(dataUrl){
+  try{
+    const [header, b64] = dataUrl.split(',');
+    const mime = header.split(':')[1].split(';')[0];
+    const ext = { 'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif' }[mime] || 'jpg';
+    const blob = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    const path = `covers/${crypto.randomUUID()}.${ext}`;
+    const session = getSession();
+    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/covers/${path}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': mime,
+        'x-upsert': 'true'
+      },
+      body: blob
+    });
+    if(!res.ok) return null;
+    return `${SUPABASE_URL}/storage/v1/object/public/covers/${path}`;
+  }catch(e){ return null; }
+}
+
+// Пушить один оцінений трек у Supabase (автопуш з maybePushTrackToSupabase).
+// Сесія створюється ліниво і перевикористовується, поки не натиснуть «Очистити список».
+async function supabasePushTrack(track){
+  if(!supaSessionId){
+    const sessionRows = await supabaseRest('/sessions', {method:'POST', body:[{}]});
+    supaSessionId = sessionRows[0].id;
+    localStorage.setItem(SUPA_SESSION_KEY, supaSessionId);
+  }
+
+  const trackId = await supabaseUpsertTrack(track);
+  const evalIdByName = {};
+  supa.evaluators.forEach(e => { if(e.name) evalIdByName[e.name] = e.id; });
+
+  const ratings = [];
+  db.evaluators.forEach((ev, i) => {
+    const r = track.ratings[i];
+    const evalId = evalIdByName[ev.name];
+    if(!r || !evalId) return;
+    ratings.push({
+      session_id: supaSessionId,
+      track_id: trackId,
+      evaluator_id: evalId,
+      vibe: r.vibe, text: r.text, beat: r.beat
+    });
+  });
+  if(ratings.length){
+    await supabaseRest('/ratings', {
+      method: 'POST',
+      prefer: 'resolution=merge-duplicates,return=representation',
+      body: ratings
+    });
+  }
+  await loadSupabaseData();
+}
 
 /* ---------------- init ---------------- */
 async function init(){
   initMode();
-  loadGitHubSettings();
 
-  if(!dbLoadedFromStorage){
-    // Fresh browser/device: pull evaluators + history straight from GitHub,
-    // no token needed since it's a plain public-file read.
-    await pullDBFromGitHub({force: false});
+  if(SUPABASE_URL && SUPABASE_ANON_KEY){
+    try{
+      await loadSupabaseData();
+    }catch(err){
+      console.error('Supabase load failed:', err);
+      showToast('Не вдалося завантажити дані з Supabase: ' + err.message);
+    }
   }
 
   renderEvaluators();
+  renderEvaluatorPicker();
   renderTracks();
   renderTopTracks();
-  renderHistory();
+  renderLibrary();
 }
 
-init();
+// Bootstrap: якщо є збережена сесія — перевіряємо токен і входмо автоматично
+(async () => {
+  const session = getSession();
+  if(session && session.access_token && SUPABASE_URL && SUPABASE_ANON_KEY){
+    try{
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+        headers: {apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${session.access_token}`}
+      });
+      if(res.ok){
+        const user = await res.json();
+        session.user = user;
+        saveSession(session);
+        await enterApp(session);
+        return;
+      }
+    }catch(e){ /* fall through to login */ }
+    clearSession();
+  }
+  // Без сесії — показуємо екран входу
+  document.getElementById('authOverlay').classList.remove('hidden');
+})();
 </script>
 </body>
 </html>

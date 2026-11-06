@@ -3,7 +3,7 @@
 // GET  /functions/v1/genius-proxy?url=https://...  — GET-проксі
 // POST /functions/v1/genius-proxy  body: {"url":"...","body":{...}} — POST-проксі
 
-const ALLOWED_HOSTS = ['genius.com', 'www.genius.com', 'youtube.com', 'www.youtube.com', 'music.youtube.com', 'youtu.be', 'youtubei.googleapis.com'];
+const ALLOWED_HOSTS = ['genius.com', 'www.genius.com', 'youtube.com', 'www.youtube.com', 'music.youtube.com', 'youtu.be', 'youtubei.googleapis.com', 'open.spotify.com', 'spotify.com', 'soundcloud.com', 'www.soundcloud.com'];
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',

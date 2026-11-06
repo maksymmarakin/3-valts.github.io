@@ -164,6 +164,20 @@
   .add-track form{margin-top:2px;}
   .add-track .btn-primary{margin-top:20px;}
 
+  /* ---- track suggestions ---- */
+  .suggest-section form{margin-top:2px;}
+  .suggest-section .btn-primary{margin-top:20px;}
+  .sug-row{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 0;border-bottom:1px solid var(--border);
+    flex-wrap:wrap;
+  }
+  .sug-row:last-child{border-bottom:none;}
+  .sug-row .sug-info{flex:1;min-width:0;}
+  .sug-row .sug-cover{width:44px;height:44px;object-fit:cover;border-radius:6px;background:var(--surface-alt);flex-shrink:0;}
+  .sug-row .sug-cover-empty{width:44px;height:44px;border-radius:6px;background:var(--surface-alt);flex-shrink:0;}
+  .sug-row .sug-actions{display:flex;gap:6px;flex-shrink:0;}
+
   /* ---- track list ---- */
   .track-card{
     background:var(--surface-alt);
@@ -403,6 +417,63 @@
   @media (max-width:600px){
     .evaluators-grid, .raters-grid{grid-template-columns:1fr;}
     .form-grid{grid-template-columns:1fr;}
+    .lib-modal .edit-grid{grid-template-columns:1fr;}
+
+    /* iOS: без зуму при фокусі на інпутах */
+    input[type=text], input[type=number], input[type=email], input[type=password],
+    select, textarea{font-size:16px;}
+
+    /* header: email + playlist link не влазять в один рядок */
+    header{flex-wrap:wrap;gap:12px;}
+    header .titles h1{font-size:28px;}
+    header .titles p{font-size:14px;}
+    .user-badge{flex-wrap:wrap;row-gap:6px;}
+    .user-badge #userEmail{
+      max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    }
+
+    /* панелі та модалки — менше падінгів */
+    .panel{padding:18px;}
+    .modal-content{padding:20px;max-height:92vh;}
+    .lib-modal{padding:20px;}
+    .auth-card{padding:24px;}
+
+    /* картки треків */
+    .track-head{gap:10px;padding:12px 14px;}
+    .track-cover{width:52px;height:52px;}
+    .track-info .title{font-size:15px;}
+    .track-info .meta{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .track-score{font-size:17px;min-width:38px;}
+    .track-body{padding:0 14px 16px;}
+    .track-actions{flex-wrap:wrap;}
+    /* на тачі немає hover — кнопка видалення має бути видимою */
+    .quick-delete{opacity:1;}
+    .raters-grid{margin-top:14px;gap:12px;}
+    .rater-block{padding:12px;}
+    .category-tooltip{width:auto;max-width:calc(100vw - 48px);left:auto;right:0;}
+
+    /* модалка оцінки */
+    .modal-header h2{font-size:20px;}
+    .modal-track-info{flex-direction:column;align-items:flex-start;gap:16px;margin-bottom:20px;}
+    .modal-cover-wrapper{width:100px;height:100px;font-size:40px;}
+    .modal-details h3{font-size:22px;}
+    .modal-details .meta{font-size:13px;}
+    .final-row .final-value{font-size:26px;}
+
+    /* бібліотека */
+    .library-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;}
+    .library-toolbar select{width:100%;}
+    .lib-modal .head{flex-direction:column;}
+    .lib-modal .cover{width:120px;height:120px;}
+    .lib-modal h3{font-size:19px;}
+
+    /* інше */
+    .mode-toggle{flex-wrap:wrap;}
+    .mode-btn{flex:1;min-width:90px;padding:10px 12px;}
+    .history-header{flex-wrap:wrap;gap:10px;}
+    .toast{max-width:calc(100vw - 40px);text-align:center;padding:14px 20px;}
+    .sug-row{gap:8px;}
+    .sug-row .sug-actions{width:100%;justify-content:flex-end;}
   }
 
   /* ---- fullscreen modal ---- */
@@ -673,7 +744,9 @@
   .album-tag{
     font-size:11px;color:var(--amber);margin-top:2px;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    cursor:pointer;
   }
+  .album-tag:hover{text-decoration:underline;}
   .album-sibling{
     display:flex;justify-content:space-between;align-items:center;gap:10px;
     padding:8px 10px;border-radius:6px;cursor:pointer;
@@ -856,6 +929,7 @@
     <button class="mode-btn" data-mode="admin">Адмін</button>
     <button class="mode-btn active" data-mode="friend">Оцінка</button>
     <button class="mode-btn" data-mode="library">Бібліотека</button>
+    <button class="mode-btn" data-mode="suggest">Запропонувати</button>
   </div>
 
   <section class="panel admin-section">
@@ -882,9 +956,9 @@
     <form id="addTrackForm">
       <div class="form-grid">
         <div class="field full">
-          <label>Посилання (YouTube або Genius, необов'язково)</label>
+          <label>Посилання (YouTube, Spotify, Apple Music, SoundCloud або Genius, необов'язково)</label>
           <div style="display:flex;gap:8px;">
-            <input type="text" id="fYoutube" placeholder="https://music.youtube.com/... або https://genius.com/..." style="flex:1;">
+            <input type="text" id="fYoutube" placeholder="https://open.spotify.com/... або https://music.apple.com/..." style="flex:1;">
             <button type="button" class="btn btn-secondary btn-small" id="fYoutubeFetch">Підтягнути</button>
           </div>
           <div class="file-hint" id="fYoutubeHint">Встав посилання — назва, виконавець, альбом, рік, тривалість, обкладинка і текст підставляться автоматично</div>
@@ -932,6 +1006,18 @@
     </form>
   </section>
 
+  <section class="panel admin-section">
+    <h2>Пропозиції треків</h2>
+    <div id="suggestionsAdminList"></div>
+  </section>
+
+  <section class="panel admin-section">
+    <h2>Метадані треків</h2>
+    <p style="font-size:13px;color:var(--text-muted);margin:0 0 12px;">Пройтись по всіх треках і підставити альбом (iTunes) та посилання YouTube Music там, де їх немає.</p>
+    <button class="btn btn-secondary" id="enrichTracksBtn">Доповнити метадані</button>
+    <div class="file-hint" id="enrichHint" style="margin-top:8px;"></div>
+  </section>
+
   <section class="panel rating-section">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
       <h2 style="margin:0;">Треки для оцінювання</h2>
@@ -968,11 +1054,51 @@
           <option value="date_desc">За датою додавання</option>
         </select>
       </div>
+      <div id="albumFilterBar" style="display:none;margin:-8px 0 14px;font-size:13px;color:var(--text-muted);">
+        Альбом: <b id="albumFilterName" style="color:var(--amber);"></b>
+        <button class="btn btn-secondary btn-small" id="albumFilterClear" style="margin-left:8px;padding:2px 8px;">✕</button>
+      </div>
       <div class="library-grid" id="libraryGrid"></div>
     </div>
     <div id="libraryTopPane" style="display:none;">
       <div id="topTracksList"></div>
     </div>
+  </section>
+
+  <section class="panel suggest-section">
+    <h2>Запропонувати трек</h2>
+    <form id="suggestForm">
+      <div class="form-grid">
+        <div class="field full">
+          <label>Посилання (YouTube, Spotify, Apple Music, SoundCloud або Genius, необов'язково)</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="sYoutube" placeholder="https://open.spotify.com/... або https://music.apple.com/..." style="flex:1;">
+            <button type="button" class="btn btn-secondary btn-small" id="sYoutubeFetch">Підтягнути</button>
+          </div>
+          <div class="file-hint" id="sYoutubeHint">Встав посилання — з'являться варіанти для вибору</div>
+          <div id="sCandidates" style="margin-top:10px;"></div>
+        </div>
+        <div class="field full">
+          <label>Пошук треку (виконавець або назва)</label>
+          <input type="text" id="sSearch" placeholder="Введи назву або виконавця...">
+          <div id="sAutocomplete" style="margin-top:6px;"></div>
+        </div>
+        <div class="field">
+          <label>Назва треку</label>
+          <input type="text" id="sTitle" placeholder="Назва" required>
+        </div>
+        <div class="field">
+          <label>Виконавець</label>
+          <input type="text" id="sArtist" placeholder="Виконавець">
+        </div>
+        <div class="field full">
+          <label>Коментар (необов'язково)</label>
+          <input type="text" id="sNote" placeholder="Чому варто це оцінити?">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Запропонувати</button>
+    </form>
+    <div id="mySuggestions" style="margin-top:18px;"></div>
   </section>
 
 </div>
@@ -1309,61 +1435,204 @@ async function fetchLyricsOvh(artist, title){
   return (data.lyrics || '').trim() || null;
 }
 
+// Слова для iTunes-матчингу
+function itunesWords(s){
+  return (s || '').toLowerCase().split(/\s+/).filter(w => w.length > 2);
+}
+
+// Релевантність iTunes-результату: збіги слів + x2 бонус за артиста
+function scoreITunesResult(r, qWords, hintWords){
+  const hay = `${r.trackName||''} ${r.artistName||''}`.toLowerCase();
+  const ra = (r.artistName||'').toLowerCase();
+  let score = qWords.filter(w => hay.includes(w)).length;
+  score += hintWords.filter(w => ra.includes(w)).length * 2;
+  return score;
+}
+
+// iTunes по довільному запиту -> найкращий трек + текст (для Genius/Spotify/SC/Apple)
+// opts.artistHint — відомий виконавець: дає x2 бонус збігам по artistName
+async function metaFromITunesQuery(query, opts = {}){
+  const results = await fetchITunesSearch(query);
+  if(!results || !results.length) throw new Error('Трек не знайдено в iTunes');
+
+  const qWords = itunesWords(query);
+  const hintWords = itunesWords(opts.artistHint);
+  let best = results[0], bestScore = -1;
+  results.forEach(r => {
+    const score = scoreITunesResult(r, qWords, hintWords);
+    if(score > bestScore){ bestScore = score; best = r; }
+  });
+  const meta = itunesResultToMeta(best);
+  const lyrics = await fetchLyricsOvh(meta.artist, meta.title);
+  return {
+    meta: {
+      title: meta.title, artist: meta.artist, album: meta.album,
+      year: meta.year, length: meta.length, lyrics: lyrics || '',
+      coverDataUrl: meta.artworkUrl ? await urlToDataUrl(meta.artworkUrl) : null,
+      youtubeUrl: ''
+    },
+    hasLyrics: !!lyrics
+  };
+}
+
+// Топ-N кандидатів з iTunes для автокомпліту (без тексту — він тягнеться після вибору)
+async function fetchITunesCandidates(query, artistHint, limit = 6){
+  const results = await fetchITunesSearch(query);
+  if(!results || !results.length) return [];
+  const qWords = itunesWords(query);
+  const hintWords = itunesWords(artistHint);
+  return results
+    .map(r => ({r, score: scoreITunesResult(r, qWords, hintWords)}))
+    .sort((a,b) => b.score - a.score)
+    .slice(0, limit)
+    .map(({r}) => {
+      const m = itunesResultToMeta(r);
+      return {
+        title: m.title, artist: m.artist,
+        album: m.album || '', year: m.year || '', length: m.length || '',
+        coverUrl: m.artworkUrl || ''
+      };
+    });
+}
+
+// Пошук у Spotify + SoundCloud через edge-функцію music-search
+async function searchRemoteServices(q, limit = 8){
+  if(!SUPABASE_URL || !SUPABASE_ANON_KEY) return [];
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/music-search?q=${encodeURIComponent(q)}`, {
+    headers: {'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`}
+  });
+  if(!res.ok) return [];
+  const data = await res.json();
+  return (data.results || []).slice(0, limit);
+}
+
+// Об'єднаний пошук: YouTube (edge) + iTunes, дедуплікація по назва+виконавець
+async function searchAllServices(q, limit = 8){
+  const [remote, itunes] = await Promise.all([
+    searchRemoteServices(q, limit).catch(() => []),
+    fetchITunesCandidates(q, '', limit).catch(() => [])
+  ]);
+  const seen = new Set();
+  const out = [];
+  [...remote, ...itunes].forEach(c => {
+    const key = `${(c.title||'').toLowerCase()}|${(c.artist||'').toLowerCase()}`;
+    if(seen.has(key)) return;
+    seen.add(key);
+    out.push({...c, source: c.source || 'iTunes'});
+    if(out.length >= limit) return;
+  });
+  return out;
+}
+
+// oEmbed JSON: напряму, фолбек — через edge-проксі (CORS)
+async function fetchOembedJson(url){
+  try{
+    const res = await fetch(url);
+    if(res.ok) return await res.json();
+  }catch(e){ /* fall through to proxy */ }
+  const text = await fetchViaEdgeProxy(url);
+  return JSON.parse(text);
+}
+
+// Розбиває "Artist - Title" або бере як є
+function splitArtistTitle(str){
+  const s = (str || '').trim();
+  const idx = s.indexOf(' - ');
+  if(idx > 0) return {artist: s.slice(0, idx).trim(), title: s.slice(idx + 3).trim()};
+  return {artist: '', title: s};
+}
+
+// Витягує iTunes-запит з Genius/Spotify/SoundCloud/Apple Music посилання.
+// Повертає {query, artistHint, coverUrl, source} або null (YouTube/невідоме).
+async function itunesQueryFromUrl(url){
+  // ---- Genius ----
+  if(/genius\.com/i.test(url)){
+    const query = geniusSlugToQuery(url);
+    if(!query) throw new Error('Не вдалося розпізнати Genius посилання');
+    return {query, artistHint: '', coverUrl: '', source: 'Genius'};
+  }
+
+  // ---- Spotify ----
+  if(/spotify\.com|spotify\.link/i.test(url)){
+    const oembed = await fetchOembedJson(`https://open.spotify.com/oembed?url=${encodeURIComponent(url)}`);
+    let artistName = (oembed.author_name || '').trim();
+    let title = (oembed.title || '').trim();
+    // oEmbed title іноді містить "Artist - Title" — чистимо, якщо артист відомий
+    const parts = splitArtistTitle(title);
+    if(parts.artist){
+      if(!artistName) artistName = parts.artist;
+      if(parts.artist.toLowerCase() === artistName.toLowerCase()) title = parts.title;
+    }
+    const query = `${artistName} ${title}`.trim();
+    if(!query) throw new Error('Spotify не повернув назву треку');
+    return {query, artistHint: artistName, coverUrl: oembed.thumbnail_url || '', source: 'Spotify'};
+  }
+
+  // ---- SoundCloud ----
+  if(/soundcloud\.com/i.test(url)){
+    const oembed = await fetchOembedJson(`https://soundcloud.com/oembed?url=${encodeURIComponent(url)}&format=json`);
+    let artistName = (oembed.author_name || '').trim();
+    let title = (oembed.title || '').trim();
+    const parts = splitArtistTitle(title);
+    if(parts.artist){
+      if(!artistName) artistName = parts.artist;
+      if(parts.artist.toLowerCase() === artistName.toLowerCase()) title = parts.title;
+    }
+    const query = `${artistName} ${title}`.trim();
+    if(!query) throw new Error('SoundCloud не повернув назву треку');
+    return {query, artistHint: artistName, coverUrl: oembed.thumbnail_url || '', source: 'SoundCloud'};
+  }
+
+  // ---- Apple Music ----
+  if(/music\.apple\.com/i.test(url)){
+    const u = new URL(url);
+    const query = u.pathname.split('/')
+      .filter(seg => seg && !/^\d+$/.test(seg) && !/^[a-z]{2}$/i.test(seg))
+      .map(seg => decodeURIComponent(seg).replace(/[-_]+/g, ' '))
+      .filter(w => !/^(album|song|artist|playlist|music|videos?|episodes?|shows?)$/i.test(w))
+      .join(' ');
+    if(!query) throw new Error('Не вдалося розпізнати Apple Music посилання');
+    return {query, artistHint: '', coverUrl: '', source: 'Apple Music'};
+  }
+
+  return null;
+}
+
+// Універсальний «Підтягнути»: YouTube / Genius / Spotify / Apple Music / SoundCloud -> метадані
+async function fetchMetaFromUrl(url){
+  const q = await itunesQueryFromUrl(url);
+  if(q){
+    const {meta, hasLyrics} = await metaFromITunesQuery(q.query, {artistHint: q.artistHint});
+    if(q.coverUrl && !meta.coverDataUrl) meta.coverDataUrl = await urlToDataUrl(q.coverUrl);
+    meta.youtubeUrl = url;
+    return {
+      meta,
+      message: hasLyrics
+        ? `✓ Все підставлено (${q.source} → iTunes + текст)`
+        : `✓ Метадані підставлено, текст не знайдено — встав вручну`
+    };
+  }
+
+  // ---- YouTube ----
+  const videoId = extractYouTubeId(url);
+  if(!videoId) throw new Error('Не вдалося розпізнати посилання');
+  const meta = await enrichYouTubeVideo(videoId);
+  return {
+    meta,
+    message: meta.album || meta.lyrics
+      ? '✓ Все підставлено (YouTube + iTunes + текст)'
+      : '✓ Назву та виконавця підставлено. Альбом/текст додай вручну.'
+  };
+}
+
 document.getElementById('fYoutubeFetch').addEventListener('click', async () => {
   const url = document.getElementById('fYoutube').value.trim();
   const hint = document.getElementById('fYoutubeHint');
   if(!url){ showToast('Встав посилання'); return; }
 
-  // ---- Genius ----
-  if(/genius\.com/i.test(url)){
-    const query = geniusSlugToQuery(url);
-    if(!query){ showToast('Не вдалося розпізнати Genius посилання'); return; }
-
-    hint.textContent = 'Шукаю трек в iTunes...';
-    try{
-      const results = await fetchITunesSearch(query);
-      if(!results || !results.length) throw new Error('Трек не знайдено в iTunes');
-
-      // Вибираємо найкращий збіг за словами зі slug
-      const qWords = query.toLowerCase().split(/\s+/).filter(w => w.length > 2);
-      let best = results[0], bestScore = -1;
-      results.forEach(r => {
-        const hay = `${r.trackName||''} ${r.artistName||''}`.toLowerCase();
-        const score = qWords.filter(w => hay.includes(w)).length;
-        if(score > bestScore){ bestScore = score; best = r; }
-      });
-      const meta = itunesResultToMeta(best);
-
-      document.getElementById('fTitle').value = meta.title;
-      document.getElementById('fArtist').value = meta.artist;
-      if(meta.album) document.getElementById('fAlbum').value = meta.album;
-      if(meta.year) document.getElementById('fYear').value = meta.year;
-      if(meta.length) document.getElementById('fLength').value = meta.length;
-      if(meta.artworkUrl){
-        currentCoverBase64 = await urlToDataUrl(meta.artworkUrl);
-      }
-
-      hint.textContent = 'Шукаю текст пісні...';
-      const lyrics = await fetchLyricsOvh(meta.artist, meta.title);
-      if(lyrics) document.getElementById('fLyrics').value = lyrics;
-
-      hint.textContent = lyrics
-        ? '✓ Все підставлено (Genius → iTunes + текст)'
-        : '✓ Метадані підставлено, текст не знайдено — встав вручну';
-    }catch(err){
-      hint.textContent = 'Не вдалося отримати дані. Заповни поля вручну.';
-      showToast('Помилка: ' + err.message);
-    }
-    return;
-  }
-
-  // ---- YouTube ----
-  const videoId = extractYouTubeId(url);
-  if(!videoId){ showToast('Не вдалося розпізнати посилання'); return; }
-
   hint.textContent = 'Завантажую метадані...';
   try{
-    const meta = await enrichYouTubeVideo(videoId);
+    const {meta, message} = await fetchMetaFromUrl(url);
     document.getElementById('fTitle').value = meta.title;
     document.getElementById('fArtist').value = meta.artist;
     if(meta.album) document.getElementById('fAlbum').value = meta.album;
@@ -1371,12 +1640,10 @@ document.getElementById('fYoutubeFetch').addEventListener('click', async () => {
     if(meta.length) document.getElementById('fLength').value = meta.length;
     if(meta.lyrics) document.getElementById('fLyrics').value = meta.lyrics;
     if(meta.coverDataUrl) currentCoverBase64 = meta.coverDataUrl;
-    hint.textContent = meta.album || meta.lyrics
-      ? '✓ Все підставлено (YouTube + iTunes + текст)'
-      : '✓ Назву та виконавця підставлено. Альбом/текст додай вручну.';
+    hint.textContent = message;
   }catch(err){
-    hint.textContent = 'Не вдалося отримати дані з YouTube. Заповни поля вручну.';
-    showToast('Помилка завантаження метаданих');
+    hint.textContent = 'Не вдалося отримати дані. Заповни поля вручну.';
+    showToast('Помилка: ' + err.message);
   }
 });
 
@@ -1780,6 +2047,324 @@ document.getElementById('addTrackForm').addEventListener('submit', async e => {
   }
 });
 
+/* ---------------- Track suggestions ---------------- */
+let sCoverDataUrl = null;
+let sCoverUrl = '';
+let sYoutubeUrl = '';
+let sCandidates = [];
+let sPendingUrl = '';
+
+// «Підтягнути» у формі пропозиції.
+// YouTube — одразу підставляє (oEmbed дає один трек).
+// Genius/Spotify/SoundCloud/Apple — показує список кандидатів з iTunes, юзер обирає сам.
+document.getElementById('sYoutubeFetch').addEventListener('click', async () => {
+  const url = document.getElementById('sYoutube').value.trim();
+  const hint = document.getElementById('sYoutubeHint');
+  const candBox = document.getElementById('sCandidates');
+  if(!url){ showToast('Встав посилання'); return; }
+  candBox.innerHTML = '';
+  sCandidates = [];
+  hint.textContent = 'Завантажую метадані...';
+  try{
+    const q = await itunesQueryFromUrl(url);
+    if(q){
+      sCandidates = await fetchITunesCandidates(q.query, q.artistHint);
+      if(!sCandidates.length) throw new Error('Трек не знайдено в iTunes');
+      sPendingUrl = url;
+      hint.textContent = `Знайдено ${sCandidates.length} варіантів — обери правильний:`;
+      candBox.innerHTML = sCandidates.map((c, i) => `
+        <div class="sug-row sug-cand" data-cand="${i}" style="cursor:pointer;">
+          ${c.coverUrl ? `<img src="${escapeAttr(c.coverUrl)}" class="sug-cover">` : `<div class="sug-cover-empty"></div>`}
+          <div class="sug-info">
+            <div style="font-weight:600;">${escapeHTML(c.title)}</div>
+            <div style="font-size:12px;color:var(--text-muted);">${escapeHTML(c.artist)}${c.album ? ' · ' + escapeHTML(c.album) : ''}${c.year ? ' · ' + escapeHTML(c.year) : ''}</div>
+          </div>
+        </div>`).join('');
+      return;
+    }
+    // YouTube — одразу підставляємо
+    const {meta, message} = await fetchMetaFromUrl(url);
+    document.getElementById('sTitle').value = meta.title || '';
+    document.getElementById('sArtist').value = meta.artist || '';
+    if(meta.coverDataUrl) sCoverDataUrl = meta.coverDataUrl;
+    sCoverUrl = '';
+    sYoutubeUrl = meta.youtubeUrl || (/youtube|youtu\.be/i.test(url) ? url : '');
+    hint.textContent = message;
+  }catch(err){
+    hint.textContent = 'Не вдалося отримати дані. Заповни поля вручну.';
+    showToast('Помилка: ' + err.message);
+  }
+});
+
+// Клік по кандидату — підставляємо його в поля
+document.getElementById('sCandidates').addEventListener('click', e => {
+  const row = e.target.closest('.sug-cand');
+  if(!row) return;
+  const c = sCandidates[+row.getAttribute('data-cand')];
+  if(!c) return;
+  document.getElementById('sTitle').value = c.title || '';
+  document.getElementById('sArtist').value = c.artist || '';
+  sCoverDataUrl = null;
+  sCoverUrl = c.coverUrl || '';
+  sYoutubeUrl = sPendingUrl || '';
+  document.getElementById('sCandidates').innerHTML = '';
+  sCandidates = [];
+  document.getElementById('sYoutubeHint').textContent = '✓ Обрано. Перевір поля і надішли пропозицію.';
+});
+
+// Live-пошук по одному полю — iTunes (спільний каталог Apple/Spotify/YouTube Music)
+let sAcTimer = null;
+let sAcItems = [];
+
+document.getElementById('sSearch').addEventListener('input', () => {
+  clearTimeout(sAcTimer);
+  const box = document.getElementById('sAutocomplete');
+  const q = document.getElementById('sSearch').value.trim();
+  if(q.length < 2){ box.innerHTML = ''; sAcItems = []; return; }
+  sAcTimer = setTimeout(async () => {
+    try{
+      sAcItems = await searchAllServices(q, 8);
+      if(!sAcItems.length){ box.innerHTML = ''; return; }
+      box.innerHTML = sAcItems.map((c, i) => `
+        <div class="sug-row sug-cand" data-ac="${i}" style="cursor:pointer;">
+          ${c.coverUrl ? `<img src="${escapeAttr(c.coverUrl)}" class="sug-cover">` : `<div class="sug-cover-empty"></div>`}
+          <div class="sug-info">
+            <div style="font-weight:600;">${escapeHTML(c.title)}<span style="font-size:10px;color:var(--text-muted);border:1px solid var(--border);border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:middle;">${escapeHTML(c.source || 'iTunes')}</span></div>
+            <div style="font-size:12px;color:var(--text-muted);">${escapeHTML(c.artist)}${c.album ? ' · ' + escapeHTML(c.album) : ''}${c.year ? ' · ' + escapeHTML(c.year) : ''}</div>
+          </div>
+        </div>`).join('');
+    }catch(e){ box.innerHTML = ''; }
+  }, 300);
+});
+
+document.getElementById('sAutocomplete').addEventListener('click', e => {
+  const row = e.target.closest('.sug-cand');
+  if(!row) return;
+  const c = sAcItems[+row.getAttribute('data-ac')];
+  if(!c) return;
+  document.getElementById('sTitle').value = c.title || '';
+  document.getElementById('sArtist').value = c.artist || '';
+  sCoverDataUrl = null;
+  sCoverUrl = c.coverUrl || '';
+  document.getElementById('sAutocomplete').innerHTML = '';
+  sAcItems = [];
+});
+
+document.getElementById('suggestForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const title = document.getElementById('sTitle').value.trim();
+  if(!title){ showToast('Введи назву треку'); return; }
+  const btn = e.target.querySelector('button[type=submit]');
+  btn.disabled = true;
+  try{
+    await supabaseRest('/track_suggestions', {method:'POST', body:[{
+      user_id: currentUser.id,
+      title,
+      artist: document.getElementById('sArtist').value.trim() || null,
+      youtube_url: sYoutubeUrl || null,
+      cover_url: sCoverDataUrl || sCoverUrl || null,
+      note: document.getElementById('sNote').value.trim() || null
+    }]});
+    e.target.reset();
+    sCoverDataUrl = null; sCoverUrl = ''; sYoutubeUrl = '';
+    sCandidates = []; sPendingUrl = '';
+    sAcItems = [];
+    document.getElementById('sCandidates').innerHTML = '';
+    document.getElementById('sAutocomplete').innerHTML = '';
+    document.getElementById('sYoutubeHint').textContent = 'Встав посилання — з\'являться варіанти для вибору';
+    await loadSupabaseData();
+    renderMySuggestions();
+    showToast('Пропозицію надіслано на модерацію');
+  }catch(err){
+    showToast('Помилка: ' + err.message);
+  }finally{
+    btn.disabled = false;
+  }
+});
+
+// Список власних пропозицій юзера (зі статусами)
+function renderMySuggestions(){
+  const box = document.getElementById('mySuggestions');
+  if(!box) return;
+  const mine = (supa.suggestions || []).filter(s => s.user_id === currentUser.id);
+  if(!mine.length){ box.innerHTML = ''; return; }
+  const statusLabel = {pending:'⏳ На розгляді', approved:'✓ Схвалено', rejected:'✕ Відхилено'};
+  const statusColor = {pending:'var(--text-muted)', approved:'var(--teal)', rejected:'var(--red)'};
+  box.innerHTML = `<div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Мої пропозиції</div>` +
+    mine.map(s => `
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px;">
+        ${s.cover_url ? `<img src="${escapeAttr(s.cover_url)}" style="width:32px;height:32px;object-fit:cover;border-radius:4px;background:var(--surface-alt);">` : ''}
+        <div style="flex:1;min-width:0;">
+          <div>${escapeHTML(s.title)}${s.artist ? ' — ' + escapeHTML(s.artist) : ''}</div>
+          ${s.note ? `<div style="color:var(--text-muted);font-size:12px;">${escapeHTML(s.note)}</div>` : ''}
+        </div>
+        <span style="font-size:12px;color:${statusColor[s.status]||'var(--text-muted)'};white-space:nowrap;">${statusLabel[s.status]||s.status}</span>
+        ${s.status === 'pending' ? `<button class="btn btn-danger btn-small" data-sugdel="${s.id}">✕</button>` : ''}
+      </div>`).join('');
+}
+
+document.getElementById('mySuggestions').addEventListener('click', async e => {
+  const btn = e.target.closest('[data-sugdel]');
+  if(!btn) return;
+  const id = btn.getAttribute('data-sugdel');
+  try{
+    await supabaseRest(`/track_suggestions?id=eq.${id}`, {method:'DELETE'});
+    await loadSupabaseData();
+    renderMySuggestions();
+    showToast('Пропозицію видалено');
+  }catch(err){
+    showToast('Помилка: ' + err.message);
+  }
+});
+
+// Адмінська модерація пропозицій
+function suggestionRowHTML(s, isPending){
+  const date = s.created_at ? new Date(s.created_at).toLocaleDateString('uk-UA') : '';
+  return `
+    <div class="sug-row">
+      ${s.cover_url ? `<img src="${escapeAttr(s.cover_url)}" class="sug-cover">` : `<div class="sug-cover-empty"></div>`}
+      <div class="sug-info">
+        <div style="font-weight:600;">${escapeHTML(s.title)}${s.artist ? ' — ' + escapeHTML(s.artist) : ''}</div>
+        <div style="font-size:12px;color:var(--text-muted);">
+          ${date}${s.note ? ' · ' + escapeHTML(s.note) : ''}
+          ${s.youtube_url ? ` · <a href="${escapeAttr(s.youtube_url)}" target="_blank" style="color:var(--teal);">▶ посилання</a>` : ''}
+        </div>
+      </div>
+      <div class="sug-actions">
+        ${isPending ? `
+          <button class="btn btn-primary btn-small" data-sugapprove="${s.id}">✓ На оцінку</button>
+          <button class="btn btn-secondary btn-small" data-sugreject="${s.id}">✕</button>
+          <button class="btn btn-danger btn-small" data-sugadmindel="${s.id}">🗑</button>` : `
+          <span style="font-size:12px;color:${s.status==='approved'?'var(--teal)':'var(--red)'};">${s.status==='approved'?'✓ схвалено':'✕ відхилено'}</span>
+          <button class="btn btn-danger btn-small" data-sugadmindel="${s.id}">🗑</button>`}
+      </div>
+    </div>`;
+}
+
+function renderSuggestionsAdmin(){
+  const box = document.getElementById('suggestionsAdminList');
+  if(!box) return;
+  const all = supa.suggestions || [];
+  const pending = all.filter(s => s.status === 'pending');
+  const done = all.filter(s => s.status !== 'pending');
+  if(!all.length){ box.innerHTML = '<div class="empty-state">Пропозицій поки немає.</div>'; return; }
+  box.innerHTML =
+    (pending.length ? pending.map(s => suggestionRowHTML(s, true)).join('') : '<div class="empty-state">Немає нових пропозицій.</div>') +
+    (done.length ? `<div style="margin-top:14px;font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;">Оброблені</div>` + done.map(s => suggestionRowHTML(s, false)).join('') : '');
+}
+
+document.getElementById('suggestionsAdminList').addEventListener('click', async e => {
+  const approveBtn = e.target.closest('[data-sugapprove]');
+  const rejectBtn = e.target.closest('[data-sugreject]');
+  const delBtn = e.target.closest('[data-sugadmindel]');
+  const id = (approveBtn || rejectBtn || delBtn)?.getAttribute('data-sugapprove')
+    || (approveBtn || rejectBtn || delBtn)?.getAttribute('data-sugreject')
+    || delBtn?.getAttribute('data-sugadmindel');
+  if(!id) return;
+  const sug = (supa.suggestions || []).find(s => s.id === id);
+  if(!sug) return;
+
+  try{
+    if(approveBtn){
+      approveBtn.disabled = true;
+      approveBtn.textContent = 'Додаю...';
+      // 1) Створюємо трек у бібліотеці (upsert — без дублів)
+      const trackId = await supabaseUpsertTrack({
+        title: sug.title,
+        artist: sug.artist || '',
+        youtubeUrl: sug.youtube_url || '',
+        coverBase64: sug.cover_url || '',
+        year: '', length: '', album: '', lyrics: ''
+      });
+      // 2) Позначаємо пропозицію схваленою
+      await supabaseRest(`/track_suggestions?id=eq.${id}`, {
+        method: 'PATCH',
+        body: {status: 'approved', approved_track_id: trackId}
+      });
+      // 3) Додаємо в локальний список оцінювання
+      db.tracks.unshift({
+        id: db.nextId++,
+        title: sug.title,
+        artist: sug.artist || '',
+        cover: '',
+        coverBase64: sug.cover_url || '',
+        youtubeUrl: sug.youtube_url || '',
+        length: '', year: '', album: '', lyrics: '',
+        addedAt: new Date().toISOString(),
+        ratings: [null, null, null, null, null]
+      });
+      saveDB();
+      renderTracks();
+      await loadSupabaseData();
+      renderSuggestionsAdmin();
+      renderMySuggestions();
+      renderLibrary();
+      showToast(`«${sug.title}» додано на оцінку`);
+    }else if(rejectBtn){
+      await supabaseRest(`/track_suggestions?id=eq.${id}`, {method:'PATCH', body:{status: 'rejected'}});
+      await loadSupabaseData();
+      renderSuggestionsAdmin();
+      renderMySuggestions();
+      showToast('Пропозицію відхилено');
+    }else if(delBtn){
+      await supabaseRest(`/track_suggestions?id=eq.${id}`, {method:'DELETE'});
+      await loadSupabaseData();
+      renderSuggestionsAdmin();
+      renderMySuggestions();
+      showToast('Пропозицію видалено');
+    }
+  }catch(err){
+    console.error('Suggestion action failed:', err);
+    showToast('Помилка: ' + err.message);
+    if(approveBtn){ approveBtn.disabled = false; approveBtn.textContent = '✓ На оцінку'; }
+  }
+});
+
+// Масове доповнення метаданих: альбом з iTunes + посилання YouTube Music там, де їх немає
+document.getElementById('enrichTracksBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('enrichTracksBtn');
+  const hint = document.getElementById('enrichHint');
+  const targets = (supa.tracks || []).filter(t => !t.album || !t.youtube_url);
+  if(!targets.length){ hint.textContent = 'Всі треки вже мають альбом і посилання'; return; }
+  btn.disabled = true;
+  let done = 0, updated = 0;
+  for(const t of targets){
+    hint.textContent = `Обробляю ${++done}/${targets.length}: ${t.title || ''}`;
+    const patch = {};
+    const q = `${t.artist || ''} ${t.title || ''}`.trim();
+    try{
+      if(!t.album && q){
+        const results = await fetchITunesSearch(q);
+        if(results && results.length){
+          const qWords = itunesWords(q), hintWords = itunesWords(t.artist);
+          let best = results[0], bestScore = -1;
+          results.forEach(r => {
+            const s = scoreITunesResult(r, qWords, hintWords);
+            if(s > bestScore){ bestScore = s; best = r; }
+          });
+          const m = itunesResultToMeta(best);
+          if(m.album) patch.album = m.album;
+        }
+      }
+      if(!t.youtube_url && q){
+        const yt = await searchRemoteServices(q, 3);
+        const hit = (yt || []).find(r => r.videoId);
+        if(hit) patch.youtube_url = `https://music.youtube.com/watch?v=${hit.videoId}`;
+      }
+      if(Object.keys(patch).length){
+        await supabaseRest(`/tracks?id=eq.${t.id}`, {method:'PATCH', body: patch});
+        updated++;
+      }
+    }catch(e){ /* пропускаємо трек */ }
+    await new Promise(r => setTimeout(r, 150));
+  }
+  await loadSupabaseData();
+  renderTracks(); renderLibrary(); renderTopTracks();
+  hint.textContent = `Готово: оновлено ${updated} з ${targets.length}`;
+  btn.disabled = false;
+  showToast(`Метадані доповнено: ${updated} треків`);
+});
+
 /* ---------------- Tracks ---------------- */
 function evalAvg(r){
   if(!r) return null;
@@ -2106,11 +2691,13 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
     const adminSections = document.querySelectorAll('.admin-section');
     const ratingSections = document.querySelectorAll('.rating-section');
     const librarySections = document.querySelectorAll('.library-section');
-    
+    const suggestSections = document.querySelectorAll('.suggest-section');
+
     adminSections.forEach(s => s.style.display = 'none');
     ratingSections.forEach(s => s.style.display = 'none');
     librarySections.forEach(s => s.style.display = 'none');
-    
+    suggestSections.forEach(s => s.style.display = 'none');
+
     if(mode === 'admin'){
       adminSections.forEach(s => s.style.display = '');
     }else if(mode === 'friend'){
@@ -2118,8 +2705,11 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
     }else if(mode === 'library'){
       librarySections.forEach(s => s.style.display = '');
       renderLibrary();
+    }else if(mode === 'suggest'){
+      suggestSections.forEach(s => s.style.display = '');
+      renderMySuggestions();
     }
-    
+
     renderTracks();
   });
 });
@@ -2129,10 +2719,12 @@ function initMode(){
   const adminSections = document.querySelectorAll('.admin-section');
   const ratingSections = document.querySelectorAll('.rating-section');
   const librarySections = document.querySelectorAll('.library-section');
-  
+  const suggestSections = document.querySelectorAll('.suggest-section');
+
   adminSections.forEach(s => s.style.display = 'none');
   ratingSections.forEach(s => s.style.display = 'none');
   librarySections.forEach(s => s.style.display = 'none');
+  suggestSections.forEach(s => s.style.display = 'none');
   
   // Set active button based on currentMode
   document.querySelectorAll('.mode-btn').forEach(btn => {
@@ -2149,6 +2741,9 @@ function initMode(){
   }else if(currentMode === 'library'){
     librarySections.forEach(s => s.style.display = '');
     renderLibrary();
+  }else if(currentMode === 'suggest'){
+    suggestSections.forEach(s => s.style.display = '');
+    renderMySuggestions();
   }
 }
 
@@ -2181,6 +2776,7 @@ function getLibraryTracksFromSupa(){
       title: t.title || '', artist: t.artist || '',
       coverBase64: t.cover_url || '', year: t.year || '', length: t.length || '',
       lyrics: t.lyrics || '', youtubeUrl: t.youtube_url || '',
+      album: t.album || '',
       entries: [{id: t.id, timestamp: t.created_at}],
       evals: evalAvgs,
       avgScore: cnt ? sum/cnt : null,
@@ -2206,6 +2802,7 @@ function getLibraryTracks(){
         title: h.title || '', artist: h.artist || '',
         coverBase64: h.coverBase64 || '', year: h.year || '', length: h.length || '',
         lyrics: h.lyrics || '', youtubeUrl: h.youtubeUrl || '',
+        album: h.album || '',
         entries: [], evalScores: {}, lastTs: 0
       };
     }
@@ -2222,6 +2819,7 @@ function getLibraryTracks(){
       if(h.length) t.length = h.length;
       if(h.lyrics) t.lyrics = h.lyrics;
       if(h.youtubeUrl) t.youtubeUrl = h.youtubeUrl;
+      if(h.album) t.album = h.album;
     }
     (h.evaluatorScores || []).forEach(s => {
       if(!s.name) return;
@@ -2249,7 +2847,7 @@ function getLibraryTracks(){
   });
 }
 
-let libraryFilter = {q:'', sort:'score_desc'};
+let libraryFilter = {q:'', sort:'score_desc', album:''};
 
 // Підвкладки бібліотеки: «Треки» / «Топ 10»
 document.querySelectorAll('.lib-subtab').forEach(btn => {
@@ -2266,6 +2864,9 @@ function renderLibrary(){
   const grid = document.getElementById('libraryGrid');
   let tracks = getLibraryTracks();
 
+  if(libraryFilter.album){
+    tracks = tracks.filter(t => t.album === libraryFilter.album);
+  }
   const q = libraryFilter.q.toLowerCase().trim();
   if(q){
     tracks = tracks.filter(t =>
@@ -2282,6 +2883,16 @@ function renderLibrary(){
     date_desc:  (a,b) => b.lastTs - a.lastTs,
   };
   tracks.sort(sorters[libraryFilter.sort] || sorters.score_desc);
+
+  const albumBar = document.getElementById('albumFilterBar');
+  if(albumBar){
+    if(libraryFilter.album){
+      albumBar.style.display = '';
+      document.getElementById('albumFilterName').textContent = libraryFilter.album;
+    }else{
+      albumBar.style.display = 'none';
+    }
+  }
 
   if(tracks.length === 0){
     grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;">Нічого не знайдено.</div>';
@@ -2316,10 +2927,25 @@ document.getElementById('librarySort').addEventListener('change', e => {
 });
 
 document.getElementById('libraryGrid').addEventListener('click', e => {
+  const albumTag = e.target.closest('.album-tag');
+  if(albumTag){
+    const card = albumTag.closest('[data-lib-key]');
+    const t = getLibraryTracks().find(x => x.key === card?.getAttribute('data-lib-key'));
+    if(t && t.album){
+      libraryFilter.album = libraryFilter.album === t.album ? '' : t.album;
+      renderLibrary();
+    }
+    return;
+  }
   const card = e.target.closest('[data-lib-key]');
   if(!card) return;
   const t = getLibraryTracks().find(x => x.key === card.getAttribute('data-lib-key'));
   if(t) openLibraryModal(t);
+});
+
+document.getElementById('albumFilterClear').addEventListener('click', () => {
+  libraryFilter.album = '';
+  renderLibrary();
 });
 
 function openLibraryModal(t){
@@ -2399,6 +3025,14 @@ function openLibraryModal(t){
   `;
 
   overlay.classList.add('open');
+
+  // Клік по треку з того ж альбому — відкриває його модалку
+  body.onclick = ev => {
+    const sib = ev.target.closest('.album-sibling');
+    if(!sib) return;
+    const s = getLibraryTracks().find(x => x.key === sib.getAttribute('data-sibling-key'));
+    if(s) openLibraryModal(s);
+  };
 
   document.getElementById('libModalClose').addEventListener('click', () => overlay.classList.remove('open'));
   overlay.addEventListener('click', ev => { if(ev.target === overlay) overlay.classList.remove('open'); });
@@ -2770,21 +3404,41 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
 });
 
 /* ---------------- Supabase data layer ---------------- */
-let supa = {tracks: [], ratingsByTrack: {}, evalNameById: {}, evaluators: [], loaded: false};
+let supa = {tracks: [], ratingsByTrack: {}, evalNameById: {}, evaluators: [], suggestions: [], loaded: false};
+
+// Оновлює access_token через refresh_token (JWT живе ~1 год)
+async function refreshSession(){
+  const s = getSession();
+  if(!s || !s.refresh_token) return false;
+  try{
+    const res = await authRequest('/token?grant_type=refresh_token', {
+      method: 'POST',
+      body: JSON.stringify({refresh_token: s.refresh_token})
+    });
+    if(res && res.access_token){ saveSession(res); return true; }
+  }catch(e){ /* refresh failed */ }
+  return false;
+}
 
 async function supabaseRest(path, opts = {}){
-  const session = getSession();
-  if(!session || !session.access_token) throw new Error('Not authenticated');
-  const res = await fetch(`${SUPABASE_URL}/rest/v1${path}`, {
-    method: opts.method || 'GET',
-    headers: {
-      'apikey': SUPABASE_ANON_KEY,
-      'Authorization': `Bearer ${session.access_token}`,
-      'Content-Type': 'application/json',
-      'Prefer': opts.prefer || 'return=representation'
-    },
-    body: opts.body ? JSON.stringify(opts.body) : undefined
-  });
+  const doFetch = async () => {
+    const session = getSession();
+    if(!session || !session.access_token) throw new Error('Not authenticated');
+    return fetch(`${SUPABASE_URL}/rest/v1${path}`, {
+      method: opts.method || 'GET',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+        'Prefer': opts.prefer || 'return=representation'
+      },
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    });
+  };
+  let res = await doFetch();
+  if(res.status === 401 && await refreshSession()){
+    res = await doFetch();
+  }
   if(res.status === 204) return null;
   const text = await res.text();
   if(!res.ok) throw new Error(`Supabase ${res.status}: ${text.slice(0,200)}`);
@@ -2793,12 +3447,14 @@ async function supabaseRest(path, opts = {}){
 
 // Завантажує треки/оцінки/оцінювачів з Supabase і синхронізує локальні структури
 async function loadSupabaseData(){
-  const [tracks, ratings, evaluators] = await Promise.all([
+  const [tracks, ratings, evaluators, suggestions] = await Promise.all([
     supabaseRest('/tracks?select=id,title,artist,album,cover_url,year,length,lyrics,youtube_url,created_at&order=created_at.desc'),
     supabaseRest('/ratings?select=track_id,vibe,text,beat,evaluator_id,sessions(created_at)'),
-    supabaseRest('/evaluators?select=id,name,avatar_url&order=created_at')
+    supabaseRest('/evaluators?select=id,name,avatar_url&order=created_at'),
+    supabaseRest('/track_suggestions?select=*&order=created_at.desc')
   ]);
 
+  supa.suggestions = suggestions || [];
   supa.evaluators = evaluators || [];
   supa.evalNameById = {};
   (evaluators || []).forEach(e => supa.evalNameById[e.id] = e.name);
@@ -2864,6 +3520,9 @@ async function loadSupabaseData(){
   // сортуємо історію за часом (новіші зверху)
   db.history.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
   saveDB();
+
+  renderMySuggestions();
+  renderSuggestionsAdmin();
 }
 
 // Створює трек у Supabase (якщо ще немає) і повертає його id.
@@ -2988,9 +3647,16 @@ async function init(){
   const session = getSession();
   if(session && session.access_token && SUPABASE_URL && SUPABASE_ANON_KEY){
     try{
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      let res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
         headers: {apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${session.access_token}`}
       });
+      if(!res.ok && await refreshSession()){
+        const fresh = getSession();
+        res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+          headers: {apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${fresh.access_token}`}
+        });
+        if(res.ok) session.access_token = fresh.access_token;
+      }
       if(res.ok){
         const user = await res.json();
         session.user = user;

@@ -21,6 +21,7 @@ create table if not exists public.tracks (
   cover_url    text,
   year         text,
   length       text,
+  album        text,
   lyrics       text,
   youtube_url  text,
   created_at   timestamptz not null default now()
@@ -129,6 +130,42 @@ create policy "admin write covers" on storage.objects for insert to authenticate
   with check (bucket_id = 'covers' and public.is_admin());
 create policy "admin update covers" on storage.objects for update to authenticated
   using (bucket_id = 'covers' and public.is_admin());
+
+-- ---------- track suggestions (юзери пропонують, адмін модерує) ----------
+create table if not exists public.track_suggestions (
+  id                uuid primary key default gen_random_uuid(),
+  user_id           uuid not null references auth.users(id) on delete cascade,
+  title             text not null,
+  artist            text,
+  youtube_url       text,
+  cover_url         text,
+  note              text,
+  status            text not null default 'pending' check (status in ('pending','approved','rejected')),
+  approved_track_id uuid references public.tracks(id) on delete set null,
+  created_at        timestamptz not null default now()
+);
+
+alter table public.track_suggestions enable row level security;
+
+-- Юзер бачить свої пропозиції, адмін — всі
+create policy "read own or admin suggestions" on public.track_suggestions
+  for select to authenticated
+  using (user_id = auth.uid() or public.is_admin());
+
+-- Будь-який залогінений може надіслати пропозицію від свого імені
+create policy "users insert suggestions" on public.track_suggestions
+  for insert to authenticated
+  with check (user_id = auth.uid());
+
+-- Змінювати статус може лише адмін
+create policy "admin update suggestions" on public.track_suggestions
+  for update to authenticated
+  using (public.is_admin()) with check (public.is_admin());
+
+-- Видаляти: адмін будь-яку, юзер — свою
+create policy "delete own or admin suggestions" on public.track_suggestions
+  for delete to authenticated
+  using (user_id = auth.uid() or public.is_admin());
 
 -- ---------- view: трек з усіма оцінками ----------
 create or replace view public.track_scores as

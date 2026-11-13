@@ -1977,69 +1977,100 @@ async function addSelectedPlaylistTracks(){
     }
     if(!enriched.length){ hint.textContent = 'Не вдалося завантажити дані жодного треку'; return; }
 
-    // 2) Прев'ю — перевірка всіх полів перед додаванням
+    // 2) Прев'ю — кожен трек можна редагувати в модалці перед додаванням
     playlistPreview = enriched;
-    hint.textContent = `Перевір ${enriched.length} треків і підтверди: `;
-    box.innerHTML = `
-      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
-        <button class="btn btn-primary btn-small" id="plConfirm">Підтвердити і додати (${enriched.length})</button>
-        <button class="btn btn-secondary btn-small" id="plCancel">Скасувати</button>
-      </div>
-      <div style="max-height:420px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;">
-        ${enriched.map((t, i) => `
-          <div style="display:grid;grid-template-columns:56px 1fr;gap:10px;padding:10px;border-bottom:1px solid var(--border);align-items:start;">
-            ${t.meta.coverDataUrl
-              ? `<img src="${escapeAttr(t.meta.coverDataUrl)}" style="width:56px;height:56px;object-fit:cover;border-radius:6px;background:var(--surface-alt);">`
-              : `<div style="width:56px;height:56px;border-radius:6px;background:var(--surface-alt);"></div>`}
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;min-width:0;">
-              <div class="field" style="margin:0;"><label>Назва</label><input type="text" data-pv-title="${i}" value="${escapeAttr(t.meta.title)}" style="font-size:12px;padding:4px 8px;"></div>
-              <div class="field" style="margin:0;"><label>Виконавець</label><input type="text" data-pv-artist="${i}" value="${escapeAttr(t.meta.artist)}" style="font-size:12px;padding:4px 8px;"></div>
-              <div class="field" style="margin:0;"><label>Альбом</label><input type="text" data-pv-album="${i}" value="${escapeAttr(t.meta.album)}" style="font-size:12px;padding:4px 8px;"></div>
-              <div style="display:flex;gap:6px;">
-                <div class="field" style="margin:0;flex:1;"><label>Рік</label><input type="text" data-pv-year="${i}" value="${escapeAttr(t.meta.year)}" style="font-size:12px;padding:4px 8px;"></div>
-                <div class="field" style="margin:0;flex:1;"><label>Тривалість</label><input type="text" data-pv-length="${i}" value="${escapeAttr(t.meta.length)}" style="font-size:12px;padding:4px 8px;"></div>
-              </div>
-              <div class="field" style="margin:0;grid-column:1/-1;"><label>Текст пісні ${t.meta.lyrics ? '(є)' : '(немає)'}</label><textarea data-pv-lyrics="${i}" rows="2" style="font-size:11px;padding:4px 8px;resize:vertical;">${escapeHTML(t.meta.lyrics || '')}</textarea></div>
-            </div>
-          </div>`).join('')}
-      </div>`;
-
-    document.getElementById('plCancel').addEventListener('click', () => {
-      playlistPreview = [];
-      box.innerHTML = '';
-      hint.textContent = 'Скасовано. Треки не додані.';
-    });
-    document.getElementById('plConfirm').addEventListener('click', () => {
-      // 3) Читаємо можливі правки і пушимо в сесію
-      let added = 0;
-      playlistPreview.forEach((t, i) => {
-        const val = sel => { const el = document.querySelector(`[data-pv-${sel}="${i}"]`); return el ? el.value.trim() : ''; };
-        db.tracks.unshift({
-          id: db.nextId++,
-          title: val('title') || t.meta.title,
-          artist: val('artist') || t.meta.artist,
-          cover: '',
-          coverBase64: t.meta.coverDataUrl,
-          youtubeUrl: t.meta.youtubeUrl,
-          length: val('length') || t.meta.length,
-          year: val('year') || t.meta.year,
-          album: val('album') || t.meta.album,
-          lyrics: val('lyrics') || t.meta.lyrics,
-          addedAt: new Date().toISOString(),
-          ratings: [null, null, null, null, null]
-        });
-        added++;
-      });
-      playlistPreview = [];
-      saveDB();
-      renderTracks();
-      box.innerHTML = '';
-      hint.textContent = `✓ Додано ${added} треків до оцінки`;
-      showToast(`Додано ${added} треків`);
-    });
+    renderPlaylistPreview();
   }finally{
     btn.disabled = false;
   }
+}
+
+function renderPlaylistPreview(){
+  const hint = document.getElementById('fPlaylistHint');
+  const box = document.getElementById('playlistResults');
+  const enriched = playlistPreview;
+  hint.textContent = `Перевір ${enriched.length} треків і підтверди: `;
+  box.innerHTML = `
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+      <button class="btn btn-primary btn-small" id="plConfirm">Підтвердити і додати (${enriched.length})</button>
+      <button class="btn btn-secondary btn-small" id="plCancel">Скасувати</button>
+    </div>
+    <div style="max-height:420px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;">
+      ${enriched.map((t, i) => `
+        <div style="display:flex;gap:10px;padding:10px;border-bottom:1px solid var(--border);align-items:center;">
+          ${t.meta.coverDataUrl
+            ? `<img src="${escapeAttr(t.meta.coverDataUrl)}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;background:var(--surface-alt);flex-shrink:0;">`
+            : `<div style="width:48px;height:48px;border-radius:6px;background:var(--surface-alt);flex-shrink:0;"></div>`}
+          <div style="flex:1;min-width:0;font-size:12px;">
+            <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHTML(t.meta.title)}</div>
+            <div style="color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+              ${escapeHTML(t.meta.artist || '')}${t.meta.album ? ' · ' + escapeHTML(t.meta.album) : ''}${t.meta.year ? ' · ' + escapeHTML(t.meta.year) : ''}${t.meta.length ? ' · ' + escapeHTML(t.meta.length) : ''}
+            </div>
+            <div style="color:var(--text-muted);">${t.meta.lyrics ? 'Текст є' : 'Без тексту'}${t.meta.youtubeUrl ? ' · ▶ посилання' : ''}</div>
+          </div>
+          <button class="btn btn-secondary btn-small" data-pl-edit="${i}" style="flex-shrink:0;">Редагувати</button>
+        </div>`).join('')}
+    </div>`;
+
+  document.getElementById('plCancel').addEventListener('click', () => {
+    playlistPreview = [];
+    box.innerHTML = '';
+    hint.textContent = 'Скасовано. Треки не додані.';
+  });
+
+  box.querySelectorAll('[data-pl-edit]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = +btn.getAttribute('data-pl-edit');
+      const t = playlistPreview[i];
+      if(!t) return;
+      openTrackEditModal({
+        subtitle: `${t.meta.title}${t.meta.artist ? ' — ' + t.meta.artist : ''}`,
+        values: {
+          title: t.meta.title,
+          artist: t.meta.artist || '',
+          album: t.meta.album || '',
+          year: t.meta.year || '',
+          length: t.meta.length || '',
+          youtubeUrl: t.meta.youtubeUrl || '',
+          lyrics: t.meta.lyrics || ''
+        },
+        cover: t.meta.coverDataUrl || '',
+        confirmLabel: 'Зберегти',
+        onConfirm: data => {
+          t.meta = {...t.meta, ...data, coverDataUrl: data.coverBase64 || ''};
+          renderPlaylistPreview();
+        }
+      });
+    });
+  });
+
+  document.getElementById('plConfirm').addEventListener('click', () => {
+    // 3) Читаємо можливі правки і пушимо в сесію
+    let added = 0;
+    playlistPreview.forEach(t => {
+      db.tracks.unshift({
+        id: db.nextId++,
+        title: t.meta.title,
+        artist: t.meta.artist || '',
+        cover: '',
+        coverBase64: t.meta.coverDataUrl || '',
+        youtubeUrl: t.meta.youtubeUrl || '',
+        length: t.meta.length || '',
+        year: t.meta.year || '',
+        album: t.meta.album || '',
+        lyrics: t.meta.lyrics || '',
+        addedAt: new Date().toISOString(),
+        ratings: [null, null, null, null, null]
+      });
+      added++;
+    });
+    playlistPreview = [];
+    saveDB();
+    renderTracks();
+    box.innerHTML = '';
+    hint.textContent = `✓ Додано ${added} треків до оцінки`;
+    showToast(`Додано ${added} треків`);
+  });
 }
 
 document.getElementById('addTrackForm').addEventListener('submit', async e => {
@@ -2320,44 +2351,44 @@ document.getElementById('suggestionsAdminList').addEventListener('click', async 
   }
 });
 
-// Модалка редагування пропозиції перед відправкою на оцінювання
-let sugEditState = null; // {id, cover}
-
-function openSuggestionEdit(sug){
+// Універсальна модалка редагування треку перед відправкою на оцінювання
+// Використовується і для пропозицій, і для прев'ю імпорту плейлиста
+function openTrackEditModal({subtitle, values, cover, confirmLabel, onConfirm}){
   const overlay = document.getElementById('sugEditOverlay');
   const body = document.getElementById('sugEditBody');
-  sugEditState = {id: sug.id, cover: sug.cover_url || ''};
+  const state = {cover: cover || ''};
+  const v = k => escapeAttr(values[k] || '');
 
   body.innerHTML = `
     <button class="close-x" id="sugEditClose">&times;</button>
     <h3 style="margin:0 0 4px;">Редагувати перед оцінкою</h3>
-    <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">${escapeHTML(sug.title)}${sug.artist ? ' — ' + escapeHTML(sug.artist) : ''}</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">${escapeHTML(subtitle || '')}</div>
     <div class="edit-grid">
       <div class="full">
         <label>Обкладинка</label>
         <div style="display:flex;gap:12px;align-items:center;">
-          <img id="sugEditCoverPrev" src="${escapeAttr(sug.cover_url || '')}" alt=""
-               style="width:64px;height:64px;object-fit:cover;border-radius:6px;background:var(--surface-alt);${sug.cover_url ? '' : 'display:none;'}">
+          <img id="sugEditCoverPrev" src="${escapeAttr(state.cover)}" alt=""
+               style="width:64px;height:64px;object-fit:cover;border-radius:6px;background:var(--surface-alt);${state.cover ? '' : 'display:none;'}">
           <label class="btn btn-secondary btn-small" style="cursor:pointer;">Змінити<input type="file" id="sugEditCoverFile" accept="image/*" hidden></label>
-          <button type="button" class="btn btn-secondary btn-small" id="sugEditCoverClear" ${sug.cover_url ? '' : 'style="display:none;"'}>Прибрати</button>
+          <button type="button" class="btn btn-secondary btn-small" id="sugEditCoverClear" ${state.cover ? '' : 'style="display:none;"'}>Прибрати</button>
         </div>
       </div>
-      <div class="full"><label>Назва</label><input type="text" id="sugEditTitle" value="${escapeAttr(sug.title)}"></div>
-      <div class="full"><label>Виконавець</label><input type="text" id="sugEditArtist" value="${escapeAttr(sug.artist || '')}"></div>
-      <div><label>Альбом (необов'язково)</label><input type="text" id="sugEditAlbum"></div>
-      <div><label>Рік</label><input type="text" id="sugEditYear"></div>
-      <div><label>Тривалість</label><input type="text" id="sugEditLength" placeholder="3:45"></div>
-      <div class="full"><label>YouTube посилання</label><input type="text" id="sugEditYoutube" value="${escapeAttr(sug.youtube_url || '')}"></div>
-      <div class="full"><label>Текст пісні</label><textarea id="sugEditLyrics" rows="5"></textarea></div>
+      <div class="full"><label>Назва</label><input type="text" id="sugEditTitle" value="${v('title')}"></div>
+      <div class="full"><label>Виконавець</label><input type="text" id="sugEditArtist" value="${v('artist')}"></div>
+      <div><label>Альбом (необов'язково)</label><input type="text" id="sugEditAlbum" value="${v('album')}"></div>
+      <div><label>Рік</label><input type="text" id="sugEditYear" value="${v('year')}"></div>
+      <div><label>Тривалість</label><input type="text" id="sugEditLength" placeholder="3:45" value="${v('length')}"></div>
+      <div class="full"><label>YouTube посилання</label><input type="text" id="sugEditYoutube" value="${v('youtubeUrl')}"></div>
+      <div class="full"><label>Текст пісні</label><textarea id="sugEditLyrics" rows="5">${escapeHTML(values.lyrics || '')}</textarea></div>
     </div>
     <div class="actions" style="margin-top:16px;">
-      <button class="btn btn-primary btn-small" id="sugEditApprove">✓ Схвалити і надіти на оцінку</button>
+      <button class="btn btn-primary btn-small" id="sugEditApprove">${escapeHTML(confirmLabel || 'Зберегти')}</button>
       <button class="btn btn-secondary btn-small" id="sugEditCancel">Скасувати</button>
     </div>`;
 
   overlay.classList.add('open');
 
-  const close = () => { overlay.classList.remove('open'); sugEditState = null; };
+  const close = () => { overlay.classList.remove('open'); };
   document.getElementById('sugEditClose').addEventListener('click', close);
   document.getElementById('sugEditCancel').addEventListener('click', close);
   overlay.addEventListener('click', ev => { if(ev.target === overlay) close(); });
@@ -2369,7 +2400,7 @@ function openSuggestionEdit(sug){
     if(!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      sugEditState.cover = reader.result;
+      state.cover = reader.result;
       prev.src = reader.result;
       prev.style.display = '';
       clearBtn.style.display = '';
@@ -2377,7 +2408,7 @@ function openSuggestionEdit(sug){
     reader.readAsDataURL(file);
   });
   clearBtn.addEventListener('click', () => {
-    sugEditState.cover = '';
+    state.cover = '';
     prev.src = '';
     prev.style.display = 'none';
     clearBtn.style.display = 'none';
@@ -2387,7 +2418,7 @@ function openSuggestionEdit(sug){
   document.getElementById('sugEditApprove').addEventListener('click', async () => {
     const btn = document.getElementById('sugEditApprove');
     btn.disabled = true;
-    btn.textContent = 'Додаю...';
+    btn.textContent = 'Зберігаю...';
     try{
       const data = {
         title: document.getElementById('sugEditTitle').value.trim(),
@@ -2397,17 +2428,35 @@ function openSuggestionEdit(sug){
         length: document.getElementById('sugEditLength').value.trim(),
         youtubeUrl: document.getElementById('sugEditYoutube').value.trim(),
         lyrics: document.getElementById('sugEditLyrics').value,
-        coverBase64: sugEditState.cover
+        coverBase64: state.cover
       };
-      if(!data.title){ showToast('Введи назву треку'); btn.disabled = false; btn.textContent = '✓ Схвалити і надіти на оцінку'; return; }
-      await approveSuggestion(sugEditState.id, data);
+      if(!data.title){ showToast('Введи назву треку'); btn.disabled = false; btn.textContent = confirmLabel || 'Зберегти'; return; }
+      await onConfirm(data);
       close();
     }catch(err){
-      console.error('Suggestion approve failed:', err);
+      console.error('Track edit failed:', err);
       showToast('Помилка: ' + err.message);
       btn.disabled = false;
-      btn.textContent = '✓ Схвалити і надіти на оцінку';
+      btn.textContent = confirmLabel || 'Зберегти';
     }
+  });
+}
+
+function openSuggestionEdit(sug){
+  openTrackEditModal({
+    subtitle: `${sug.title}${sug.artist ? ' — ' + sug.artist : ''}`,
+    values: {
+      title: sug.title,
+      artist: sug.artist || '',
+      album: '',
+      year: '',
+      length: '',
+      youtubeUrl: sug.youtube_url || '',
+      lyrics: ''
+    },
+    cover: sug.cover_url || '',
+    confirmLabel: '✓ Схвалити і надіти на оцінку',
+    onConfirm: data => approveSuggestion(sug.id, data)
   });
 }
 

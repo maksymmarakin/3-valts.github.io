@@ -3180,13 +3180,21 @@ function openLibraryModal(t){
   const overlay = document.getElementById('libModalOverlay');
   const body = document.getElementById('libModalBody');
 
+  const isAdmin = currentRole === 'admin';
   const evalRows = Object.entries(t.evals).map(([name, sc]) => `
     <tr>
       <td>${escapeHTML(name)}</td>
-      <td class="mono">${sc.vibe===null?'—':fmt1(sc.vibe)}</td>
-      <td class="mono">${sc.text===null?'—':fmt1(sc.text)}</td>
-      <td class="mono">${sc.beat===null?'—':fmt1(sc.beat)}</td>
-      <td class="mono" style="font-weight:600;color:var(--amber);">${sc.avg===null?'—':fmt1(sc.avg)}</td>
+      ${isAdmin
+        ? ['vibe','text','beat'].map(k => `
+          <td><input type="number" min="0" max="10" step="0.5" data-rate-cat="${k}" data-rate-name="${escapeAttr(name)}"
+               value="${sc[k]===null||sc[k]===undefined?'':sc[k]}"
+               style="width:60px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:4px 6px;font-family:'IBM Plex Mono',monospace;font-size:13px;">
+          </td>`).join('') + `<td class="mono" style="font-weight:600;color:var(--amber);">${sc.avg===null?'—':fmt1(sc.avg)}</td>`
+        : `
+          <td class="mono">${sc.vibe===null?'—':fmt1(sc.vibe)}</td>
+          <td class="mono">${sc.text===null?'—':fmt1(sc.text)}</td>
+          <td class="mono">${sc.beat===null?'—':fmt1(sc.beat)}</td>
+          <td class="mono" style="font-weight:600;color:var(--amber);">${sc.avg===null?'—':fmt1(sc.avg)}</td>`}
     </tr>
   `).join('');
 
@@ -3232,23 +3240,10 @@ function openLibraryModal(t){
     <div class="actions">
       <button class="btn btn-secondary btn-small" id="libEditBtn">Редагувати</button>
       <button class="btn btn-danger btn-small" id="libDeleteBtn">Видалити трек</button>
-    </div>` : ''}
-    ${currentRole === 'admin' ? `
-    <div id="libEditForm" style="display:none;">
-      <div class="edit-grid">
-        <div><label>Назва</label><input type="text" id="libEditTitle" value="${escapeAttr(t.title)}"></div>
-        <div><label>Виконавець</label><input type="text" id="libEditArtist" value="${escapeAttr(t.artist)}"></div>
-        <div><label>Рік</label><input type="text" id="libEditYear" value="${escapeAttr(t.year)}"></div>
-        <div><label>Тривалість</label><input type="text" id="libEditLength" value="${escapeAttr(t.length)}"></div>
-        <div><label>Альбом</label><input type="text" id="libEditAlbum" value="${escapeAttr(t.album)}"></div>
-        <div class="full"><label>YouTube URL</label><input type="text" id="libEditYoutube" value="${escapeAttr(t.youtubeUrl)}"></div>
-        <div class="full"><label>Текст пісні</label><textarea id="libEditLyrics">${escapeHTML(t.lyrics)}</textarea></div>
-      </div>
-      <div class="actions">
-        <button class="btn btn-primary btn-small" id="libEditSave">Зберегти</button>
-        <button class="btn btn-secondary btn-small" id="libEditCancel">Скасувати</button>
-      </div>
     </div>
+    ${Object.keys(t.evals).length ? `<div class="actions" style="margin-top:10px;">
+      <button class="btn btn-primary btn-small" id="libRatingsSave">Зберегти оцінки</button>
+    </div>` : ''}
     ` : ''}
   `;
 
@@ -3291,49 +3286,129 @@ function openLibraryModal(t){
   const editBtn = document.getElementById('libEditBtn');
   if(editBtn){
     editBtn.addEventListener('click', () => {
-      document.getElementById('libEditForm').style.display = '';
-    });
-    document.getElementById('libEditCancel').addEventListener('click', () => {
-      document.getElementById('libEditForm').style.display = 'none';
-    });
-    document.getElementById('libEditSave').addEventListener('click', async () => {
-    const patch = {
-      title: document.getElementById('libEditTitle').value.trim(),
-      artist: document.getElementById('libEditArtist').value.trim(),
-      year: document.getElementById('libEditYear').value.trim(),
-      length: document.getElementById('libEditLength').value.trim(),
-      album: document.getElementById('libEditAlbum').value.trim(),
-      youtubeUrl: document.getElementById('libEditYoutube').value.trim(),
-      lyrics: document.getElementById('libEditLyrics').value,
-    };
-    if(t.supaId){
-      try{
-        await supabaseRest(`/tracks?id=eq.${t.supaId}`, {
-          method: 'PATCH',
-          body: {
-            title: patch.title, artist: patch.artist,
-            year: patch.year || null, length: patch.length || null,
-            album: patch.album || null,
-            youtube_url: patch.youtubeUrl || null, lyrics: patch.lyrics || null
-          }
-        });
-        await loadSupabaseData();
-        renderTopTracks(); renderLibrary();
-        overlay.classList.remove('open');
-        showToast('Зміни збережено.');
-      }catch(err){
-        showToast('Помилка збереження: ' + err.message);
-      }
-      return;
-    }
-    const ids = new Set(t.entries.map(h => h.id));
-    db.history.forEach(h => { if(ids.has(h.id)) Object.assign(h, patch); });
-    saveDB();
-    renderTopTracks(); renderLibrary();
-    overlay.classList.remove('open');
-    showToast('Зміни збережено.');
+      overlay.classList.remove('open');
+      openTrackEditModal({
+        subtitle: `${t.title}${t.artist ? ' — ' + t.artist : ''}`,
+        values: {
+          title: t.title,
+          artist: t.artist || '',
+          album: t.album || '',
+          year: t.year || '',
+          length: t.length || '',
+          youtubeUrl: t.youtubeUrl || '',
+          lyrics: t.lyrics || ''
+        },
+        cover: t.coverBase64 || '',
+        confirmLabel: 'Зберегти',
+        onConfirm: data => saveLibraryTrack(t, data)
+      });
     });
   }
+
+  const rateSaveBtn = document.getElementById('libRatingsSave');
+  if(rateSaveBtn){
+    rateSaveBtn.addEventListener('click', async () => {
+      const scores = {};
+      body.querySelectorAll('[data-rate-name]').forEach(inp => {
+        const name = inp.getAttribute('data-rate-name');
+        const cat = inp.getAttribute('data-rate-cat');
+        const raw = inp.value.trim();
+        if(!scores[name]) scores[name] = {};
+        scores[name][cat] = raw === '' ? null : parseFloat(raw);
+      });
+      try{
+        await saveLibraryRatings(t, scores);
+      }catch(err){
+        console.error('Ratings save failed:', err);
+        showToast('Помилка збереження оцінок: ' + err.message);
+      }
+    });
+  }
+}
+
+// Зберігає відредаговані поля треку з бібліотеки (Supabase або локальна історія)
+async function saveLibraryTrack(t, data){
+  if(t.supaId){
+    let coverUrl = t.coverBase64 || null;
+    if(data.coverBase64 !== (t.coverBase64 || '')){
+      if(data.coverBase64 && data.coverBase64.startsWith('data:')){
+        coverUrl = await supabaseUploadCover(data.coverBase64);
+      }else{
+        coverUrl = data.coverBase64 || null;
+      }
+    }
+    await supabaseRest(`/tracks?id=eq.${t.supaId}`, {
+      method: 'PATCH',
+      body: {
+        title: data.title,
+        artist: data.artist || null,
+        album: data.album || null,
+        year: data.year || null,
+        length: data.length || null,
+        youtube_url: data.youtubeUrl || null,
+        lyrics: data.lyrics || null,
+        cover_url: coverUrl
+      }
+    });
+    await loadSupabaseData();
+  }else{
+    const ids = new Set(t.entries.map(h => h.id));
+    db.history.forEach(h => {
+      if(!ids.has(h.id)) return;
+      Object.assign(h, {
+        title: data.title,
+        artist: data.artist,
+        album: data.album,
+        year: data.year,
+        length: data.length,
+        youtubeUrl: data.youtubeUrl,
+        lyrics: data.lyrics
+      });
+      if(data.coverBase64) h.coverBase64 = data.coverBase64;
+    });
+    saveDB();
+  }
+  renderTopTracks(); renderLibrary();
+  const fresh = getLibraryTracks().find(x => x.key === t.key);
+  if(fresh) openLibraryModal(fresh);
+  showToast('Зміни збережено.');
+}
+
+// Зберігає відредаговані оцінки оцінювачів для треку з бібліотеки
+async function saveLibraryRatings(t, scores){
+  if(t.supaId){
+    const rows = supa.ratingsByTrack[t.supaId] || [];
+    for(const r of rows){
+      const name = supa.evalNameById[r.evaluator_id];
+      const sc = name && scores[name];
+      if(!sc) continue;
+      const patch = {};
+      ['vibe','text','beat'].forEach(k => { if(sc[k] !== undefined) patch[k] = sc[k]; });
+      if(Object.keys(patch).length){
+        await supabaseRest(`/ratings?id=eq.${r.id}`, {method:'PATCH', body: patch});
+      }
+    }
+    await loadSupabaseData();
+  }else{
+    const ids = new Set(t.entries.map(h => h.id));
+    db.history.forEach(h => {
+      if(!ids.has(h.id)) return;
+      (h.evaluatorScores || []).forEach(s => {
+        const sc = scores[s.name];
+        if(!sc) return;
+        ['vibe','text','beat'].forEach(k => { if(sc[k] !== undefined) s[k] = sc[k]; });
+        const vals = [s.vibe, s.text, s.beat].filter(v => v !== null && v !== undefined);
+        s.avg = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
+      });
+      const avgs = (h.evaluatorScores || []).map(s => s.avg).filter(v => v !== null && v !== undefined);
+      h.finalScore = avgs.length ? avgs.reduce((a,b)=>a+b,0)/avgs.length : null;
+    });
+    saveDB();
+  }
+  renderTopTracks(); renderLibrary();
+  const fresh = getLibraryTracks().find(x => x.key === t.key);
+  if(fresh) openLibraryModal(fresh);
+  showToast('Оцінки збережено.');
 }
 
 /* ---------------- Modal functionality ---------------- */

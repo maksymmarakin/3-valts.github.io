@@ -623,8 +623,10 @@
 
   /* ---- blind mode ---- */
   body.blind-mode .track-card:not(.rated) .track-info .title,
+  body.blind-mode .track-card:not(.rated) .track-info .meta,
   body.blind-mode .track-details h3,
-  body.blind-mode .modal-details h3{
+  body.blind-mode .modal-details h3,
+  body.blind-mode .modal-details .meta{
     filter:blur(4px);
     user-select:none;
   }
@@ -638,6 +640,7 @@
   
   /* Unblur when modal is open */
   body.blind-mode .modal-overlay.open .modal-details h3,
+  body.blind-mode .modal-overlay.open .modal-details .meta,
   body.blind-mode .modal-overlay.open .modal-cover{
     filter:none !important;
     user-select:auto !important;
@@ -728,15 +731,17 @@
 
   /* ---- library ---- */
   .library-subtabs{
-    display:flex;gap:8px;margin-bottom:16px;
+    display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;
   }
   .lib-subtab{
     font-family:'Space Grotesk', sans-serif;
-    font-weight:600;font-size:13px;
-    padding:8px 16px;border-radius:8px;
+    font-weight:600;font-size:13px;line-height:1;
+    display:inline-flex;align-items:center;justify-content:center;
+    min-height:38px;padding:8px 18px;border-radius:8px;
     border:1px solid var(--border);
     background:var(--bg);color:var(--text);cursor:pointer;
     transition:background .15s,color .15s,border-color .15s;
+    white-space:nowrap;
   }
   .lib-subtab.active{
     background:var(--amber);color:#1a1408;border-color:var(--amber);
@@ -762,9 +767,13 @@
     flex:1;min-width:200px;
   }
   .library-toolbar select{
-    background:var(--bg);border:1px solid var(--border);color:var(--text);
-    border-radius:6px;padding:10px 12px;font-family:'Space Grotesk',sans-serif;font-size:14px;
+    appearance:none;-webkit-appearance:none;
+    background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23e8a33d' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+    border:1px solid var(--border);color:var(--text);
+    border-radius:6px;padding:10px 36px 10px 12px;font-family:'Space Grotesk',sans-serif;font-size:15px;
+    height:42px;box-sizing:border-box;cursor:pointer;
   }
+  .library-toolbar select:focus{outline:none;border-color:var(--teal);}
   .library-grid{
     display:grid;
     grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
@@ -881,6 +890,19 @@
     border:1px solid var(--border);
   }
   .user-badge .role.admin{color:var(--amber);border-color:var(--amber);}
+
+  /* ---- header actions ---- */
+  .header-right{
+    margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .header-link{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:13px;font-weight:600;text-decoration:none;
+    color:var(--text-muted);padding:8px 12px;border-radius:6px;
+    border:1px solid transparent;transition:color .15s,border-color .15s,background .15s;
+  }
+  .header-link:hover{color:var(--text);border-color:var(--border);background:var(--surface-alt);}
+  .header-link svg{flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -912,14 +934,18 @@
       <h1>Три Вальта</h1>
       <p>Оцінюй треки</p>
     </div>
-    <div style="margin-left:auto;display:flex;align-items:center;gap:14px;">
+    <a href="#" id="top10Link" class="btn btn-primary btn-small" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;flex-shrink:0;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/></svg>
+    Топ 10
+    </a>
+    <div class="header-right">
       <div class="user-badge" id="userBadge" style="display:none;">
         <span id="userEmail"></span>
         <span class="role" id="userRole"></span>
         <button class="btn btn-secondary btn-small" id="logoutBtn">Вийти</button>
       </div>
-      <a href="https://music.youtube.com/playlist?list=PLVj-osNZEFnw" target="_blank" style="color:var(--text);text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+      <a href="https://music.youtube.com/playlist?list=PLVj-osNZEFnw" target="_blank" class="header-link">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
       Playlist
       </a>
     </div>
@@ -1026,10 +1052,6 @@
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:12px;background:var(--surface-alt);border-radius:6px;flex-wrap:wrap;">
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;">
-        <input type="checkbox" id="showAllTracks" style="width:16px;height:16px;">
-        <span>Показати всі треки</span>
-      </label>
       <span style="color:var(--text-muted);font-size:13px;">Хто оцінює:</span>
       <div id="evaluatorPicker" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
     </div>
@@ -1041,6 +1063,7 @@
     <div class="library-subtabs">
       <button class="lib-subtab active" data-libtab="tracks">Треки</button>
       <button class="lib-subtab" data-libtab="top">Топ 10</button>
+      <button class="lib-subtab" data-libtab="evaluator">Оцінювач</button>
     </div>
     <div id="libraryTracksPane">
       <div class="library-toolbar">
@@ -1062,6 +1085,12 @@
     </div>
     <div id="libraryTopPane" style="display:none;">
       <div id="topTracksList"></div>
+    </div>
+    <div id="libraryEvalPane" style="display:none;">
+      <div class="library-toolbar">
+        <select id="evalSelect"></select>
+      </div>
+      <div id="evalRatingsList"></div>
     </div>
   </section>
 
@@ -1106,6 +1135,11 @@
 <!-- Library Detail Modal -->
 <div class="lib-modal-overlay" id="libModalOverlay">
   <div class="lib-modal lib-modal-wrap" id="libModalBody"></div>
+</div>
+
+<!-- Suggestion Edit Modal -->
+<div class="lib-modal-overlay" id="sugEditOverlay">
+  <div class="lib-modal lib-modal-wrap" id="sugEditBody" style="max-width:560px;"></div>
 </div>
 
 <!-- Fullscreen Modal -->
@@ -1202,7 +1236,7 @@ let db = loadDB();
 let openTrackId = null;
 let currentMode = 'friend';
 let currentModalTrackId = null;
-let libraryTab = 'tracks'; // 'tracks' | 'top'
+let libraryTab = 'tracks'; // 'tracks' | 'top' | 'evaluator'
 
 // Активні оцінювачі для поточної сесії (індекси в db.evaluators)
 const ACTIVE_EVALS_KEY = 'trackRaterActiveEvals_v1';
@@ -2266,40 +2300,7 @@ document.getElementById('suggestionsAdminList').addEventListener('click', async 
 
   try{
     if(approveBtn){
-      approveBtn.disabled = true;
-      approveBtn.textContent = 'Додаю...';
-      // 1) Створюємо трек у бібліотеці (upsert — без дублів)
-      const trackId = await supabaseUpsertTrack({
-        title: sug.title,
-        artist: sug.artist || '',
-        youtubeUrl: sug.youtube_url || '',
-        coverBase64: sug.cover_url || '',
-        year: '', length: '', album: '', lyrics: ''
-      });
-      // 2) Позначаємо пропозицію схваленою
-      await supabaseRest(`/track_suggestions?id=eq.${id}`, {
-        method: 'PATCH',
-        body: {status: 'approved', approved_track_id: trackId}
-      });
-      // 3) Додаємо в локальний список оцінювання
-      db.tracks.unshift({
-        id: db.nextId++,
-        title: sug.title,
-        artist: sug.artist || '',
-        cover: '',
-        coverBase64: sug.cover_url || '',
-        youtubeUrl: sug.youtube_url || '',
-        length: '', year: '', album: '', lyrics: '',
-        addedAt: new Date().toISOString(),
-        ratings: [null, null, null, null, null]
-      });
-      saveDB();
-      renderTracks();
-      await loadSupabaseData();
-      renderSuggestionsAdmin();
-      renderMySuggestions();
-      renderLibrary();
-      showToast(`«${sug.title}» додано на оцінку`);
+      openSuggestionEdit(sug);
     }else if(rejectBtn){
       await supabaseRest(`/track_suggestions?id=eq.${id}`, {method:'PATCH', body:{status: 'rejected'}});
       await loadSupabaseData();
@@ -2316,9 +2317,130 @@ document.getElementById('suggestionsAdminList').addEventListener('click', async 
   }catch(err){
     console.error('Suggestion action failed:', err);
     showToast('Помилка: ' + err.message);
-    if(approveBtn){ approveBtn.disabled = false; approveBtn.textContent = '✓ На оцінку'; }
   }
 });
+
+// Модалка редагування пропозиції перед відправкою на оцінювання
+let sugEditState = null; // {id, cover}
+
+function openSuggestionEdit(sug){
+  const overlay = document.getElementById('sugEditOverlay');
+  const body = document.getElementById('sugEditBody');
+  sugEditState = {id: sug.id, cover: sug.cover_url || ''};
+
+  body.innerHTML = `
+    <button class="close-x" id="sugEditClose">&times;</button>
+    <h3 style="margin:0 0 4px;">Редагувати перед оцінкою</h3>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">${escapeHTML(sug.title)}${sug.artist ? ' — ' + escapeHTML(sug.artist) : ''}</div>
+    <div class="edit-grid">
+      <div class="full">
+        <label>Обкладинка</label>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <img id="sugEditCoverPrev" src="${escapeAttr(sug.cover_url || '')}" alt=""
+               style="width:64px;height:64px;object-fit:cover;border-radius:6px;background:var(--surface-alt);${sug.cover_url ? '' : 'display:none;'}">
+          <label class="btn btn-secondary btn-small" style="cursor:pointer;">Змінити<input type="file" id="sugEditCoverFile" accept="image/*" hidden></label>
+          <button type="button" class="btn btn-secondary btn-small" id="sugEditCoverClear" ${sug.cover_url ? '' : 'style="display:none;"'}>Прибрати</button>
+        </div>
+      </div>
+      <div class="full"><label>Назва</label><input type="text" id="sugEditTitle" value="${escapeAttr(sug.title)}"></div>
+      <div class="full"><label>Виконавець</label><input type="text" id="sugEditArtist" value="${escapeAttr(sug.artist || '')}"></div>
+      <div><label>Альбом (необов'язково)</label><input type="text" id="sugEditAlbum"></div>
+      <div><label>Рік</label><input type="text" id="sugEditYear"></div>
+      <div><label>Тривалість</label><input type="text" id="sugEditLength" placeholder="3:45"></div>
+      <div class="full"><label>YouTube посилання</label><input type="text" id="sugEditYoutube" value="${escapeAttr(sug.youtube_url || '')}"></div>
+      <div class="full"><label>Текст пісні</label><textarea id="sugEditLyrics" rows="5"></textarea></div>
+    </div>
+    <div class="actions" style="margin-top:16px;">
+      <button class="btn btn-primary btn-small" id="sugEditApprove">✓ Схвалити і надіти на оцінку</button>
+      <button class="btn btn-secondary btn-small" id="sugEditCancel">Скасувати</button>
+    </div>`;
+
+  overlay.classList.add('open');
+
+  const close = () => { overlay.classList.remove('open'); sugEditState = null; };
+  document.getElementById('sugEditClose').addEventListener('click', close);
+  document.getElementById('sugEditCancel').addEventListener('click', close);
+  overlay.addEventListener('click', ev => { if(ev.target === overlay) close(); });
+
+  const prev = document.getElementById('sugEditCoverPrev');
+  const clearBtn = document.getElementById('sugEditCoverClear');
+  document.getElementById('sugEditCoverFile').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      sugEditState.cover = reader.result;
+      prev.src = reader.result;
+      prev.style.display = '';
+      clearBtn.style.display = '';
+    };
+    reader.readAsDataURL(file);
+  });
+  clearBtn.addEventListener('click', () => {
+    sugEditState.cover = '';
+    prev.src = '';
+    prev.style.display = 'none';
+    clearBtn.style.display = 'none';
+    document.getElementById('sugEditCoverFile').value = '';
+  });
+
+  document.getElementById('sugEditApprove').addEventListener('click', async () => {
+    const btn = document.getElementById('sugEditApprove');
+    btn.disabled = true;
+    btn.textContent = 'Додаю...';
+    try{
+      const data = {
+        title: document.getElementById('sugEditTitle').value.trim(),
+        artist: document.getElementById('sugEditArtist').value.trim(),
+        album: document.getElementById('sugEditAlbum').value.trim(),
+        year: document.getElementById('sugEditYear').value.trim(),
+        length: document.getElementById('sugEditLength').value.trim(),
+        youtubeUrl: document.getElementById('sugEditYoutube').value.trim(),
+        lyrics: document.getElementById('sugEditLyrics').value,
+        coverBase64: sugEditState.cover
+      };
+      if(!data.title){ showToast('Введи назву треку'); btn.disabled = false; btn.textContent = '✓ Схвалити і надіти на оцінку'; return; }
+      await approveSuggestion(sugEditState.id, data);
+      close();
+    }catch(err){
+      console.error('Suggestion approve failed:', err);
+      showToast('Помилка: ' + err.message);
+      btn.disabled = false;
+      btn.textContent = '✓ Схвалити і надіти на оцінку';
+    }
+  });
+}
+
+async function approveSuggestion(id, data){
+  const sug = (supa.suggestions || []).find(s => s.id === id);
+  if(!sug) return;
+  // 1) Створюємо трек у бібліотеці (upsert — без дублів)
+  const trackId = await supabaseUpsertTrack(data);
+  // 2) Позначаємо пропозицію схваленою
+  await supabaseRest(`/track_suggestions?id=eq.${id}`, {
+    method: 'PATCH',
+    body: {status: 'approved', approved_track_id: trackId}
+  });
+  // 3) Додаємо в локальний список оцінювання
+  db.tracks.unshift({
+    id: db.nextId++,
+    title: data.title,
+    artist: data.artist || '',
+    cover: '',
+    coverBase64: data.coverBase64 || '',
+    youtubeUrl: data.youtubeUrl || '',
+    length: data.length || '', year: data.year || '', album: data.album || '', lyrics: data.lyrics || '',
+    addedAt: new Date().toISOString(),
+    ratings: [null, null, null, null, null]
+  });
+  saveDB();
+  renderTracks();
+  await loadSupabaseData();
+  renderSuggestionsAdmin();
+  renderMySuggestions();
+  renderLibrary();
+  showToast(`«${data.title}» додано на оцінку`);
+}
 
 // Масове доповнення метаданих: альбом з iTunes + посилання YouTube Music там, де їх немає
 document.getElementById('enrichTracksBtn').addEventListener('click', async () => {
@@ -2618,20 +2740,6 @@ document.getElementById('finishSessionBtn').addEventListener('click', () => {
   showToast('Список очищено.');
 });
 
-/* ---------------- Show All Tracks Toggle ---------------- */
-document.getElementById('showAllTracks').addEventListener('change', e => {
-  const showAll = e.target.checked;
-  const trackCards = document.querySelectorAll('.track-card');
-  
-  trackCards.forEach(card => {
-    if(showAll){
-      card.classList.add('open');
-    }else{
-      card.classList.remove('open');
-    }
-  });
-});
-
 /* ---------------- Top 10 (Бібліотека) ---------------- */
 function renderTopTracks(){
   const container = document.getElementById('topTracksList');
@@ -2849,15 +2957,86 @@ function getLibraryTracks(){
 
 let libraryFilter = {q:'', sort:'score_desc', album:''};
 
-// Підвкладки бібліотеки: «Треки» / «Топ 10»
+// Підвкладки бібліотеки: «Треки» / «Топ 10» / «Оцінювач»
 document.querySelectorAll('.lib-subtab').forEach(btn => {
   btn.addEventListener('click', () => {
     libraryTab = btn.getAttribute('data-libtab');
     document.querySelectorAll('.lib-subtab').forEach(b => b.classList.toggle('active', b === btn));
     document.getElementById('libraryTracksPane').style.display = libraryTab === 'tracks' ? '' : 'none';
     document.getElementById('libraryTopPane').style.display = libraryTab === 'top' ? '' : 'none';
+    document.getElementById('libraryEvalPane').style.display = libraryTab === 'evaluator' ? '' : 'none';
     if(libraryTab === 'top') renderTopTracks();
+    if(libraryTab === 'evaluator') renderEvaluatorRatings();
   });
+});
+
+// Підвкладка «Оцінювач»: вибір оцінювача і всі його оцінки (з топом)
+let libraryEvalName = null;
+
+function evaluatorNames(){
+  if(supa.evaluators && supa.evaluators.length){
+    return supa.evaluators.map(e => e.name).filter(Boolean);
+  }
+  return db.evaluators.map(e => e.name).filter(Boolean);
+}
+
+function renderEvaluatorRatings(){
+  const sel = document.getElementById('evalSelect');
+  const list = document.getElementById('evalRatingsList');
+  const names = evaluatorNames();
+  if(!names.length){
+    sel.innerHTML = '';
+    list.innerHTML = '<div class="empty-state">Немає оцінювачів.</div>';
+    return;
+  }
+  if(!libraryEvalName || !names.includes(libraryEvalName)) libraryEvalName = names[0];
+  sel.innerHTML = names.map(n => `<option value="${escapeAttr(n)}" ${n === libraryEvalName ? 'selected' : ''}>${escapeHTML(n)}</option>`).join('');
+
+  const name = libraryEvalName;
+  const rows = getLibraryTracks()
+    .map(t => ({t, e: (t.evals || {})[name]}))
+    .filter(x => x.e && x.e.avg !== null && x.e.avg !== undefined)
+    .sort((a,b) => b.e.avg - a.e.avg);
+
+  if(!rows.length){
+    list.innerHTML = '<div class="empty-state">Цей оцінювач ще нічого не оцінив.</div>';
+    return;
+  }
+
+  const medal = i => i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`;
+  const medalColor = i => i < 3 ? 'var(--amber)' : 'var(--text-muted)';
+
+  list.innerHTML = `
+    <table class="history-table">
+      <thead>
+        <tr><th>#</th><th></th><th>Трек</th><th>Вайб</th><th>Текст</th><th>Біт</th><th>Середня</th></tr>
+      </thead>
+      <tbody>${rows.map((x, i) => `
+        <tr>
+          <td style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:${medalColor(i)};">${medal(i)}</td>
+          <td>${x.t.coverBase64 ? `<img src="${escapeAttr(x.t.coverBase64)}">` : ''}</td>
+          <td>${escapeHTML(x.t.title)}${x.t.artist ? ' — ' + escapeHTML(x.t.artist) : ''}${x.t.album ? `<div style="font-size:11px;color:var(--text-muted);">${escapeHTML(x.t.album)}</div>` : ''}</td>
+          <td class="mono">${x.e.vibe===null||x.e.vibe===undefined?'—':fmt1(x.e.vibe)}</td>
+          <td class="mono">${x.e.text===null||x.e.text===undefined?'—':fmt1(x.e.text)}</td>
+          <td class="mono">${x.e.beat===null||x.e.beat===undefined?'—':fmt1(x.e.beat)}</td>
+          <td class="score-cell" style="font-size:16px;font-weight:600;">${fmt1(x.e.avg)}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+document.getElementById('evalSelect').addEventListener('change', e => {
+  libraryEvalName = e.target.value;
+  renderEvaluatorRatings();
+});
+
+// Лінк «Топ 10» у хедері — відкриває Бібліотеку одразу на підтабі «Топ 10»
+document.getElementById('top10Link').addEventListener('click', e => {
+  e.preventDefault();
+  document.querySelector('.mode-btn[data-mode="library"]').click();
+  document.querySelector('.lib-subtab[data-libtab="top"]').click();
+  window.scrollTo({top: 0, behavior: 'smooth'});
 });
 
 function renderLibrary(){

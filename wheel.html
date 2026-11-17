@@ -198,7 +198,6 @@
         <div class="mode-toggle" id="modeToggle">
           <button data-mode="normal" class="active">Звичайне</button>
           <button data-mode="dropout">Вибування</button>
-          <button data-mode="sim">Симуляція</button>
         </div>
         <div class="dur-row">
           <label>Тривалість:</label>
@@ -221,6 +220,13 @@
             <option value="desc">шанс ↓</option>
             <option value="asc">шанс ↑</option>
           </select>
+        </div>
+        <div class="dur-row">
+          <label>Значення:</label>
+          <div class="mode-toggle" id="unitToggle" style="flex:1;margin-bottom:0;">
+            <button data-unit="weight" class="active">Вага</button>
+            <button data-unit="pct">Відсоток</button>
+          </div>
         </div>
         <div class="sub">Вага визначає розмір сегмента і шанс виграшу. Відсотки рахуються автоматично.</div>
         <div id="optionsList"></div>
@@ -267,6 +273,7 @@ let history = [];
 const LS_MODE = 'wheelMode_v1';
 const LS_ELIM = 'wheelEliminated_v1';
 let mode = localStorage.getItem(LS_MODE) || 'normal';
+if(mode === 'sim') mode = 'dropout'; // старий режим sim об'єднано з вибуванням
 let eliminated = new Set(JSON.parse(localStorage.getItem(LS_ELIM) || '[]'));
 const LS_SIM = 'wheelSimPlan_v1';
 const LS_DUR = 'wheelDuration_v1';
@@ -392,7 +399,7 @@ function renderOptions(){
     <div class="opt-row${eliminated.has(i) ? ' elim' : ''}">
       <span class="swatch" style="background:${COLORS[i % COLORS.length]};"></span>
       <input type="text" data-oi="${i}" data-f="name" value="${escapeAttr(o.name)}" placeholder="Варіант ${i+1}">
-      <input type="number" data-oi="${i}" data-f="weight" value="${o.weight}" min="0" step="any" placeholder="Вага">
+      <input type="number" data-oi="${i}" data-f="weight" value="${o.weight}" min="0" step="any" placeholder="${unitMode === 'pct' ? '%' : 'Вага'}">
       <button class="del" data-oi="${i}" title="Видалити">✕</button>
     </div>
     <div class="opt-row" style="grid-template-columns:14px 1fr 90px 34px;margin-top:-6px;margin-bottom:10px;">
@@ -707,7 +714,7 @@ document.getElementById('spinBtn').addEventListener('click', async () => {
   if(!tw || !act.length){ banner.textContent = 'Немає варіантів для spin'; return; }
 
   // Вибування: якщо лишився один — це переможець, без обертання
-  if((mode === 'dropout' || mode === 'sim') && act.length === 1){
+  if(mode === 'dropout' && act.length === 1){
     const w = act[0].o;
     banner.textContent = `🏆 ${w.name || '—'} — переможець!`;
     recordResult(w.name, pctOf(w).toFixed(1));
@@ -718,10 +725,10 @@ document.getElementById('spinBtn').addEventListener('click', async () => {
   document.getElementById('spinBtn').disabled = true;
   banner.textContent = '';
 
-  const isDropout = mode === 'dropout' || mode === 'sim';
-  const isSim = mode === 'sim';
+  const isDropout = mode === 'dropout';
   let picked;
-  if(isSim){
+  if(isDropout){
+    // переможець визначається одразу (пропорційно до ваги), решта вибуває у випадковому порядку
     if(!validSimPlan()) buildSimPlan();
     const nextIdx = simPlan.queue[0];
     picked = {o: options[nextIdx], i: nextIdx};
@@ -773,7 +780,7 @@ document.getElementById('spinBtn').addEventListener('click', async () => {
       if(isDropout){
         // анімація "згорання" сегмента, потім фактичне видалення
         eliminating = {idx: picked.i, t0: performance.now()};
-        if(isSim){ simPlan.queue.shift(); saveSimPlan(); }
+        simPlan.queue.shift(); saveSimPlan();
         // rAF-цикл: сегмент візуально "згорає" 700мс
         const elimBadge = document.getElementById('elimBadge');
         (function elimAnim(now){
@@ -861,6 +868,22 @@ document.getElementById('sortMode').addEventListener('change', e => {
   localStorage.setItem(LS_SORT, sortMode);
   applySort();
 });
+
+/* ---------- weight/percent unit toggle ---------- */
+// Вага і відсоток еквівалентні: має значення лише співвідношення.
+// Тогл лише підписує колонку, щоб було зручно вводити "%".
+let unitMode = localStorage.getItem('wheelUnit_v1') || 'weight';
+document.getElementById('unitToggle').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-unit]');
+  if(!btn) return;
+  unitMode = btn.getAttribute('data-unit');
+  localStorage.setItem('wheelUnit_v1', unitMode);
+  document.querySelectorAll('#unitToggle button').forEach(b => b.classList.toggle('active', b === btn));
+  document.querySelectorAll('.opt-row input[data-f="weight"]').forEach(inp => {
+    inp.placeholder = unitMode === 'pct' ? '%' : 'вага';
+  });
+});
+document.querySelectorAll('#unitToggle button').forEach(b => b.classList.toggle('active', b.getAttribute('data-unit') === unitMode));
 
 /* ---------- duration controls ---------- */
 const durTypeEl = document.getElementById('durType');

@@ -167,6 +167,22 @@ create policy "delete own or admin suggestions" on public.track_suggestions
   for delete to authenticated
   using (user_id = auth.uid() or public.is_admin());
 
+-- ---------- wheel spins (історія колеса фортуни) ----------
+create table if not exists public.wheel_spins (
+  id           uuid primary key default gen_random_uuid(),
+  winner_name  text not null,
+  winner_pct   numeric(5,2),
+  created_at   timestamptz not null default now()
+);
+
+alter table public.wheel_spins enable row level security;
+
+-- Читання і запис — усім (колесо публічне, історія не чутлива)
+create policy "read wheel spins" on public.wheel_spins
+  for select to anon, authenticated using (true);
+create policy "insert wheel spins" on public.wheel_spins
+  for insert to anon, authenticated with check (true);
+
 -- ---------- view: трек з усіма оцінками ----------
 create or replace view public.track_scores as
 select

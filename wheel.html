@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Колесо фортуни — Три Вальта</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14131a;
+    --surface:#1e1d26;
+    --surface-alt:#26242f;
+    --border:#38364a;
+    --text:#edeae2;
+    --text-muted:#9c98a8;
+    --amber:#e8a33d;
+    --teal:#4fbfb0;
+    --violet:#b084f5;
+    --red:#d9564a;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:'Space Grotesk',sans-serif;line-height:1.5;
+    padding:0 20px 80px;font-size:18px;
+  }
+  .app{max-width:1100px;margin:0 auto;}
+
+  header{
+    padding:40px 0 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  }
+  header .titles h1{margin:0;font-size:30px;font-weight:700;letter-spacing:-0.02em;}
+  header .titles p{margin:4px 0 0;color:var(--text-muted);font-size:15px;}
+  .header-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+  .header-link{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:13px;font-weight:600;text-decoration:none;
+    color:var(--text-muted);padding:8px 12px;border-radius:6px;
+    border:1px solid transparent;transition:color .15s,border-color .15s,background .15s;
+  }
+  .header-link:hover{color:var(--text);border-color:var(--border);background:var(--surface-alt);}
+
+  .wheel-layout{
+    display:grid;grid-template-columns:1fr minmax(260px,340px);gap:28px;align-items:start;
+  }
+  @media(max-width:860px){.wheel-layout{grid-template-columns:1fr;}}
+
+  .wheel-stage{position:relative;display:flex;flex-direction:column;align-items:stretch;}
+  .wheel-wrap{position:relative;width:100%;max-width:94vh;aspect-ratio:1;}
+  canvas#wheel{width:100%;height:100%;display:block;}
+  .pointer{
+    position:absolute;top:-6px;left:50%;transform:translateX(-50%);
+    width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;
+    border-top:26px solid var(--amber);filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));z-index:2;
+  }
+  .wheel-center{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:84px;height:84px;border-radius:50%;overflow:hidden;
+    background:var(--surface);border:3px solid var(--amber);
+    display:flex;align-items:center;justify-content:center;
+    font-size:30px;z-index:2;box-shadow:0 4px 16px rgba(0,0,0,.5);
+  }
+  .wheel-center img{width:100%;height:100%;object-fit:cover;display:block;}
+  .spin-btn{
+    margin:22px auto 0;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;
+    padding:14px 44px;border-radius:10px;border:none;cursor:pointer;
+    background:var(--amber);color:#1a1408;transition:transform .1s,opacity .15s;
+  }
+  .spin-btn:hover:not(:disabled){transform:translateY(-1px);}
+  .spin-btn:disabled{opacity:.5;cursor:not-allowed;}
+  .winner-banner{
+    margin:16px auto 0;min-height:30px;font-size:20px;font-weight:600;color:var(--amber);
+    text-align:center;max-width:640px;
+  }
+
+  .panel{
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;
+  }
+  .panel h2{margin:0 0 4px;font-size:16px;}
+  .panel .sub{color:var(--text-muted);font-size:12px;margin-bottom:12px;}
+  .opt-row{
+    display:grid;grid-template-columns:14px 1fr 90px 34px;gap:8px;align-items:center;
+    margin-bottom:8px;
+  }
+  .opt-row input{
+    background:var(--bg);border:1px solid var(--border);color:var(--text);
+    border-radius:6px;padding:6px 9px;font-family:'Space Grotesk',sans-serif;font-size:13px;
+    width:100%;
+  }
+  .opt-row input:focus{outline:none;border-color:var(--teal);}
+  .opt-row .swatch{
+    width:14px;height:14px;border-radius:4px;flex-shrink:0;
+    border:1px solid rgba(0,0,0,.3);align-self:center;
+  }
+  .opt-row .pct{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);
+    text-align:right;white-space:nowrap;
+  }
+  .opt-row .del{
+    background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;
+    padding:4px;border-radius:4px;
+  }
+  .opt-row .del:hover{color:var(--red);background:var(--surface-alt);}
+  .panel-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+  .mode-toggle{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:16px;}
+  .mode-toggle button{
+    flex:1;background:var(--bg);border:none;color:var(--text-muted);
+    padding:9px 10px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;
+    cursor:pointer;transition:background .15s,color .15s;
+  }
+  .mode-toggle button.active{background:var(--amber);color:#1a1408;}
+  .opt-row.elim input{opacity:.35;text-decoration:line-through;}
+  .opt-row.elim .del{opacity:.35;}
+  .dur-row{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap;}
+  .dur-row select,.dur-row input{
+    background:var(--bg);border:1px solid var(--border);color:var(--text);
+    border-radius:6px;padding:7px 9px;font-family:'Space Grotesk',sans-serif;font-size:13px;
+  }
+  .dur-row input{width:64px;}
+  .dur-row label{font-size:13px;color:var(--text-muted);}
+  .elim-badge{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--red);
+    text-transform:uppercase;letter-spacing:.05em;
+  }
+  .btn{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;
+    padding:9px 16px;border-radius:6px;cursor:pointer;border:1px solid var(--border);
+    background:var(--bg);color:var(--text);transition:opacity .15s;
+  }
+  .btn:hover{opacity:.85;}
+  .btn-primary{background:var(--amber);color:#1a1408;border-color:var(--amber);}
+  .history{
+    margin-top:20px;background:var(--surface);border:1px solid var(--border);
+    border-radius:12px;padding:16px;
+  }
+  .history h2{margin:0 0 10px;font-size:15px;}
+  .history-item{
+    display:flex;align-items:center;gap:12px;padding:10px 12px;margin-bottom:8px;
+    background:var(--surface-alt);border:1px solid var(--border);border-radius:8px;font-size:14px;
+  }
+  .history-item .h-rank{
+    width:26px;height:26px;border-radius:50%;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;
+    background:var(--bg);color:var(--text-muted);border:1px solid var(--border);
+  }
+  .history-item:nth-child(1) .h-rank{background:var(--amber);color:#1a1408;border-color:var(--amber);}
+  .history-item:nth-child(2) .h-rank{background:#c9c9c9;color:#1a1408;border-color:#c9c9c9;}
+  .history-item:nth-child(3) .h-rank{background:#cd7f32;color:#1a1408;border-color:#cd7f32;}
+  .history-item .h-name{font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .history-item .h-pct{
+    font-family:'IBM Plex Mono',monospace;color:var(--amber);font-weight:600;font-size:13px;flex-shrink:0;
+  }
+  .history-item .h-time{color:var(--text-muted);font-size:12px;flex-shrink:0;}
+  #confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:99;}
+  #elimBadge{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    z-index:5;pointer-events:none;white-space:nowrap;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;
+    font-size:clamp(16px,3.2vw,30px);color:#edeae2;
+    background:rgba(20,19,26,.9);border:2px solid var(--red);
+    border-radius:12px;padding:10px 22px;
+    box-shadow:0 4px 18px rgba(0,0,0,.55);
+    opacity:0;transition:opacity .15s;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <a href="index.html" style="color:var(--text-muted);text-decoration:none;font-size:13px;">← Назад</a>
+    <div class="titles">
+      <h1>Колесо фортуни</h1>
+    </div>
+    <div class="header-right">
+      <a href="index.html" class="header-link">Три Вальта</a>
+    </div>
+  </header>
+
+  <div class="wheel-layout">
+    <div class="wheel-stage">
+      <div class="wheel-wrap">
+        <div class="pointer"></div>
+        <canvas id="wheel"></canvas>
+        <div class="wheel-center">🎡</div>
+        <div id="elimBadge"></div>
+      </div>
+      <button class="spin-btn" id="spinBtn">Крутити</button>
+      <div class="winner-banner" id="winnerBanner"></div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h2>Варіанти</h2>
+        <div class="mode-toggle" id="modeToggle">
+          <button data-mode="normal" class="active">Звичайне</button>
+          <button data-mode="dropout">Вибування</button>
+          <button data-mode="sim">Симуляція</button>
+        </div>
+        <div class="dur-row">
+          <label>Тривалість:</label>
+          <select id="durType">
+            <option value="fixed">фіксована</option>
+            <option value="random">випадкова</option>
+          </select>
+          <input type="number" id="durFixed" min="1" max="30" step="0.5" value="6">
+          <span id="durRangeWrap" style="display:none;">
+            <input type="number" id="durMin" min="1" max="30" step="0.5" value="4">
+            <span style="color:var(--text-muted);">–</span>
+            <input type="number" id="durMax" min="1" max="30" step="0.5" value="8">
+          </span>
+          <span style="color:var(--text-muted);font-size:12px;">сек</span>
+        </div>
+        <div class="dur-row">
+          <label>Сортування:</label>
+          <select id="sortMode">
+            <option value="none">немає</option>
+            <option value="desc">шанс ↓</option>
+            <option value="asc">шанс ↑</option>
+          </select>
+        </div>
+        <div class="sub">Вага визначає розмір сегмента і шанс виграшу. Відсотки рахуються автоматично.</div>
+        <div id="optionsList"></div>
+        <div class="panel-actions">
+          <button class="btn" id="addOption">+ Додати варіант</button>
+          <button class="btn" id="resetOptions">Скинути</button>
+          <button class="btn" id="resetDropout" style="display:none;">Скинути вибування</button>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:16px;">
+        <h2>Оформлення</h2>
+        <div class="sub">Картинка в центрі колеса</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <img id="centerPrev" src="" alt="" style="width:44px;height:44px;border-radius:50%;object-fit:cover;background:var(--bg);border:1px solid var(--border);display:none;">
+          <label class="btn" style="cursor:pointer;">Завантажити<input type="file" id="centerFile" accept="image/*" hidden></label>
+          <button class="btn" id="centerClear" style="display:none;">Прибрати</button>
+        </div>
+      </div>
+
+      <div class="history">
+        <h2>Останні результати</h2>
+        <div id="historyList"><div style="color:var(--text-muted);font-size:14px;">Поки порожньо</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<canvas id="confetti"></canvas>
+
+<script>
+const LS_KEY = 'wheelOptions_v1';
+const LS_HIST = 'wheelHistory_v1';
+const SUPABASE_URL = 'https://qgzywelljwjvvanwlyor.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_gYOtJZetjGRn8-jRSvEfOw_ayIaM93W';
+const SUPA_SESSION_KEY = 'trackRaterSupaSession_v1';
+const DEFAULTS = [
+  {name:'Виграш', weight:1},
+  {name:'Нічого', weight:3},
+];
+
+let options = loadOptions();
+let history = [];
+const LS_MODE = 'wheelMode_v1';
+const LS_ELIM = 'wheelEliminated_v1';
+let mode = localStorage.getItem(LS_MODE) || 'normal';
+let eliminated = new Set(JSON.parse(localStorage.getItem(LS_ELIM) || '[]'));
+const LS_SIM = 'wheelSimPlan_v1';
+const LS_DUR = 'wheelDuration_v1';
+let durCfg = Object.assign({type:'fixed', fixed:6, min:4, max:8}, JSON.parse(localStorage.getItem(LS_DUR) || '{}'));
+const LS_SORT = 'wheelSort_v1';
+let sortMode = localStorage.getItem(LS_SORT) || 'none';
+let simPlan = JSON.parse(localStorage.getItem(LS_SIM) || 'null'); // {winner:i, queue:[i,...]}
+let eliminating = null; // {idx, t0} — сегмент, що "згорає" після спіну
+let rotation = 0;
+let spinning = false;
+
+function getSession(){
+  try{ return JSON.parse(localStorage.getItem(SUPA_SESSION_KEY)); }catch(e){ return null; }
+}
+async function supaRest(path, opts = {}){
+  const session = getSession();
+  const headers = {'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json'};
+  if(session && session.access_token) headers['Authorization'] = `Bearer ${session.access_token}`;
+  else headers['Authorization'] = `Bearer ${SUPABASE_ANON_KEY}`;
+  const res = await fetch(`${SUPABASE_URL}/rest/v1${path}`, {...opts, headers});
+  if(!res.ok) throw new Error(`Supabase ${res.status}`);
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+async function loadHistoryDB(){
+  try{
+    const rows = await supaRest('/wheel_spins?select=winner_name,winner_pct,created_at&order=created_at.desc&limit=20');
+    if(Array.isArray(rows)){
+      history = rows.map(r => ({name: r.winner_name, pct: r.winner_pct, ts: new Date(r.created_at).getTime()}));
+      return true;
+    }
+  }catch(e){ console.warn('wheel history load failed', e); }
+  return false;
+}
+async function saveSpinDB(name, pct){
+  try{
+    await supaRest('/wheel_spins', {method:'POST', body: JSON.stringify([{winner_name: name, winner_pct: pct}])});
+    return true;
+  }catch(e){ console.warn('wheel spin save failed', e); return false; }
+}
+
+const canvas = document.getElementById('wheel');
+const ctx = canvas.getContext('2d');
+const COLORS = ['#e8a33d','#4fbfb0','#b084f5','#d9564a','#5b8dd9','#7bc96f','#e86a92','#8a8f98','#c9a227','#4a90d9'];
+
+function loadOptions(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(LS_KEY));
+    if(Array.isArray(raw) && raw.length) return raw;
+  }catch(e){}
+  return DEFAULTS.map(o => ({...o}));
+}
+function saveOptions(){ localStorage.setItem(LS_KEY, JSON.stringify(options)); }
+function loadHistory(){
+  try{ return JSON.parse(localStorage.getItem(LS_HIST)) || []; }catch(e){ return []; }
+}
+function saveHistory(){ localStorage.setItem(LS_HIST, JSON.stringify(history.slice(0,20))); }
+
+function totalWeight(){ return options.reduce((s,o) => s + Math.max(0, +o.weight || 0), 0); }
+function pctOf(o){ const tw = totalWeight(); return tw ? (Math.max(0,+o.weight||0)/tw*100) : 0; }
+// Активні (не вибулі) опції з індексом: [{o, i}]
+function activeOptions(){
+  const out = [];
+  options.forEach((o,i) => {
+    if(eliminated.has(i)) return;
+    if(Math.max(0,+o.weight||0) > 0 && (o.name||'').trim()) out.push({o, i});
+  });
+  return out;
+}
+function activeWeight(){ return activeOptions().reduce((s,x) => s + Math.max(0,+x.o.weight||0), 0); }
+function saveEliminated(){ localStorage.setItem(LS_ELIM, JSON.stringify([...eliminated])); }
+function saveSimPlan(){ localStorage.setItem(LS_SIM, simPlan ? JSON.stringify(simPlan) : 'null'); }
+// Візуальні ваги сегментів. У режимах вибування — інверсія:
+// більший шанс => менший сегмент (менш передбачувано).
+function visualItems(){
+  const act = activeOptions();
+  const ws = act.map(x => Math.max(0, +x.o.weight || 0));
+  const maxW = ws.length ? Math.max(...ws) : 0;
+  const isElim = mode !== 'normal';
+  return act.map((x,k) => {
+    let vw = ws[k];
+    if(isElim) vw = (maxW - ws[k]) + maxW * 0.02;
+    return {x, vw};
+  });
+}
+function saveDurCfg(){ localStorage.setItem(LS_DUR, JSON.stringify(durCfg)); }
+function spinDurationMs(){
+  if(durCfg.type === 'random'){
+    const lo = Math.min(durCfg.min, durCfg.max), hi = Math.max(durCfg.min, durCfg.max);
+    return (lo + Math.random() * (hi - lo)) * 1000;
+  }
+  return (durCfg.fixed || 6) * 1000;
+}
+// Симульоване вибування: переможець і порядок вибування визначаються одразу
+function buildSimPlan(){
+  const act = activeOptions();
+  if(act.length < 2) return null;
+  const winner = pickActive();
+  const losers = act.filter(x => x.i !== winner.i).map(x => x.i);
+  // перемішуємо порядок вибування (Fisher–Yates)
+  for(let i = losers.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [losers[i], losers[j]] = [losers[j], losers[i]];
+  }
+  simPlan = {winner: winner.i, queue: losers};
+  saveSimPlan();
+  return simPlan;
+}
+function validSimPlan(){
+  if(!simPlan) return false;
+  const {winner, queue} = simPlan;
+  if(winner === undefined || eliminated.has(winner) || winner >= options.length) return false;
+  if(!queue.every(i => i < options.length && !eliminated.has(i))) return false;
+  return true;
+}
+
+/* ---------- rendering options list ---------- */
+function renderOptions(){
+  // чистимо індекси вибулих, якщо список змінився
+  [...eliminated].forEach(i => { if(i >= options.length) eliminated.delete(i); });
+  const list = document.getElementById('optionsList');
+  list.innerHTML = options.map((o,i) => `
+    <div class="opt-row${eliminated.has(i) ? ' elim' : ''}">
+      <span class="swatch" style="background:${COLORS[i % COLORS.length]};"></span>
+      <input type="text" data-oi="${i}" data-f="name" value="${escapeAttr(o.name)}" placeholder="Варіант ${i+1}">
+      <input type="number" data-oi="${i}" data-f="weight" value="${o.weight}" min="0" step="any" placeholder="Вага">
+      <button class="del" data-oi="${i}" title="Видалити">✕</button>
+    </div>
+    <div class="opt-row" style="grid-template-columns:14px 1fr 90px 34px;margin-top:-6px;margin-bottom:10px;">
+      <span></span><span></span><span class="pct" data-pct="${i}">${pctOf(o).toFixed(1)}%</span><span></span>
+    </div>
+  `).join('');
+  drawWheel();
+}
+
+function escapeAttr(s){ return String(s==null?'':s).replace(/"/g,'&quot;'); }
+function escapeHTML(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+document.getElementById('optionsList').addEventListener('input', e => {
+  const oi = +e.target.getAttribute('data-oi');
+  const f = e.target.getAttribute('data-f');
+  if(oi === undefined || isNaN(oi)) return;
+  if(f === 'name') options[oi].name = e.target.value;
+  if(f === 'weight') options[oi].weight = e.target.value;
+  saveOptions();
+  updatePcts(); drawWheel();
+});
+// Зсув індексу після видалення елемента idx зі списку
+function remapIdx(i, idx){
+  if(i === idx) return -1;
+  return i > idx ? i - 1 : i;
+}
+document.getElementById('optionsList').addEventListener('click', e => {
+  const btn = e.target.closest('.del');
+  if(!btn) return;
+  const idx = +btn.getAttribute('data-oi');
+  options.splice(idx, 1);
+  // коригуємо індекси вибулих і sim-плану, щоб не "з'їхали"
+  const newElim = new Set();
+  eliminated.forEach(i => { const r = remapIdx(i, idx); if(r >= 0) newElim.add(r); });
+  eliminated = newElim; saveEliminated();
+  if(simPlan){
+    simPlan.winner = remapIdx(simPlan.winner, idx);
+    simPlan.queue = simPlan.queue.map(i => remapIdx(i, idx)).filter(i => i >= 0);
+    if(simPlan.winner < 0){ simPlan = null; }
+    saveSimPlan();
+  }
+  saveOptions(); renderOptions();
+});
+function updatePcts(){
+  document.querySelectorAll('[data-pct]').forEach(el => {
+    const i = +el.getAttribute('data-pct');
+    el.textContent = options[i] ? pctOf(options[i]).toFixed(1)+'%' : '';
+  });
+}
+document.getElementById('addOption').addEventListener('click', () => {
+  options.push({name:'', weight:1});
+  saveOptions(); renderOptions();
+});
+document.getElementById('resetOptions').addEventListener('click', () => {
+  options = DEFAULTS.map(o => ({...o}));
+  saveOptions(); renderOptions();
+});
+
+/* ---------- center image ---------- */
+const LS_CENTER = 'wheelCenterImg_v1';
+const centerEl = document.querySelector('.wheel-center');
+const centerPrev = document.getElementById('centerPrev');
+const centerClear = document.getElementById('centerClear');
+
+function applyCenterImg(src){
+  centerEl.innerHTML = '';
+  if(src){
+    const img = document.createElement('img');
+    img.src = src; img.alt = '';
+    centerEl.appendChild(img);
+    centerPrev.src = src; centerPrev.style.display = '';
+    centerClear.style.display = '';
+  }else{
+    centerEl.textContent = '🎡';
+    centerPrev.src = ''; centerPrev.style.display = 'none';
+    centerClear.style.display = 'none';
+  }
+}
+(function initCenter(){
+  const saved = localStorage.getItem(LS_CENTER);
+  applyCenterImg(saved || '');
+})();
+document.getElementById('centerFile').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    localStorage.setItem(LS_CENTER, reader.result);
+    applyCenterImg(reader.result);
+  };
+  reader.readAsDataURL(file);
+});
+centerClear.addEventListener('click', () => {
+  localStorage.removeItem(LS_CENTER);
+  applyCenterImg('');
+  document.getElementById('centerFile').value = '';
+});
+
+/* ---------- wheel drawing ---------- */
+function sizeCanvas(){
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener('resize', () => { sizeCanvas(); drawWheel(); });
+
+// θ — кут за годинниковою стрілкою від верху (0 = топ)
+function pointAt(cx, cy, r, theta){
+  return [cx + r*Math.sin(theta), cy - r*Math.cos(theta)];
+}
+
+function drawWheel(){
+  sizeCanvas();
+  const w = canvas.getBoundingClientRect().width;
+  const h = canvas.getBoundingClientRect().height;
+  const cx = w/2, cy = h/2, R = Math.min(w,h)/2 - 8;
+  ctx.clearRect(0,0,w,h);
+
+  let items = visualItems();
+  // Сегмент, що вибуває: фаза 1 — "згорання" (700мс), фаза 2 — сірий з ✕ (ще ~1.1с)
+  if(eliminating){
+    const o = options[eliminating.idx];
+    if(o && Math.max(0,+o.weight||0) > 0 && (o.name||'').trim()){
+      items = items.filter(it => it.x.i !== eliminating.idx); // без дубліката
+      const w = Math.max(0,+o.weight||0);
+      const maxW = Math.max(...options.map(x=>Math.max(0,+x.weight||0)), 0);
+      const t = Math.min(1, (performance.now() - eliminating.t0) / 1800);
+      const item = {x:{o, i:eliminating.idx}, vw: (maxW - w) + maxW*0.02, elimT: t};
+      let pos = items.findIndex(it => it.x.i > eliminating.idx);
+      if(pos === -1) pos = items.length;
+      items.splice(pos, 0, item);
+    }
+  }
+  const tw = items.reduce((s2,it) => s2 + it.vw, 0);
+  if(!tw || !items.length){
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2);
+    ctx.fillStyle = 'var(--surface-alt)'; ctx.fill();
+    ctx.fillStyle = '#9c98a8'; ctx.font = '14px Space Grotesk'; ctx.textAlign='center';
+    ctx.fillText('Додай варіанти з вагою > 0', cx, cy);
+    return;
+  }
+
+  // Кутові межі сегментів (у локальних координатах колеса)
+  const segs = [];
+  let acc = 0;
+  items.forEach((it,i) => {
+    const a0 = acc, a1 = acc + (it.vw/tw) * Math.PI*2;
+    segs.push({o: it.x.o, idx: it.x.i, a0, a1, color: COLORS[it.x.i % COLORS.length], elimT: it.elimT || 0});
+    acc = a1;
+  });
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(rotation);
+
+  segs.forEach(s => {
+    const et = s.elimT || 0;
+    // фаза 1 (et<0.39): стиск + затемнення; фаза 2: сірий сегмент з ✕; фаза 3: зникнення
+    let alpha = 1, rEff = R, fill = s.color, showX = false, hideLabel = false;
+    if(et > 0){
+      if(et < 0.39){ const u = et/0.39; alpha = 1 - 0.65*u; rEff = R*(1 - 0.35*u); }
+      else if(et < 0.83){ alpha = 0.35; rEff = R*0.65; fill = '#3a3a46'; showX = true; hideLabel = true; }
+      else { const u = (et-0.83)/0.17; alpha = 0.35*(1-u); rEff = R*0.65; fill = '#3a3a46'; showX = u < 0.5; hideLabel = true; }
+    }
+    ctx.save();
+    if(et > 0) ctx.globalAlpha = alpha;
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    const steps = 24;
+    for(let k=0;k<=steps;k++){
+      const th = s.a0 + (s.a1 - s.a0) * k/steps;
+      const [x,y] = pointAt(0,0,rEff,th);
+      ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = fill;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,.35)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    if(showX){
+      const mid = (s.a0 + s.a1)/2;
+      const [xx,yy] = pointAt(0,0,rEff*0.62,mid);
+      ctx.fillStyle = '#edeae2';
+      ctx.font = '700 22px Space Grotesk, sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('✕', xx, yy);
+    }
+    ctx.restore();
+
+    if(hideLabel) return;
+    // занадто вузький сегмент — підпис наїжджатиме на сусідів
+    if((s.a1 - s.a0) < 0.32) return;
+
+    // підпис — в середині сегмента
+    const mid = (s.a0 + s.a1)/2;
+    const [lx,ly] = pointAt(0,0,R*0.62,mid);
+    ctx.save();
+    if(et > 0) ctx.globalAlpha = alpha;
+    ctx.translate(lx,ly);
+    ctx.rotate(mid); // текст радіально
+    ctx.fillStyle = '#14131a';
+    ctx.font = '600 13px Space Grotesk, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const label = (s.o.name||'').length > 14 ? s.o.name.slice(0,13)+'…' : (s.o.name||'');
+    ctx.fillText(label, 0, 0);
+    ctx.restore();
+  });
+
+  // зовнішнє кільце
+  ctx.beginPath(); ctx.arc(0,0,R,0,Math.PI*2);
+  ctx.strokeStyle = '#edeae2'; ctx.lineWidth = 4; ctx.stroke();
+
+  ctx.restore();
+
+}
+
+/* ---------- spin ---------- */
+// Повертає {o, i} активного учасника за зваженим рандомом
+function pickActive(){
+  const act = activeOptions();
+  const tw = act.reduce((s,x) => s + Math.max(0,+x.o.weight||0), 0);
+  let r = Math.random() * tw;
+  for(const x of act){
+    const w = Math.max(0, +x.o.weight || 0);
+    if(r < w) return x;
+    r -= w;
+  }
+  return act[act.length-1];
+}
+
+function segmentCenterAngle(idx){
+  const items = visualItems();
+  const tw = items.reduce((s2,it) => s2 + it.vw, 0);
+  let acc = 0;
+  for(const it of items){
+    const w = it.vw/tw * Math.PI*2;
+    if(it.x.i === idx) return acc + w/2;
+    acc += w;
+  }
+  return 0;
+}
+
+/* ---------- confetti ---------- */
+const confCanvas = document.getElementById('confetti');
+const confCtx = confCanvas.getContext('2d');
+function celebrate(){
+  const dpr = window.devicePixelRatio || 1;
+  confCanvas.width = innerWidth * dpr;
+  confCanvas.height = innerHeight * dpr;
+  confCtx.setTransform(dpr,0,0,dpr,0,0);
+  const colors = ['#e8a33d','#4fbfb0','#b084f5','#d9564a','#5b8dd9','#7bc96f','#e86a92'];
+  const cx = innerWidth/2, cy = innerHeight*0.35;
+  const parts = [];
+  for(let i=0;i<90;i++){
+    const a = Math.random()*Math.PI*2;
+    const sp = 4 + Math.random()*9;
+    parts.push({
+      x: cx, y: cy,
+      vx: Math.cos(a)*sp, vy: Math.sin(a)*sp - 4,
+      w: 5+Math.random()*5, h: 3+Math.random()*4,
+      rot: Math.random()*Math.PI, vr: (Math.random()-0.5)*0.25,
+      color: colors[i % colors.length],
+      life: 1
+    });
+  }
+  const t0 = performance.now();
+  const DUR = 2600;
+  function frame(now){
+    const t = (now - t0)/DUR;
+    confCtx.clearRect(0,0,innerWidth,innerHeight);
+    if(t >= 1){ confCtx.clearRect(0,0,innerWidth,innerHeight); return; }
+    parts.forEach(p => {
+      p.vy += 0.18; p.vx *= 0.985; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      p.life = 1 - t;
+      confCtx.save();
+      confCtx.globalAlpha = Math.max(0, p.life);
+      confCtx.translate(p.x, p.y); confCtx.rotate(p.rot);
+      confCtx.fillStyle = p.color;
+      confCtx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      confCtx.restore();
+    });
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+// Зберігає результат у БД (фолбек — localStorage) і в UI
+function recordResult(name, pct){
+  celebrate();
+  const entry = {name: name || '—', pct, ts: Date.now()};
+  history.unshift(entry);
+  renderHistory();
+  (async () => {
+    const saved = await saveSpinDB(entry.name, parseFloat(pct));
+    if(!saved){
+      const local = loadHistory();
+      local.unshift(entry);
+      localStorage.setItem(LS_HIST, JSON.stringify(local.slice(0,20)));
+    }
+  })();
+}
+
+document.getElementById('spinBtn').addEventListener('click', async () => {
+  if(spinning) return;
+  const banner = document.getElementById('winnerBanner');
+  const act = activeOptions();
+  const tw = activeWeight();
+  if(!tw || !act.length){ banner.textContent = 'Немає варіантів для spin'; return; }
+
+  // Вибування: якщо лишився один — це переможець, без обертання
+  if((mode === 'dropout' || mode === 'sim') && act.length === 1){
+    const w = act[0].o;
+    banner.textContent = `🏆 ${w.name || '—'} — переможець!`;
+    recordResult(w.name, pctOf(w).toFixed(1));
+    return;
+  }
+
+  spinning = true;
+  document.getElementById('spinBtn').disabled = true;
+  banner.textContent = '';
+
+  const isDropout = mode === 'dropout' || mode === 'sim';
+  const isSim = mode === 'sim';
+  let picked;
+  if(isSim){
+    if(!validSimPlan()) buildSimPlan();
+    const nextIdx = simPlan.queue[0];
+    picked = {o: options[nextIdx], i: nextIdx};
+  }else{
+    picked = pickActive(); // {o, i}
+  }
+  const center = segmentCenterAngle(picked.i);
+  // ширина сегмента візуально (інверсія в elim-режимах)
+  const items = visualItems();
+  const vtw = items.reduce((s2,it) => s2 + it.vw, 0);
+  const vit = items.find(it => it.x.i === picked.i);
+  const segW = vit ? (vit.vw/vtw) * Math.PI*2 : 0.3;
+  const jitter = (Math.random() - 0.5) * segW * 0.7;
+  const targetLocal = center + jitter;
+
+  const currentMod = ((rotation % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+  // сегмент з локальним кутом θ опиняється на екрані під кутом θ+rotation;
+  // щоб він був зверху (0), треба rotation ≡ -θ (mod 2π)
+  let delta = (((-targetLocal) - currentMod) % (Math.PI*2) + Math.PI*2) % (Math.PI*2);
+  const spins = 8 + Math.floor(Math.random()*4); // 8–11 обертів — видно прокрутку
+  const target = rotation + delta + spins*Math.PI*2;
+
+  let duration = spinDurationMs();
+  if(mode !== 'normal'){
+    // фінальні раунди — довше і напруженіше
+    const n = activeOptions().length;
+    if(n <= 3) duration *= 1.7;
+    else if(n <= 6) duration *= 1.35;
+  }
+  const start = performance.now();
+  const from = rotation;
+
+  // suspense: швидко на старті, до кінця швидкість плавно падає до нуля —
+  // останні ~20% часу колесо "повзе", і кожен сегмент видно
+  function suspenseEase(t){ return Math.pow(Math.sin(t * Math.PI / 2), 0.4); }
+
+  function frame(now){
+    const t = Math.min(1, (now - start)/duration);
+    rotation = from + (target - from) * suspenseEase(t);
+    drawWheel();
+    if(t < 1){
+      requestAnimationFrame(frame);
+    }else{
+      rotation = target;
+      drawWheel();
+      spinning = false;
+      if(!isDropout) document.getElementById('spinBtn').disabled = false;
+
+      if(isDropout){
+        // анімація "згорання" сегмента, потім фактичне видалення
+        eliminating = {idx: picked.i, t0: performance.now()};
+        if(isSim){ simPlan.queue.shift(); saveSimPlan(); }
+        // rAF-цикл: сегмент візуально "згорає" 700мс
+        const elimBadge = document.getElementById('elimBadge');
+        (function elimAnim(now){
+          drawWheel();
+          const et = Math.min(1, (now - eliminating.t0) / 1800);
+          if(et >= 0.39){
+            const o = options[eliminating.idx];
+            elimBadge.textContent = `✕ ${(o && o.name) || '—'} вибув!`;
+            elimBadge.style.opacity = Math.min(1, (et - 0.39) / 0.08);
+          }else{
+            elimBadge.style.opacity = 0;
+          }
+          if(now - eliminating.t0 < 1800){
+            requestAnimationFrame(elimAnim);
+            return;
+          }
+          eliminating = null;
+          elimBadge.style.opacity = 0;
+          eliminated.add(picked.i);
+          saveEliminated();
+          const remaining = activeOptions();
+          renderOptions();
+          drawWheel();
+          if(remaining.length === 1){
+            const w = remaining[0].o;
+            banner.textContent = `🏆 ${w.name || '—'} — переможець!`;
+            recordResult(w.name, pctOf(w).toFixed(1));
+            simPlan = null; saveSimPlan();
+          }else{
+            banner.textContent = `💀 ${picked.o.name || '—'} вибув! Лишилось: ${remaining.length}`;
+          }
+          document.getElementById('spinBtn').disabled = false;
+        })(performance.now());
+      }else{
+        const pct = pctOf(picked.o).toFixed(1);
+        banner.textContent = `🎉 ${picked.o.name || '—'} виграв! (${pct}%)`;
+        recordResult(picked.o.name, pct);
+      }
+    }
+  }
+  requestAnimationFrame(frame);
+});
+
+/* ---------- mode toggle + dropout reset ---------- */
+document.getElementById('modeToggle').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-mode]');
+  if(!btn) return;
+  mode = btn.getAttribute('data-mode');
+  localStorage.setItem(LS_MODE, mode);
+  document.querySelectorAll('#modeToggle button').forEach(b => b.classList.toggle('active', b === btn));
+  const isElim = mode !== 'normal';
+  document.getElementById('spinBtn').textContent = isElim ? 'Виключити' : 'Крутити';
+  document.getElementById('resetDropout').style.display = isElim ? '' : 'none';
+  renderOptions();
+});
+document.getElementById('resetDropout').addEventListener('click', () => {
+  eliminated.clear();
+  simPlan = null; saveSimPlan();
+  saveEliminated();
+  document.getElementById('winnerBanner').textContent = '';
+  renderOptions();
+});
+/* ---------- sort options ---------- */
+function applySort(){
+  if(sortMode === 'none' || options.length < 2) return;
+  const order = options.map((o,i) => i).sort((a,b) => {
+    const d = (+options[b].weight||0) - (+options[a].weight||0);
+    return sortMode === 'desc' ? d : -d;
+  });
+  const remap = {};
+  order.forEach((oldI, newI) => remap[oldI] = newI);
+  options = order.map(i => options[i]);
+  eliminated = new Set([...eliminated].map(i => remap[i]).filter(i => i !== undefined));
+  saveEliminated();
+  if(simPlan){
+    simPlan.winner = remap[simPlan.winner];
+    simPlan.queue = simPlan.queue.map(i => remap[i]).filter(i => i !== undefined);
+    saveSimPlan();
+  }
+  saveOptions(); renderOptions();
+}
+document.getElementById('sortMode').value = sortMode;
+document.getElementById('sortMode').addEventListener('change', e => {
+  sortMode = e.target.value;
+  localStorage.setItem(LS_SORT, sortMode);
+  applySort();
+});
+
+/* ---------- duration controls ---------- */
+const durTypeEl = document.getElementById('durType');
+const durFixedEl = document.getElementById('durFixed');
+const durMinEl = document.getElementById('durMin');
+const durMaxEl = document.getElementById('durMax');
+const durRangeWrap = document.getElementById('durRangeWrap');
+function syncDurUI(){
+  durTypeEl.value = durCfg.type;
+  durFixedEl.value = durCfg.fixed;
+  durMinEl.value = durCfg.min;
+  durMaxEl.value = durCfg.max;
+  durRangeWrap.style.display = durCfg.type === 'random' ? '' : 'none';
+}
+durTypeEl.addEventListener('change', () => { durCfg.type = durTypeEl.value; saveDurCfg(); syncDurUI(); });
+durFixedEl.addEventListener('input', () => { durCfg.fixed = parseFloat(durFixedEl.value) || 6; saveDurCfg(); });
+durMinEl.addEventListener('input', () => { durCfg.min = parseFloat(durMinEl.value) || 1; saveDurCfg(); });
+durMaxEl.addEventListener('input', () => { durCfg.max = parseFloat(durMaxEl.value) || 30; saveDurCfg(); });
+syncDurUI();
+
+// Підтримка збереженого режиму при завантаженні
+if(mode !== 'normal'){
+  document.querySelectorAll('#modeToggle button').forEach(b => b.classList.toggle('active', b.getAttribute('data-mode') === mode));
+  document.getElementById('spinBtn').textContent = 'Виключити';
+  document.getElementById('resetDropout').style.display = '';
+}
+
+function timeAgo(ts){
+  const diff = Date.now() - ts;
+  const m = Math.floor(diff/60000);
+  if(m < 1) return 'щойно';
+  if(m < 60) return m + ' хв тому';
+  const h = Math.floor(m/60);
+  if(h < 24) return h + ' год тому';
+  const d = Math.floor(h/24);
+  if(d < 30) return d + ' дн тому';
+  return new Date(ts).toLocaleDateString('uk-UA');
+}
+
+function renderHistory(){
+  const el = document.getElementById('historyList');
+  if(!history.length){ el.innerHTML = '<div style="color:var(--text-muted);font-size:14px;">Поки порожньо</div>'; return; }
+  el.innerHTML = history.map((h,i) => `
+    <div class="history-item">
+      <span class="h-rank">${i+1}</span>
+      <span class="h-name">${escapeHTML(h.name)}</span>
+      <span class="h-time">${timeAgo(h.ts)}</span>
+      <span class="h-pct">${(+h.pct).toFixed(1)}%</span>
+    </div>`).join('');
+}
+
+(async () => {
+  const ok = await loadHistoryDB();
+  if(!ok || !history.length){
+    const local = loadHistory();
+    if(local.length) history = local;
+  }
+  renderOptions();
+  renderHistory();
+})();
+</script>
+</body>
+</html>

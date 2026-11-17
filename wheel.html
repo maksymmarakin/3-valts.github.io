@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
+    color-scheme: dark;
     --bg:#14131a;
     --surface:#1e1d26;
     --surface-alt:#26242f;
@@ -46,6 +47,30 @@
     display:grid;grid-template-columns:1fr minmax(260px,340px);gap:28px;align-items:start;
   }
   @media(max-width:860px){.wheel-layout{grid-template-columns:1fr;}}
+  @media(max-width:600px){
+    body{padding:0 12px 60px;font-size:16px;}
+    header{padding:28px 0 18px;gap:12px;}
+    header .titles h1{font-size:24px;}
+    header .titles p{font-size:14px;}
+    .wheel-wrap{max-width:100%;}
+    .panel{padding:14px;border-radius:10px;}
+    .opt-row{grid-template-columns:12px 1fr 68px 30px;gap:6px;margin-bottom:6px;}
+    .opt-row input{padding:8px 8px;font-size:14px;}
+    .opt-row .pct{font-size:13px;}
+    .opt-row .del{font-size:14px;padding:2px;}
+    .dur-row{gap:6px;margin-bottom:12px;}
+    .dur-row select,.dur-row input{font-size:14px;padding:8px 30px 8px 9px;}
+    .dur-row input{width:56px;padding:8px 9px;}
+    .mode-toggle button{font-size:14px;padding:10px 6px;}
+    .btn{font-size:14px;padding:8px 12px;}
+    .spin-btn{font-size:16px;padding:13px 36px;}
+    .winner-banner{font-size:17px;}
+    .history-item{font-size:15px;padding:9px 10px;gap:8px;}
+    .history-item .h-name{font-size:15px;}
+    .history-item .h-pct{font-size:14px;}
+    .history-item .h-time{font-size:12px;}
+    #elimBadge{font-size:clamp(14px,4.5vw,22px);padding:8px 16px;}
+  }
 
   .wheel-stage{position:relative;display:flex;flex-direction:column;align-items:stretch;}
   .wheel-wrap{position:relative;width:100%;max-width:94vh;aspect-ratio:1;}
@@ -78,15 +103,15 @@
   .panel{
     background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;
   }
-  .panel h2{margin:0 0 4px;font-size:16px;}
-  .panel .sub{color:var(--text-muted);font-size:12px;margin-bottom:12px;}
+  .panel h2{margin:0 0 4px;font-size:19px;}
+  .panel .sub{color:var(--text-muted);font-size:14px;margin-bottom:12px;}
   .opt-row{
     display:grid;grid-template-columns:14px 1fr 90px 34px;gap:8px;align-items:center;
     margin-bottom:8px;
   }
   .opt-row input{
     background:var(--bg);border:1px solid var(--border);color:var(--text);
-    border-radius:6px;padding:6px 9px;font-family:'Space Grotesk',sans-serif;font-size:13px;
+    border-radius:6px;padding:9px 11px;font-family:'Space Grotesk',sans-serif;font-size:15px;
     width:100%;
   }
   .opt-row input:focus{outline:none;border-color:var(--teal);}
@@ -95,7 +120,7 @@
     border:1px solid rgba(0,0,0,.3);align-self:center;
   }
   .opt-row .pct{
-    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);
+    font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--text-muted);
     text-align:right;white-space:nowrap;
   }
   .opt-row .del{
@@ -107,7 +132,7 @@
   .mode-toggle{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:16px;}
   .mode-toggle button{
     flex:1;background:var(--bg);border:none;color:var(--text-muted);
-    padding:9px 10px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;
+    padding:11px 10px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;
     cursor:pointer;transition:background .15s,color .15s;
   }
   .mode-toggle button.active{background:var(--amber);color:#1a1408;}
@@ -116,18 +141,23 @@
   .dur-row{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap;}
   .dur-row select,.dur-row input{
     background:var(--bg);border:1px solid var(--border);color:var(--text);
-    border-radius:6px;padding:7px 9px;font-family:'Space Grotesk',sans-serif;font-size:13px;
+    border-radius:6px;padding:9px 34px 9px 11px;font-family:'Space Grotesk',sans-serif;font-size:15px;
+    appearance:none;-webkit-appearance:none;cursor:pointer;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239c98a8' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 10px center;
   }
+  .dur-row select:focus{outline:none;border-color:var(--teal);}
+  .dur-row input{padding:9px 11px;background-image:none;cursor:text;}
   .dur-row input{width:64px;}
-  .dur-row label{font-size:13px;color:var(--text-muted);}
+  .dur-row label{font-size:15px;color:var(--text-muted);white-space:nowrap;}
   .elim-badge{
-    font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--red);
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--red);
     text-transform:uppercase;letter-spacing:.05em;
   }
   .btn{
     font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;
     padding:9px 16px;border-radius:6px;cursor:pointer;border:1px solid var(--border);
-    background:var(--bg);color:var(--text);transition:opacity .15s;
+    background:var(--bg);color:var(--text);transition:opacity .15s;font-size:15px;
   }
   .btn:hover{opacity:.85;}
   .btn-primary{background:var(--amber);color:#1a1408;border-color:var(--amber);}
@@ -135,10 +165,10 @@
     margin-top:20px;background:var(--surface);border:1px solid var(--border);
     border-radius:12px;padding:16px;
   }
-  .history h2{margin:0 0 10px;font-size:15px;}
+  .history h2{margin:0 0 10px;font-size:17px;}
   .history-item{
     display:flex;align-items:center;gap:12px;padding:10px 12px;margin-bottom:8px;
-    background:var(--surface-alt);border:1px solid var(--border);border-radius:8px;font-size:14px;
+    background:var(--surface-alt);border:1px solid var(--border);border-radius:8px;font-size:16px;
   }
   .history-item .h-rank{
     width:26px;height:26px;border-radius:50%;flex-shrink:0;
@@ -149,11 +179,11 @@
   .history-item:nth-child(1) .h-rank{background:var(--amber);color:#1a1408;border-color:var(--amber);}
   .history-item:nth-child(2) .h-rank{background:#c9c9c9;color:#1a1408;border-color:#c9c9c9;}
   .history-item:nth-child(3) .h-rank{background:#cd7f32;color:#1a1408;border-color:#cd7f32;}
-  .history-item .h-name{font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .history-item .h-name{font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px;}
   .history-item .h-pct{
-    font-family:'IBM Plex Mono',monospace;color:var(--amber);font-weight:600;font-size:13px;flex-shrink:0;
+    font-family:'IBM Plex Mono',monospace;color:var(--amber);font-weight:600;font-size:15px;flex-shrink:0;
   }
-  .history-item .h-time{color:var(--text-muted);font-size:12px;flex-shrink:0;}
+  .history-item .h-time{color:var(--text-muted);font-size:14px;flex-shrink:0;}
   #confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:99;}
   #elimBadge{
     position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
@@ -227,6 +257,13 @@
             <button data-unit="weight" class="active">Вага</button>
             <button data-unit="pct">Відсоток</button>
           </div>
+        </div>
+        <div class="dur-row">
+          <label>Шаблон:</label>
+          <select id="tplSelect" style="flex:1;min-width:0;"></select>
+          <button class="btn" id="tplApply" title="Застосувати шаблон">▶</button>
+          <button class="btn" id="tplSave" title="Зберегти поточні варіанти як шаблон">💾</button>
+          <button class="btn" id="tplDelete" title="Видалити шаблон">🗑</button>
         </div>
         <div class="sub">Вага визначає розмір сегмента і шанс виграшу. Відсотки рахуються автоматично.</div>
         <div id="optionsList"></div>
@@ -457,6 +494,54 @@ document.getElementById('resetOptions').addEventListener('click', () => {
   options = DEFAULTS.map(o => ({...o}));
   saveOptions(); renderOptions();
 });
+
+/* ---------- templates ---------- */
+const LS_TPL = 'wheelTemplates_v1';
+function loadTemplates(){
+  try{ return JSON.parse(localStorage.getItem(LS_TPL)) || {}; }catch(e){ return {}; }
+}
+function saveTemplates(t){ localStorage.setItem(LS_TPL, JSON.stringify(t)); }
+const tplSelect = document.getElementById('tplSelect');
+function renderTplSelect(){
+  const t = loadTemplates();
+  const names = Object.keys(t).sort((a,b) => a.localeCompare(b, 'uk'));
+  tplSelect.innerHTML = names.length
+    ? '<option value="">— шаблон —</option>' + names.map(n => `<option value="${escapeAttr(n)}">${escapeHTML(n)}</option>`).join('')
+    : '<option value="">— немає шаблонів —</option>';
+}
+function applyTemplate(name){
+  const t = loadTemplates()[name];
+  if(!t || !t.length) return;
+  options = t.map(o => ({name: o.name || '', weight: +o.weight || 0}));
+  eliminated.clear(); simPlan = null;
+  saveEliminated(); saveSimPlan(); saveOptions();
+  document.getElementById('winnerBanner').textContent = '';
+  renderOptions();
+}
+document.getElementById('tplApply').addEventListener('click', () => {
+  const name = tplSelect.value;
+  if(name) applyTemplate(name);
+});
+tplSelect.addEventListener('change', () => {
+  if(tplSelect.value) applyTemplate(tplSelect.value);
+});
+document.getElementById('tplSave').addEventListener('click', () => {
+  const name = prompt('Назва шаблону:');
+  if(!name || !name.trim()) return;
+  const t = loadTemplates();
+  t[name.trim()] = options.map(o => ({name: o.name || '', weight: +o.weight || 0}));
+  saveTemplates(t); renderTplSelect();
+  tplSelect.value = name.trim();
+});
+document.getElementById('tplDelete').addEventListener('click', () => {
+  const name = tplSelect.value;
+  if(!name) return;
+  if(!confirm(`Видалити шаблон "${name}"?`)) return;
+  const t = loadTemplates();
+  delete t[name];
+  saveTemplates(t); renderTplSelect();
+});
+renderTplSelect();
 
 /* ---------- center image ---------- */
 const LS_CENTER = 'wheelCenterImg_v1';
